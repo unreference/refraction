@@ -1,151 +1,119 @@
 package me.unreference.refraction.managers;
 
-import me.unreference.refraction.Refraction;
-
 import java.sql.*;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static me.unreference.refraction.Refraction.getPlugin;
+import static me.unreference.refraction.Refraction.log;
 
 public class DatabaseManager {
     private static DatabaseManager instance;
-
     private Connection connection;
-    private final String host;
-    private final int port;
-    private final String user;
-    private final String password;
-    private final String database;
 
-    private DatabaseManager(String host, int port, String user, String password, String database) {
-        this.host = host;
-        this.port = port;
-        this.user = user;
-        this.password = password;
-        this.database = database;
+    private final String host = getPlugin().getConfig().getString("database.host");
+    private final int port = getPlugin().getConfig().getInt("database.port");
+    private final String user = getPlugin().getConfig().getString("database.user");
+    private final String password = getPlugin().getConfig().getString("database.password");
+    private final String name = getPlugin().getConfig().getString("database.name");
+
+    private DatabaseManager() {
     }
 
-    public static DatabaseManager get(String host, int port, String user, String password, String database) {
+    public static synchronized DatabaseManager get() {
         if (instance == null) {
-            instance = new DatabaseManager(host, port, user, password, database);
+            instance = new DatabaseManager();
         }
 
         return instance;
     }
 
     public void connect() throws SQLException {
-        if (connection == null || connection.isClosed()) {
+        if (isConnectionClosed()) {
             connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port, user, password);
-            Refraction.getPlugin().getLogger().info("Connected to server [" + host + ":" + port + "]");
-
-            if (!databaseExists(connection)) {
-                createDatabase(connection);
-                Refraction.getPlugin().getLogger().info("Created database [" + database + "]");
-            }
-
-            connection.setCatalog(database);
-            Refraction.getPlugin().getLogger().info("Connected to database [" + database + "]");
+            log(0, "DatabaseManager", "Connected to server [" + host + ":" + port + "]");
+            initializeDatabase();
         }
     }
 
-    private boolean databaseExists(Connection connection) {
-        try (Statement statement = connection.createStatement()) {
-            ResultSet result = statement.executeQuery("SHOW DATABASES LIKE '" + database + "'");
+    private boolean isConnectionClosed() throws SQLException {
+        return connection == null || connection.isClosed();
+    }
+
+    private void initializeDatabase() throws SQLException {
+        if (!databaseExists()) {
+            createDatabase();
+        }
+
+        connection.setCatalog(name);
+        log(0, "DatabaseManager", "Connected to database [" + name + "]");
+    }
+
+
+    private boolean databaseExists() throws SQLException {
+        String query = "SHOW DATABASES LIKE ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, name);
+            ResultSet result = statement.executeQuery();
             return result.next();
-        } catch (SQLException exception) {
-            return false;
         }
     }
 
-    private void createDatabase(Connection connection) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate("CREATE DATABASE " + database);
-        }
+    private void createDatabase() throws SQLException {
+        String query = "CREATE DATABASE " + name;
+        executeUpdate(query);
+        log(0, "DatabaseManager", "Created database [" + name + "]");
     }
 
     public void close() {
         if (connection != null) {
             try {
                 connection.close();
-                Refraction.getPlugin().getLogger().info("Closed the database connection.");
+                log(0, "DatabaseManager", "Closed the database connection.");
             } catch (SQLException exception) {
-                Refraction.getPlugin().getLogger().severe("Failed to close database connection: " + exception.getMessage());
+                log(2, "DatabaseManager", "Failed to close database connection.");
+                log(2, "DatabaseManager", Arrays.toString(exception.getStackTrace()));
             }
+        }
+    }
+
+    private void executeUpdate(String query) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(query);
         }
     }
 
     public void createTable(String tableName, Map<String, String> columns) throws SQLException {
-        StringBuilder query = new StringBuilder("CREATE TABLE IF NOT EXISTS " + tableName + " (");
-        query.append("id INT AUTO_INCREMENT PRIMARY KEY, ");
-        columns.forEach((name, type) -> query.append(name).append(" ").append(type).append(", "));
-
-        if (query.charAt(query.length() - 2) == ',') {
-            query.setLength(query.length() - 2);
+        if (tableExists(tableName)) {
+            log(0, "DatabaseManager", "Found table [" + tableName + "]");
+            return;
         }
 
-        query.append(")");
+        String columnDefinitions = columns.entrySet().stream()
+                .map(entry -> entry.getKey() + " " + entry.getValue())
+                .collect(Collectors.joining(", "));
+        String query = "CREATE TABLE " + tableName + " (id INT AUTO_INCREMENT PRIMARY KEY, " + columnDefinitions + ")";
 
-        try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate(query.toString());
-            Refraction.getPlugin().getLogger().info("Created table [" + tableName + "]");
-        }
+        executeUpdate(query);
+        log(0, "DatabaseManager", "Created table [" + tableName + "]");
     }
 
-    public void insertData(String tableName, Map<String, Object> data) throws SQLException {
-        StringBuilder columns = new StringBuilder();
-        StringBuilder values = new StringBuilder();
-
-        data.forEach((key, value) -> {
-            columns.append(key).append(", ");
-            values.append("?, ");
-        });
-
-        // Removes trailing comma and space
-        String query = "INSERT INTO " + tableName + " (" + columns.substring(0, columns.length() - 2) +
-                ") VALUES (" + values.substring(0, values.length() - 2) + ")";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            int i = 1;
-            for (Object value : data.values()) {
-                preparedStatement.setObject(i++, value);
-            }
-
-            preparedStatement.executeUpdate();
-            Refraction.getPlugin().getLogger().info("Inserted data [" + tableName + "]");
-        }
-    }
-
-    public boolean recordExists(String tableName, String columnName, Object value) throws SQLException {
-        String query = "SELECT COUNT(*) FROM " + tableName + " WHERE " + columnName + " = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setObject(1, value);
-
-            ResultSet result = preparedStatement.executeQuery();
-            if (result.next()) {
-                return result.getInt(1) > 0;
+    public boolean tableExists(String tableName) throws SQLException {
+        String query = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '" + name + "' AND table_name = '" + tableName + "'";
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
             }
         }
 
         return false;
     }
 
-    public void upsertData(String tableName, Map<String, Object> data) throws SQLException {
-        StringBuilder columns = new StringBuilder();
-        StringBuilder values = new StringBuilder();
-        StringBuilder updates = new StringBuilder();
-
-        for (String key : data.keySet()) {
-            columns.append(key).append(", ");
-            values.append("?, ");
-            updates.append(key).append(" = VALUES (").append(key).append("), ");
-        }
-
-        // Removes trailing commas
-        columns.setLength(columns.length() - 2);
-        values.setLength(values.length() - 2);
-        updates.setLength(updates.length() - 2);
-
-        String query = "INSERT INTO " + tableName + " (" + columns + ") VALUES (" + values + ") " +
-                "ON DUPLICATE KEY UPDATE " + updates;
+    public void insertData(String tableName, Map<String, Object> data) throws SQLException {
+        String columns = String.join(", ", data.keySet());
+        String placeholders = data.keySet().stream().map(key -> "?").collect(Collectors.joining(", "));
+        String query = "INSERT INTO " + tableName + " (" + columns + ") VALUES (" + placeholders + ")";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             int i = 1;
@@ -154,21 +122,25 @@ public class DatabaseManager {
             }
 
             preparedStatement.executeUpdate();
+            log(0, "DatabaseManager", "Inserted data into [" + tableName + "]");
         }
     }
 
-    public void updateData(String tableName, Map<String, Object> data, String keyColumn, String keyValue) throws SQLException {
-        StringBuilder setClause = new StringBuilder();
-
-        for (String key : data.keySet()) {
-            setClause.append(key).append("= ?, ");
+    public boolean recordExists(String tableName, String columnName, Object value) throws SQLException {
+        String query = "SELECT COUNT(*) FROM " + tableName + " WHERE " + columnName + " = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setObject(1, value);
+            ResultSet result = preparedStatement.executeQuery();
+            return result.next() && result.getInt(1) > 0;
         }
+    }
 
-        // Remove last comma and space
-        setClause.setLength(setClause.length() - 2);
+    public void updateData(String tableName, Map<String, Object> data, String keyColumn, Object keyValue) throws SQLException {
+        String setClause = data.keySet().stream()
+                .map(key -> key + " = ?")
+                .collect(Collectors.joining(", "));
 
         String query = "UPDATE " + tableName + " SET " + setClause + " WHERE " + keyColumn + " = ?";
-
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             int i = 1;
             for (Object value : data.values()) {

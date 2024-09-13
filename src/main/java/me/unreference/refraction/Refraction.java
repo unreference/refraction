@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 
 public final class Refraction extends JavaPlugin {
     boolean isFatalError = false;
@@ -17,17 +18,28 @@ public final class Refraction extends JavaPlugin {
         return Bukkit.getPluginManager().getPlugin("Refraction");
     }
 
+    public static void log(int severity, String prefix, String message) {
+        String msg = prefix.isBlank() ? message : "(" + prefix + "): " + message;
+
+        switch (severity) {
+            case 0:
+                getPlugin().getLogger().info(msg);
+                break;
+            case 1:
+                getPlugin().getLogger().warning(msg);
+                break;
+            case 2:
+                // FALL-THROUGH
+            default:
+                getPlugin().getLogger().severe(msg);
+        }
+    }
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
 
-        String host = getConfig().getString("database.host");
-        int port = getConfig().getInt("database.port");
-        String user = getConfig().getString("database.user");
-        String password = getConfig().getString("database.password");
-        String database = getConfig().getString("database.name");
-
-        DatabaseManager databaseManager = DatabaseManager.get(host, port, user, password, database);
+        DatabaseManager databaseManager = DatabaseManager.get();
 
         try {
             databaseManager.connect();
@@ -37,7 +49,7 @@ public final class Refraction extends JavaPlugin {
 
             addListener(new PlayerManager(databaseManager));
         } catch (SQLException exception) {
-            getLogger().severe("FATAL (DatabaseManager): " + exception.getMessage());
+            getLogger().severe("FATAL (DatabaseManager): " + Arrays.toString(exception.getStackTrace()));
             isFatalError = true;
         }
 
@@ -49,10 +61,12 @@ public final class Refraction extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        DatabaseManager.get(null, 0, null, null, null).close();
+        DatabaseManager.get().close();
     }
 
     private void addListener(Listener listener) {
         this.getServer().getPluginManager().registerEvents(listener, this);
     }
+
+
 }

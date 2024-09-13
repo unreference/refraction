@@ -1,11 +1,13 @@
 package me.unreference.refraction.managers;
 
-import me.unreference.refraction.Refraction;
 import me.unreference.refraction.data.PlayerData;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static me.unreference.refraction.Refraction.log;
 
 public class PlayerDataManager {
     private static PlayerDataManager instance;
@@ -15,7 +17,7 @@ public class PlayerDataManager {
         this.databaseManager = databaseManager;
     }
 
-    public static PlayerDataManager get(DatabaseManager databaseManager) {
+    public static synchronized PlayerDataManager get(DatabaseManager databaseManager) {
         if (instance == null) {
             instance = new PlayerDataManager(databaseManager);
         }
@@ -28,42 +30,35 @@ public class PlayerDataManager {
     }
 
     public void insertStatic(PlayerData data) throws SQLException {
-        if (!isNew(data.uuid())) {
-            Refraction.getPlugin().getLogger().info("Static data already exists [" + data.name() + "]");
-        } else {
-            LinkedHashMap<String, Object> player = new LinkedHashMap<>();
-            player.put("uuid", data.uuid());
-            player.put("name", data.name());
-            player.put("first_played", data.firstPlayed());
-
+        if (isNew(data.uuid())) {
+            Map<String, Object> player = buildPlayerMap(data);
             databaseManager.insertData("players", player);
+        } else {
+            log(1, "PlayerDataManager", "Static data already exists [" + data.name() + "]");
         }
     }
 
     public void updateDynamic(String uuid, LocalDateTime lastPlayed) throws SQLException {
-        LinkedHashMap<String, Object> player = new LinkedHashMap<>();
+        Map<String, Object> player = new LinkedHashMap<>();
         player.put("last_played", lastPlayed);
-
         databaseManager.updateData("players", player, "uuid", uuid);
     }
 
     public void create() throws SQLException {
-        LinkedHashMap<String, String> columns = new LinkedHashMap<>();
+        Map<String, String> columns = new LinkedHashMap<>();
         columns.put("uuid", "CHAR(36) NOT NULL UNIQUE");
         columns.put("name", "CHAR(16) NOT NULL");
         columns.put("first_played", "DATETIME(0) NOT NULL");
         columns.put("last_played", "DATETIME(0) NULL");
-
         databaseManager.createTable("players", columns);
     }
 
-    public void insert(PlayerData data) throws SQLException {
-        LinkedHashMap<String, Object> player = new LinkedHashMap<>();
+    private Map<String, Object> buildPlayerMap(PlayerData data) {
+        Map<String, Object> player = new LinkedHashMap<>();
         player.put("uuid", data.uuid());
         player.put("name", data.name());
         player.put("first_played", data.firstPlayed());
         player.put("last_played", data.lastPlayed());
-
-        databaseManager.insertData("players", player);
+        return player;
     }
 }
