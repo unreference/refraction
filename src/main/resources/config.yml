@@ -1,6 +1,6 @@
 database:
-  host: localhost
-  port: 3306
-  name: refraction
-  user: root
-  password: password
+  host: localhost   # Default: localhost
+  port: 3306        # Default: 3306
+  user: root        # Default: root
+  password:         # Default: <blank>
+  name: refraction  # Default: refraction

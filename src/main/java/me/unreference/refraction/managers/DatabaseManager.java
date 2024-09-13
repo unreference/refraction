@@ -1,7 +1,6 @@
 package me.unreference.refraction.managers;
 
 import me.unreference.refraction.Refraction;
-import net.minecraft.stats.Stat;
 
 import java.sql.*;
 
@@ -9,21 +8,21 @@ public class DatabaseManager {
     private Connection connection;
     private final String host;
     private final int port;
-    private final String database;
     private final String user;
     private final String password;
+    private final String database;
 
-    public DatabaseManager(String host, int port, String database, String user, String password) {
+    public DatabaseManager(String host, int port, String user, String password, String database) {
         this.host = host;
         this.port = port;
-        this.database = database;
         this.user = user;
         this.password = password;
+        this.database = database;
     }
 
     public void connect() throws SQLException {
         connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port, user, password);
-        Refraction.getPlugin().getLogger().info("Successfully connected to the server.");
+        Refraction.getPlugin().getLogger().info("Successfully connected to server [" + host + ":" + port + "]");
 
         if (!databaseExists(connection)) {
             createDatabase(connection);
@@ -46,9 +45,6 @@ public class DatabaseManager {
     private void createDatabase(Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE DATABASE " + database);
-        } catch (SQLException exception) {
-            Refraction.getPlugin().getLogger().severe("Error creating database [" + database + "]: " + exception.getMessage());
-            throw exception;
         }
     }
 
@@ -59,7 +55,6 @@ public class DatabaseManager {
                 Refraction.getPlugin().getLogger().info("Successfully closed the database connection.");
             } catch (SQLException exception) {
                 Refraction.getPlugin().getLogger().severe("Failed to close database connection: " + exception.getMessage());
-
             }
         }
     }

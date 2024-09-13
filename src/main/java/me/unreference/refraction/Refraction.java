@@ -11,6 +11,7 @@ import java.sql.SQLException;
 
 public final class Refraction extends JavaPlugin {
     private DatabaseManager databaseManager;
+    boolean isFatalError = false;
 
     public static Plugin getPlugin() {
         return Bukkit.getPluginManager().getPlugin("Refraction");
@@ -22,21 +23,24 @@ public final class Refraction extends JavaPlugin {
 
         String host = getConfig().getString("database.host");
         int port = getConfig().getInt("database.port");
-        String database = getConfig().getString("database.name");
         String user = getConfig().getString("database.user");
         String password = getConfig().getString("database.password");
+        String database = getConfig().getString("database.name");
 
-        databaseManager = new DatabaseManager(host, port, database, user, password);
+        databaseManager = new DatabaseManager(host, port, user, password, database);
 
         try {
             databaseManager.connect();
-            addManager(new PlayerManager());
+            addListener(new PlayerManager());
         } catch (SQLException exception) {
-            getLogger().severe("FATAL (DatabaseManager): Failed to connect: " + exception.getMessage());
+            getLogger().severe("FATAL (DatabaseManager): " + exception.getMessage());
+            isFatalError = true;
         }
 
-        getLogger().severe("One of more fatal errors have occurred!  Disabling plugin!");
-        getServer().getPluginManager().disablePlugin(this);
+        if (isFatalError) {
+            getLogger().severe("One of more fatal errors have occurred!  Disabling plugin!");
+            getServer().getPluginManager().disablePlugin(this);
+        }
     }
 
     @Override
@@ -46,7 +50,7 @@ public final class Refraction extends JavaPlugin {
         }
     }
 
-    private void addManager(Listener listener) {
+    private void addListener(Listener listener) {
         this.getServer().getPluginManager().registerEvents(listener, this);
     }
 }
