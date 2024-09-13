@@ -1,6 +1,7 @@
 package me.unreference.refraction;
 
 import me.unreference.refraction.managers.DatabaseManager;
+import me.unreference.refraction.managers.PlayerDataManager;
 import me.unreference.refraction.managers.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -10,7 +11,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.sql.SQLException;
 
 public final class Refraction extends JavaPlugin {
-    private DatabaseManager databaseManager;
     boolean isFatalError = false;
 
     public static Plugin getPlugin() {
@@ -27,11 +27,15 @@ public final class Refraction extends JavaPlugin {
         String password = getConfig().getString("database.password");
         String database = getConfig().getString("database.name");
 
-        databaseManager = new DatabaseManager(host, port, user, password, database);
+        DatabaseManager databaseManager = DatabaseManager.get(host, port, user, password, database);
 
         try {
             databaseManager.connect();
-            addListener(new PlayerManager());
+
+            PlayerDataManager playerDataManager = PlayerDataManager.get(databaseManager);
+            playerDataManager.create();
+
+            addListener(new PlayerManager(databaseManager));
         } catch (SQLException exception) {
             getLogger().severe("FATAL (DatabaseManager): " + exception.getMessage());
             isFatalError = true;
@@ -45,9 +49,7 @@ public final class Refraction extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (databaseManager != null) {
-            databaseManager.close();
-        }
+        DatabaseManager.get(null, 0, null, null, null).close();
     }
 
     private void addListener(Listener listener) {
