@@ -10,13 +10,12 @@ import static me.unreference.refraction.Refraction.log;
 
 public class DatabaseManager {
     private static DatabaseManager instance;
-    private Connection connection;
-
     private final String host = getPlugin().getConfig().getString("database.host");
     private final int port = getPlugin().getConfig().getInt("database.port");
     private final String user = getPlugin().getConfig().getString("database.user");
     private final String password = getPlugin().getConfig().getString("database.password");
     private final String name = getPlugin().getConfig().getString("database.name");
+    private Connection connection;
 
     private DatabaseManager() {
     }

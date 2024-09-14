@@ -7,10 +7,10 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class SetSpawnCommand extends AbstractCommand {
+public class SpawnCommand extends AbstractCommand {
 
-    public SetSpawnCommand() {
-        super("setspawn", "refraction.command.setspawn");
+    public SpawnCommand() {
+        super("spawn", "refraction.command.spawn");
     }
 
     @Override
@@ -21,11 +21,8 @@ public class SetSpawnCommand extends AbstractCommand {
         }
 
         Player player = (Player) sender;
-        Location location = player.getLocation();
-
-        player.getWorld().setSpawnLocation(location);
-
-        player.sendMessage("Spawn set.");
+        Location spawn = player.getWorld().getSpawnLocation();
+        player.teleport(spawn);
     }
 
     @Override
@@ -40,6 +37,6 @@ public class SetSpawnCommand extends AbstractCommand {
 
     @Override
     protected void generatePermissions() {
-        RankModel.ADMIN.grantPermission(getPermission(), true);
+        RankModel.PLAYER.grantPermission(getPermission(), true);
     }
 }

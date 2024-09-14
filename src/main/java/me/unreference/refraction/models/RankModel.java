@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static me.unreference.refraction.Refraction.log;
-
 public enum RankModel {
     PLAYER("Player", null),
 
@@ -42,7 +40,6 @@ public enum RankModel {
 
     public void grantPermission(String permission, boolean isInheritable) {
         grantedPermissions.put(permission, new RankPermissionModel(isInheritable));
-        log(1, "RankModel", "Granted permission: " + permission);
     }
 
     public void revokePermission(String permission) {
