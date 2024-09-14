@@ -1,6 +1,7 @@
 package me.unreference.refraction.managers;
 
 import me.unreference.refraction.data.PlayerData;
+import me.unreference.refraction.models.Rank;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -28,11 +29,12 @@ public class PlayerManager implements Listener {
 
         try {
             if (playerDataManager.isNew(uuid)) {
-                PlayerData data = new PlayerData(uuid, name, ip, now, now);
+                RankManager rankManager = RankManager.get();
+                PlayerData data = new PlayerData(uuid, name, ip, now, now, rankManager.getId(Rank.PLAYER));
                 playerDataManager.insertStatic(data);
             }
         } catch (SQLException exception) {
-            log(2, "PlayerDataManager", "Failed to manage player data [" + name + "]");
+            log(2, "PlayerDataManager", "Failed to manage player data [" + name + "]: " + exception.getMessage());
             log(2, "PlayerDataManager", Arrays.toString(exception.getStackTrace()));
             event.getPlayer().kick();
         }

@@ -51,8 +51,8 @@ public class PlayerDataManager {
         columns.put("name", "CHAR(16) NOT NULL");
         columns.put("ip", "VARCHAR(45) NOT NULL");
         columns.put("first_played", "DATETIME(0) NOT NULL");
-        columns.put("last_played", "DATETIME(0) NULL");
-
+        columns.put("last_played", "DATETIME(0) NOT NULL");
+        columns.put("rank", "CHAR(6) NOT NULL");
         databaseManager.createTable("players", columns);
     }
 
@@ -63,6 +63,7 @@ public class PlayerDataManager {
         player.put("ip", data.ip());
         player.put("first_played", data.firstPlayed());
         player.put("last_played", data.lastPlayed());
+        player.put("rank", data.rank());
         return player;
     }
 }

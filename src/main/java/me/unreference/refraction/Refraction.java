@@ -28,8 +28,6 @@ public final class Refraction extends JavaPlugin {
             case 1:
                 getPlugin().getLogger().warning(msg);
                 break;
-            case 2:
-                // FALL-THROUGH
             default:
                 getPlugin().getLogger().severe(msg);
         }
@@ -49,6 +47,7 @@ public final class Refraction extends JavaPlugin {
 
             addListener(new PlayerManager(databaseManager));
         } catch (SQLException exception) {
+            getLogger().severe("FATAL (DatabaseManager): " + exception.getMessage());
             getLogger().severe("FATAL (DatabaseManager): " + Arrays.toString(exception.getStackTrace()));
             isFatalError = true;
         }

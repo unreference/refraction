@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.Set;
 
 public enum Rank {
-    PLAYER("player", null),
+    PLAYER("Player", null),
 
-    ADMIN("admin", null, PLAYER),
-    OWNER("owner", null, ADMIN);
+    ADMIN("Admin", null, PLAYER),
+    OWNER("Owner", null, ADMIN);
 
     private final String id;
     private final String prefix;
@@ -32,6 +32,10 @@ public enum Rank {
         this.parent = parent;
         this.grantedPermissions = new HashMap<>();
         this.revokedPermissions = new HashSet<>();
+    }
+
+    public String getId() {
+        return id;
     }
 
     public void grantPermission(String permission, boolean isInheritable) {
