@@ -23,11 +23,12 @@ public class PlayerManager implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         String uuid = event.getPlayer().getUniqueId().toString();
         String name = event.getPlayer().getName();
+        String ip = event.getPlayer().getAddress().getAddress().getHostAddress();
         LocalDateTime now = LocalDateTime.now();
 
         try {
             if (playerDataManager.isNew(uuid)) {
-                PlayerData data = new PlayerData(uuid, name, now, now);
+                PlayerData data = new PlayerData(uuid, name, ip, now, now);
                 playerDataManager.insertStatic(data);
             }
         } catch (SQLException exception) {
@@ -42,10 +43,11 @@ public class PlayerManager implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         String uuid = event.getPlayer().getUniqueId().toString();
+        String ip = event.getPlayer().getAddress().getAddress().getHostAddress();
         LocalDateTime now = LocalDateTime.now();
 
         try {
-            playerDataManager.updateDynamic(uuid, now);
+            playerDataManager.updateDynamic(uuid, ip, now);
         } catch (SQLException exception) {
             String name = event.getPlayer().getName();
             log(2, "PlayerDataManager", "Failed to update dynamic data [" + name + "]");

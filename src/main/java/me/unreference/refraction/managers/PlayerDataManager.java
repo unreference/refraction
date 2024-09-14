@@ -38,8 +38,9 @@ public class PlayerDataManager {
         }
     }
 
-    public void updateDynamic(String uuid, LocalDateTime lastPlayed) throws SQLException {
+    public void updateDynamic(String uuid, String ip, LocalDateTime lastPlayed) throws SQLException {
         Map<String, Object> player = new LinkedHashMap<>();
+        player.put("ip", ip);
         player.put("last_played", lastPlayed);
         databaseManager.updateData("players", player, "uuid", uuid);
     }
@@ -48,8 +49,10 @@ public class PlayerDataManager {
         Map<String, String> columns = new LinkedHashMap<>();
         columns.put("uuid", "CHAR(36) NOT NULL UNIQUE");
         columns.put("name", "CHAR(16) NOT NULL");
+        columns.put("ip", "VARCHAR(45) NOT NULL");
         columns.put("first_played", "DATETIME(0) NOT NULL");
         columns.put("last_played", "DATETIME(0) NULL");
+
         databaseManager.createTable("players", columns);
     }
 
@@ -57,6 +60,7 @@ public class PlayerDataManager {
         Map<String, Object> player = new LinkedHashMap<>();
         player.put("uuid", data.uuid());
         player.put("name", data.name());
+        player.put("ip", data.ip());
         player.put("first_played", data.firstPlayed());
         player.put("last_played", data.lastPlayed());
         return player;
