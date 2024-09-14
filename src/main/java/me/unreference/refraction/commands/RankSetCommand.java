@@ -1,13 +1,12 @@
 package me.unreference.refraction.commands;
 
-import me.unreference.refraction.managers.DatabaseManager;
-import me.unreference.refraction.managers.PlayerDataManager;
 import me.unreference.refraction.managers.RankManager;
 import me.unreference.refraction.models.RankModel;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,19 +29,20 @@ public class RankSetCommand extends AbstractCommand {
             return;
         }
 
-        DatabaseManager databaseManager = DatabaseManager.get();
-        PlayerDataManager playerDataManager = PlayerDataManager.get(databaseManager);
         RankManager rankManager = RankManager.get();
-
-        RankModel rank = rankManager.getRankFromId(args[2]);
-        if (rank == null) {
+        RankModel newRank = rankManager.getRankFromId(args[2]);
+        if (newRank == null) {
             sender.sendMessage("Rank not found: " + args[2]);
             return;
         }
 
-        playerDataManager.setPlayerRank(target.getUniqueId().toString(), rank.getId());
-        sender.sendMessage("Set " + target.getName() + "'s rank to " + rank.getId() + ".");
-        target.sendMessage("Your rank was set to " + rank.getId() + ".");
+        try {
+            rankManager.setPlayerRank(target, newRank);
+            sender.sendMessage("Set " + target.getName() + "'s rank to " + newRank.getId() + ".");
+            target.sendMessage("Your rank was set to " + newRank.getId() + ".");
+        } catch (SQLException exception) {
+            sender.sendMessage("An error occurred while attempting to set the target's rank.");
+        }
     }
 
     @Override

@@ -1,7 +1,6 @@
 package me.unreference.refraction.commands;
 
-import me.unreference.refraction.managers.DatabaseManager;
-import me.unreference.refraction.managers.PlayerDataManager;
+import me.unreference.refraction.managers.RankManager;
 import me.unreference.refraction.models.RankModel;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -128,9 +127,8 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
             return true;
         }
 
-        DatabaseManager databaseManager = DatabaseManager.get();
-        PlayerDataManager playerDataManager = PlayerDataManager.get(databaseManager);
-        RankModel rank = playerDataManager.getPlayerRank(player.getUniqueId().toString());
+        RankManager rankManager = RankManager.get();
+        RankModel rank = rankManager.getPlayerRank(player);
         return rank.isPermitted(permission);
     }
 

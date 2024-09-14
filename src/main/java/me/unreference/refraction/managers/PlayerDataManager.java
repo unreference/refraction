@@ -1,12 +1,9 @@
 package me.unreference.refraction.managers;
 
 import me.unreference.refraction.data.PlayerData;
-import me.unreference.refraction.models.RankModel;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -68,35 +65,5 @@ public class PlayerDataManager {
         player.put("last_played", data.lastPlayed());
         player.put("rank", data.rank());
         return player;
-    }
-
-    public RankModel getPlayerRank(String uuid) {
-        try (ResultSet result = databaseManager.queryData("rank", "players", "uuid = ?", uuid)) {
-            if (result.next()) {
-                for (RankModel rank : RankModel.values()) {
-                    if (rank.getId().equalsIgnoreCase(result.getString("rank"))) {
-                        return rank;
-                    }
-                }
-            }
-        } catch (SQLException exception) {
-            log(2, "PlayerDataManager", "Failed to find rank [" + uuid + "]: " + Arrays.toString(exception.getStackTrace()));
-            log(2, "PlayerDataManager", Arrays.toString(exception.getStackTrace()));
-        }
-
-        return null;
-    }
-
-    public void setPlayerRank(String uuid, String newRank) {
-        Map<String, Object> player = new LinkedHashMap<>();
-        player.put("rank", newRank);
-
-        try {
-            databaseManager.updateData("players", player, "uuid", uuid);
-            log(0, "PlayerDataManager", "Updated rank [" + uuid + "] -> " + newRank);
-        } catch (SQLException exception) {
-            log(2, "PlayerDataManager", "Failed to update rank [" + uuid + "] " + exception.getMessage());
-            log(2, "PlayerDataManager", Arrays.toString(exception.getStackTrace()));
-        }
     }
 }

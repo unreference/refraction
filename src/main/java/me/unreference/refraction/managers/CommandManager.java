@@ -47,9 +47,8 @@ public class CommandManager implements Listener {
     }
 
     private Collection<String> getAllowedCommands(Player player) {
-        DatabaseManager databaseManager = DatabaseManager.get();
-        PlayerDataManager playerDataManager = PlayerDataManager.get(databaseManager);
-        RankModel rank = playerDataManager.getPlayerRank(player.getUniqueId().toString());
+        RankManager rankManager = RankManager.get();
+        RankModel rank = rankManager.getPlayerRank(player);
         CommandMap commandMap = Bukkit.getCommandMap();
 
         Collection<String> allowedCommands = new HashSet<>();
