@@ -1,7 +1,7 @@
 package me.unreference.refraction.managers;
 
 import me.unreference.refraction.data.PlayerData;
-import me.unreference.refraction.models.Rank;
+import me.unreference.refraction.models.RankModel;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -30,7 +30,7 @@ public class PlayerManager implements Listener {
         try {
             if (playerDataManager.isNew(uuid)) {
                 RankManager rankManager = RankManager.get();
-                PlayerData data = new PlayerData(uuid, name, ip, now, now, rankManager.getId(Rank.PLAYER));
+                PlayerData data = new PlayerData(uuid, name, ip, now, now, rankManager.getId(RankModel.PLAYER));
                 playerDataManager.insertStatic(data);
             }
         } catch (SQLException exception) {

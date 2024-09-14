@@ -1,6 +1,6 @@
 package me.unreference.refraction.managers;
 
-import me.unreference.refraction.models.Rank;
+import me.unreference.refraction.models.RankModel;
 
 public class RankManager {
     private static RankManager instance;
@@ -16,7 +16,7 @@ public class RankManager {
         return instance;
     }
 
-    public String getId(Rank rank) {
+    public String getId(RankModel rank) {
         return rank.getId();
     }
 }

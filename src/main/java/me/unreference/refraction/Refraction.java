@@ -1,5 +1,6 @@
 package me.unreference.refraction;
 
+import me.unreference.refraction.managers.CommandManager;
 import me.unreference.refraction.managers.DatabaseManager;
 import me.unreference.refraction.managers.PlayerDataManager;
 import me.unreference.refraction.managers.PlayerManager;
@@ -46,6 +47,7 @@ public final class Refraction extends JavaPlugin {
             playerDataManager.create();
 
             addListener(new PlayerManager(databaseManager));
+            addListener(new CommandManager());
         } catch (SQLException exception) {
             getLogger().severe("FATAL (DatabaseManager): " + exception.getMessage());
             getLogger().severe("FATAL (DatabaseManager): " + Arrays.toString(exception.getStackTrace()));

@@ -151,4 +151,19 @@ public class DatabaseManager {
             preparedStatement.executeUpdate();
         }
     }
+
+    public ResultSet queryData(String select, String from, String where, String... parameters) throws SQLException {
+        String query = String.format("SELECT %s FROM %s WHERE %s", select, from, where);
+        PreparedStatement statement = connection.prepareStatement(query);
+
+        for (int i = 0; i < parameters.length; i++) {
+            statement.setString(i + 1, parameters[i]);
+        }
+
+        return statement.executeQuery();
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
 }
