@@ -30,7 +30,7 @@ public class PlayerManager implements Listener {
         try {
             if (playerDataManager.isNew(uuid)) {
                 RankManager rankManager = RankManager.get();
-                PlayerData data = new PlayerData(uuid, name, ip, now, now, rankManager.getId(RankModel.PLAYER));
+                PlayerData data = new PlayerData(uuid, name, ip, now, now, rankManager.getId(RankModel.DEFAULT));
                 playerDataManager.insertStatic(data);
             }
         } catch (SQLException exception) {

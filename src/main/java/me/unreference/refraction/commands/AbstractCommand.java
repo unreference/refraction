@@ -12,6 +12,7 @@ public abstract class AbstractCommand extends Command implements CommandInterfac
     private final String permission;
     private final List<String> aliases;
     protected String aliasUsed;
+    protected String mainAliasUsed;
 
     protected AbstractCommand(@NotNull String name, String permission, String... aliases) {
         super(name);
@@ -59,6 +60,14 @@ public abstract class AbstractCommand extends Command implements CommandInterfac
         aliasUsed = alias;
     }
 
+    protected String getMainAliasUsed() {
+        return mainAliasUsed;
+    }
+
+    @Override
+    public void setMainAliasUsed(String alias) {
+        mainAliasUsed = alias;
+    }
 
     protected abstract String getUsageMessage();
 

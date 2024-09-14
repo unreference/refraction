@@ -55,7 +55,7 @@ public class PlayerDataManager {
         columns.put("ip", "VARCHAR(45) NOT NULL");
         columns.put("first_played", "DATETIME(0) NOT NULL");
         columns.put("last_played", "DATETIME(0) NOT NULL");
-        columns.put("rank", "CHAR(6) NOT NULL");
+        columns.put("rank", "CHAR(7) NOT NULL");
         databaseManager.createTable("players", columns);
     }
 
@@ -85,5 +85,18 @@ public class PlayerDataManager {
         }
 
         return null;
+    }
+
+    public void setPlayerRank(String uuid, String newRank) {
+        Map<String, Object> player = new LinkedHashMap<>();
+        player.put("rank", newRank);
+
+        try {
+            databaseManager.updateData("players", player, "uuid", uuid);
+            log(0, "PlayerDataManager", "Updated rank [" + uuid + "] -> " + newRank);
+        } catch (SQLException exception) {
+            log(2, "PlayerDataManager", "Failed to update rank [" + uuid + "] " + exception.getMessage());
+            log(2, "PlayerDataManager", Arrays.toString(exception.getStackTrace()));
+        }
     }
 }

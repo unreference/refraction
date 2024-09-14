@@ -1,5 +1,6 @@
 package me.unreference.refraction.managers;
 
+import me.unreference.refraction.commands.RankCommand;
 import me.unreference.refraction.commands.SetSpawnCommand;
 import me.unreference.refraction.commands.SpawnCommand;
 import me.unreference.refraction.models.RankModel;
@@ -20,6 +21,7 @@ public class CommandManager implements Listener {
     public CommandManager() {
         registerCommand(new SetSpawnCommand());
         registerCommand(new SpawnCommand());
+        registerCommand(new RankCommand());
     }
 
     @EventHandler

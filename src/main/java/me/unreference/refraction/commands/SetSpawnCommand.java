@@ -22,9 +22,7 @@ public class SetSpawnCommand extends AbstractCommand {
 
         Player player = (Player) sender;
         Location location = player.getLocation();
-
         player.getWorld().setSpawnLocation(location);
-
         player.sendMessage("Spawn set.");
     }
 

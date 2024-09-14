@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Set;
 
 public enum RankModel {
-    PLAYER("Player", null),
+    DEFAULT("Default", null),
 
-    ADMIN("Admin", null, PLAYER),
+    ADMIN("Admin", null, DEFAULT),
     OWNER("Owner", null, ADMIN);
 
     private final String id;

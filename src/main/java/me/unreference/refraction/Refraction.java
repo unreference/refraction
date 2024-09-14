@@ -23,14 +23,9 @@ public final class Refraction extends JavaPlugin {
         String msg = prefix.isBlank() ? message : "(" + prefix + "): " + message;
 
         switch (severity) {
-            case 0:
-                getPlugin().getLogger().info(msg);
-                break;
-            case 1:
-                getPlugin().getLogger().warning(msg);
-                break;
-            default:
-                getPlugin().getLogger().severe(msg);
+            case 0 -> getPlugin().getLogger().info(msg);
+            case 1 -> getPlugin().getLogger().warning(msg);
+            default -> getPlugin().getLogger().severe(msg);
         }
     }
 

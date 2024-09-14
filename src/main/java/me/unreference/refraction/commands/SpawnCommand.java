@@ -37,6 +37,6 @@ public class SpawnCommand extends AbstractCommand {
 
     @Override
     protected void generatePermissions() {
-        RankModel.PLAYER.grantPermission(getPermission(), true);
+        RankModel.DEFAULT.grantPermission(getPermission(), true);
     }
 }

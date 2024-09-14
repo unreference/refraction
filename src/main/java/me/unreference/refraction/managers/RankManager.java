@@ -19,4 +19,14 @@ public class RankManager {
     public String getId(RankModel rank) {
         return rank.getId();
     }
+
+    public RankModel getRankFromId(String id) {
+        for (RankModel rank : RankModel.values()) {
+            if (rank.getId().equalsIgnoreCase(id)) {
+                return rank;
+            }
+        }
+
+        return null;
+    }
 }
