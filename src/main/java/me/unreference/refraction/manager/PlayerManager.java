@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.UUID;
 
 import static me.unreference.refraction.Refraction.log;
 
@@ -28,7 +29,7 @@ public class PlayerManager implements Listener {
         LocalDateTime now = LocalDateTime.now();
 
         try {
-            if (playerDataManager.isNew(uuid)) {
+            if (playerDataManager.isNew(UUID.fromString(uuid))) {
                 RankManager rankManager = RankManager.get();
                 PlayerData data = new PlayerData(uuid, name, ip, now, now, rankManager.getId(RankModel.DEFAULT));
                 playerDataManager.insertStatic(data);
@@ -49,10 +50,9 @@ public class PlayerManager implements Listener {
         LocalDateTime now = LocalDateTime.now();
 
         try {
-            playerDataManager.updateDynamic(uuid, ip, now);
+            playerDataManager.updateDynamic(UUID.fromString(uuid), ip, now);
         } catch (SQLException exception) {
-            String name = event.getPlayer().getName();
-            log(2, "Failed to update dynamic data [" + name + "]");
+            log(2, "Failed to update dynamic data [" + uuid + "]");
             log(2, Arrays.toString(exception.getStackTrace()));
         }
 

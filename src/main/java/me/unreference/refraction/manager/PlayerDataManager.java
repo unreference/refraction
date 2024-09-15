@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static me.unreference.refraction.Refraction.log;
 
@@ -25,12 +26,12 @@ public class PlayerDataManager {
         return instance;
     }
 
-    public boolean isNew(String uuid) throws SQLException {
-        return !databaseManager.recordExists("players", "uuid", uuid);
+    public boolean isNew(UUID uuid) throws SQLException {
+        return !databaseManager.recordExists("players", "uuid", uuid.toString());
     }
 
     public void insertStatic(PlayerData data) throws SQLException {
-        if (isNew(data.uuid())) {
+        if (isNew(UUID.fromString(data.uuid()))) {
             Map<String, Object> player = buildPlayerMap(data);
             databaseManager.insertData("players", player);
         } else {
@@ -38,7 +39,7 @@ public class PlayerDataManager {
         }
     }
 
-    public void updateDynamic(String uuid, String ip, LocalDateTime lastPlayed) throws SQLException {
+    public void updateDynamic(UUID uuid, String ip, LocalDateTime lastPlayed) throws SQLException {
         Map<String, Object> player = new LinkedHashMap<>();
         player.put("ip", ip);
         player.put("last_played", lastPlayed);
@@ -47,7 +48,7 @@ public class PlayerDataManager {
 
     public void create() throws SQLException {
         Map<String, String> columns = new LinkedHashMap<>();
-        columns.put("uuid", "CHAR(36) NOT NULL UNIQUE");
+        columns.put("uuid", "CHAR(36) NOT NULL UNIQUE PRIMARY KEY");
         columns.put("name", "CHAR(16) NOT NULL");
         columns.put("ip", "VARCHAR(45) NOT NULL");
         columns.put("first_played", "DATETIME(0) NOT NULL");

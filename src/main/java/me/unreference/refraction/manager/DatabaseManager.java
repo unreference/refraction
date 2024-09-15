@@ -71,7 +71,7 @@ public class DatabaseManager {
                 connection.close();
                 log(0, "Closed the database connection.");
             } catch (SQLException exception) {
-                log(2, "Failed to close database connection.");
+                log(2, "Failed to close database connection: " + exception.getMessage());
                 log(2, Arrays.toString(exception.getStackTrace()));
             }
         }
@@ -92,7 +92,7 @@ public class DatabaseManager {
         String columnDefinitions = columns.entrySet().stream()
                 .map(entry -> entry.getKey() + " " + entry.getValue())
                 .collect(Collectors.joining(", "));
-        String query = "CREATE TABLE " + tableName + " (id INT AUTO_INCREMENT PRIMARY KEY, " + columnDefinitions + ")";
+        String query = "CREATE TABLE " + tableName + " (" + columnDefinitions + ")";
 
         executeUpdate(query);
         log(0, "Created table [" + tableName + "]");
@@ -121,7 +121,6 @@ public class DatabaseManager {
             }
 
             preparedStatement.executeUpdate();
-            log(0, "Inserted data into [" + tableName + "]");
         }
     }
 

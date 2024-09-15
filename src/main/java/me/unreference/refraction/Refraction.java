@@ -54,14 +54,19 @@ public final class Refraction extends JavaPlugin {
             addListener(new PlayerManager(databaseManager));
             addListener(new CommandManager());
         } catch (SQLException exception) {
-            getLogger().severe("FATAL (DatabaseManager): " + exception.getMessage());
-            getLogger().severe("FATAL (DatabaseManager): " + Arrays.toString(exception.getStackTrace()));
+            log(2, exception.getMessage());
+            log(2, Arrays.toString(exception.getStackTrace()));
             isFatalError = true;
         }
 
         if (isFatalError) {
-            getLogger().severe("One of more fatal errors have occurred!  Disabling plugin!");
-            getServer().getPluginManager().disablePlugin(this);
+            log(2, "***************************************");
+            log(2, "One or more fatal errors have occurred.");
+            log(2, "          Whitelist enabled.          ");
+            log(2, "***************************************");
+
+            getServer().setWhitelist(true);
+            getServer().setWhitelistEnforced(true);
         }
     }
 
