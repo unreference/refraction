@@ -1,4 +1,4 @@
-package me.unreference.refraction.managers;
+package me.unreference.refraction.manager;
 
 import me.unreference.refraction.data.PlayerData;
 

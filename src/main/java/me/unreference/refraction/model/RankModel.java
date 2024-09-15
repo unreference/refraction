@@ -1,4 +1,4 @@
-package me.unreference.refraction.models;
+package me.unreference.refraction.model;
 
 import java.util.HashMap;
 import java.util.HashSet;

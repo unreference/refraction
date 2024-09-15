@@ -1,6 +1,6 @@
-package me.unreference.refraction.managers;
+package me.unreference.refraction.manager;
 
-import me.unreference.refraction.models.RankModel;
+import me.unreference.refraction.model.RankModel;
 import org.bukkit.entity.Player;
 
 import java.sql.ResultSet;

@@ -1,4 +1,4 @@
-package me.unreference.refraction.commands;
+package me.unreference.refraction.command;
 
 import org.bukkit.command.CommandSender;
 

@@ -1,9 +1,9 @@
-package me.unreference.refraction.managers;
+package me.unreference.refraction.manager;
 
-import me.unreference.refraction.commands.RankCommand;
-import me.unreference.refraction.commands.SetSpawnCommand;
-import me.unreference.refraction.commands.SpawnCommand;
-import me.unreference.refraction.models.RankModel;
+import me.unreference.refraction.command.RankCommand;
+import me.unreference.refraction.command.SetSpawnCommand;
+import me.unreference.refraction.command.SpawnCommand;
+import me.unreference.refraction.model.RankModel;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;

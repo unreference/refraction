@@ -1,7 +1,7 @@
-package me.unreference.refraction.commands;
+package me.unreference.refraction.command;
 
-import me.unreference.refraction.managers.RankManager;
-import me.unreference.refraction.models.RankModel;
+import me.unreference.refraction.manager.RankManager;
+import me.unreference.refraction.model.RankModel;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

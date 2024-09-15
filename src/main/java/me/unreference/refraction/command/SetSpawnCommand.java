@@ -1,6 +1,6 @@
-package me.unreference.refraction.commands;
+package me.unreference.refraction.command;
 
-import me.unreference.refraction.models.RankModel;
+import me.unreference.refraction.model.RankModel;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

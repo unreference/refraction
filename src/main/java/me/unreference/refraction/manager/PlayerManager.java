@@ -1,7 +1,7 @@
-package me.unreference.refraction.managers;
+package me.unreference.refraction.manager;
 
 import me.unreference.refraction.data.PlayerData;
-import me.unreference.refraction.models.RankModel;
+import me.unreference.refraction.model.RankModel;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
