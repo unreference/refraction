@@ -31,7 +31,7 @@ public class DatabaseManager {
     public void connect() throws SQLException {
         if (isConnectionClosed()) {
             connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port, user, password);
-            log(0, "DatabaseManager", "Connected to server [" + host + ":" + port + "]");
+            log(0, "Connected to server [" + host + ":" + port + "]");
             initializeDatabase();
         }
     }
@@ -46,7 +46,7 @@ public class DatabaseManager {
         }
 
         connection.setCatalog(name);
-        log(0, "DatabaseManager", "Connected to database [" + name + "]");
+        log(0, "Connected to database [" + name + "]");
     }
 
 
@@ -62,17 +62,17 @@ public class DatabaseManager {
     private void createDatabase() throws SQLException {
         String query = "CREATE DATABASE " + name;
         executeUpdate(query);
-        log(0, "DatabaseManager", "Created database [" + name + "]");
+        log(0, "Created database [" + name + "]");
     }
 
     public void close() {
         if (connection != null) {
             try {
                 connection.close();
-                log(0, "DatabaseManager", "Closed the database connection.");
+                log(0, "Closed the database connection.");
             } catch (SQLException exception) {
-                log(2, "DatabaseManager", "Failed to close database connection.");
-                log(2, "DatabaseManager", Arrays.toString(exception.getStackTrace()));
+                log(2, "Failed to close database connection.");
+                log(2, Arrays.toString(exception.getStackTrace()));
             }
         }
     }
@@ -85,7 +85,7 @@ public class DatabaseManager {
 
     public void createTable(String tableName, Map<String, String> columns) throws SQLException {
         if (tableExists(tableName)) {
-            log(0, "DatabaseManager", "Found table [" + tableName + "]");
+            log(0, "Found table [" + tableName + "]");
             return;
         }
 
@@ -95,7 +95,7 @@ public class DatabaseManager {
         String query = "CREATE TABLE " + tableName + " (id INT AUTO_INCREMENT PRIMARY KEY, " + columnDefinitions + ")";
 
         executeUpdate(query);
-        log(0, "DatabaseManager", "Created table [" + tableName + "]");
+        log(0, "Created table [" + tableName + "]");
     }
 
     public boolean tableExists(String tableName) throws SQLException {
@@ -121,7 +121,7 @@ public class DatabaseManager {
             }
 
             preparedStatement.executeUpdate();
-            log(0, "DatabaseManager", "Inserted data into [" + tableName + "]");
+            log(0, "Inserted data into [" + tableName + "]");
         }
     }
 

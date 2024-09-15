@@ -2,13 +2,15 @@ package me.unreference.refraction.command;
 
 import me.unreference.refraction.manager.RankManager;
 import me.unreference.refraction.model.RankModel;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static me.unreference.refraction.Refraction.log;
 
 public abstract class AbstractParameterizedCommand extends AbstractCommand {
     private final Map<String, CommandInterface> subcommands = new HashMap<>();
@@ -77,13 +79,13 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
                 case 1 -> {
                     List<String> suggestions = new ArrayList<>(getOnlinePlayers());
                     String currentArg = args[0];
-                    filterSuggestions(suggestions, currentArg);
+                    filterTab(suggestions, currentArg);
                     return suggestions;
                 }
                 case 2 -> {
                     List<String> suggestions = new ArrayList<>(getPermittedSubcommands(sender));
                     String currentArg = args[1];
-                    filterSuggestions(suggestions, currentArg);
+                    filterTab(suggestions, currentArg);
                     return suggestions;
                 }
                 default -> {
@@ -97,7 +99,7 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
             if (args.length == 1) {
                 List<String> suggestions = new ArrayList<>(getPermittedSubcommands(sender));
                 String currentArg = args[0];
-                filterSuggestions(suggestions, currentArg);
+                filterTab(suggestions, currentArg);
                 return suggestions;
             } else {
                 CommandInterface subcommand = subcommands.get(args[0]);
@@ -128,16 +130,13 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
         }
 
         RankManager rankManager = RankManager.get();
-        RankModel rank = rankManager.getPlayerRank(player);
-        return rank.isPermitted(permission);
-    }
-
-    private List<String> getOnlinePlayers() {
-        return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
-    }
-
-    private void filterSuggestions(List<String> suggestions, String arg) {
-        suggestions.removeIf(suggestion -> !suggestion.toLowerCase().startsWith(arg.toLowerCase()));
+        try {
+            RankModel rank = rankManager.getPlayerRank(player);
+            return rank.isPermitted(permission);
+        } catch (SQLException exception) {
+            log(2, "A database error occurred while attempting to check command permissions.");
+            return false;
+        }
     }
 
     private List<String> getPermittedSubcommands(CommandSender sender) {

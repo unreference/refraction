@@ -13,8 +13,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerCommandSendEvent;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+
+import static me.unreference.refraction.Refraction.log;
 
 public class CommandManager implements Listener {
 
@@ -48,26 +52,32 @@ public class CommandManager implements Listener {
 
     private Collection<String> getAllowedCommands(Player player) {
         RankManager rankManager = RankManager.get();
-        RankModel rank = rankManager.getPlayerRank(player);
-        CommandMap commandMap = Bukkit.getCommandMap();
 
-        Collection<String> allowedCommands = new HashSet<>();
+        try {
+            RankModel rank = rankManager.getPlayerRank(player);
+            CommandMap commandMap = Bukkit.getCommandMap();
+            Collection<String> allowedCommands = new HashSet<>();
 
-        if (player.isOp()) {
-            for (Command command : commandMap.getKnownCommands().values()) {
-                allowedCommands.add(command.getName());
-                allowedCommands.addAll(command.getAliases());
-            }
-        } else {
-            for (Command command : commandMap.getKnownCommands().values()) {
-                if (rank.isPermitted(command.getPermission())) {
+            if (player.isOp()) {
+                for (Command command : commandMap.getKnownCommands().values()) {
                     allowedCommands.add(command.getName());
                     allowedCommands.addAll(command.getAliases());
                 }
+            } else {
+                for (Command command : commandMap.getKnownCommands().values()) {
+                    if (rank.isPermitted(command.getPermission())) {
+                        allowedCommands.add(command.getName());
+                        allowedCommands.addAll(command.getAliases());
+                    }
+                }
             }
-        }
 
-        return allowedCommands;
+            return allowedCommands;
+
+        } catch (SQLException exception) {
+            log(2, "A database error occurred while attempting to determine allowed commands.");
+            return List.of();
+        }
     }
 
     private void registerCommand(Command command) {

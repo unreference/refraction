@@ -39,7 +39,7 @@ public class RankManager {
         return null;
     }
 
-    public RankModel getPlayerRank(Player player) {
+    public RankModel getPlayerRank(Player player) throws SQLException {
         DatabaseManager databaseManager = DatabaseManager.get();
         String uuid = player.getUniqueId().toString();
 
@@ -52,8 +52,9 @@ public class RankManager {
                 }
             }
         } catch (SQLException exception) {
-            log(2, "PlayerDataManager", "Failed to find rank [" + player + "]: " + Arrays.toString(exception.getStackTrace()));
-            log(2, "PlayerDataManager", Arrays.toString(exception.getStackTrace()));
+            log(2, "Failed to find rank [" + player + "]: " + Arrays.toString(exception.getStackTrace()));
+            log(2, Arrays.toString(exception.getStackTrace()));
+            throw exception;
         }
 
         return null;
@@ -67,10 +68,10 @@ public class RankManager {
         String uuid = player.getUniqueId().toString();
         try {
             databaseManager.updateData("players", data, "uuid", uuid);
-            log(0, "PlayerDataManager", "Updated rank [" + uuid + "] -> " + newRank.getId());
+            log(0, "Updated rank [" + uuid + "] -> " + newRank.getId());
         } catch (SQLException exception) {
-            log(2, "PlayerDataManager", "Failed to update rank [" + uuid + "]: " + exception.getMessage());
-            log(2, "PlayerDataManager", Arrays.toString(exception.getStackTrace()));
+            log(2, "Failed to update rank [" + uuid + "]: " + exception.getMessage());
+            log(2, Arrays.toString(exception.getStackTrace()));
             throw exception;
         }
     }

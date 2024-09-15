@@ -34,8 +34,8 @@ public class PlayerManager implements Listener {
                 playerDataManager.insertStatic(data);
             }
         } catch (SQLException exception) {
-            log(2, "PlayerDataManager", "Failed to manage player data [" + name + "]: " + exception.getMessage());
-            log(2, "PlayerDataManager", Arrays.toString(exception.getStackTrace()));
+            log(2, "Failed to manage player data [" + name + "]: " + exception.getMessage());
+            log(2, Arrays.toString(exception.getStackTrace()));
             event.getPlayer().kick();
         }
 
@@ -52,8 +52,8 @@ public class PlayerManager implements Listener {
             playerDataManager.updateDynamic(uuid, ip, now);
         } catch (SQLException exception) {
             String name = event.getPlayer().getName();
-            log(2, "PlayerDataManager", "Failed to update dynamic data [" + name + "]");
-            log(2, "PlayerDataManager", Arrays.toString(exception.getStackTrace()));
+            log(2, "Failed to update dynamic data [" + name + "]");
+            log(2, Arrays.toString(exception.getStackTrace()));
         }
 
         event.quitMessage(null);

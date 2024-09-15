@@ -1,11 +1,14 @@
 package me.unreference.refraction.command;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class AbstractCommand extends Command implements CommandInterface {
     private final String name;
@@ -67,6 +70,14 @@ public abstract class AbstractCommand extends Command implements CommandInterfac
     @Override
     public void setMainAliasUsed(String alias) {
         mainAliasUsed = alias;
+    }
+
+    public List<String> getOnlinePlayers() {
+        return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
+    }
+
+    public void filterTab(List<String> suggestions, String arg) {
+        suggestions.removeIf(suggestion -> !suggestion.toLowerCase().startsWith(arg.toLowerCase()));
     }
 
     protected abstract String getUsageMessage();

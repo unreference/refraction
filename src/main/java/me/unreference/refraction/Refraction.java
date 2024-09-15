@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Optional;
 
 public final class Refraction extends JavaPlugin {
     boolean isFatalError = false;
@@ -19,8 +20,17 @@ public final class Refraction extends JavaPlugin {
         return Bukkit.getPluginManager().getPlugin("Refraction");
     }
 
-    public static void log(int severity, String prefix, String message) {
-        String msg = prefix.isBlank() ? message : "(" + prefix + "): " + message;
+    public static void log(int severity, String message) {
+        Optional<String> callingClassName = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
+                .walk(frames -> frames
+                        .skip(1)
+                        .findFirst()
+                        .map(StackWalker.StackFrame::getDeclaringClass)
+                        .map(Class::getSimpleName)
+                );
+
+        String caller = callingClassName.map(className -> "(" + className + "): ").orElse("");
+        String msg = caller + message;
 
         switch (severity) {
             case 0 -> getPlugin().getLogger().info(msg);
