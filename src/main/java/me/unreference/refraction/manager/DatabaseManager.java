@@ -92,8 +92,8 @@ public class DatabaseManager {
         String columnDefinitions = columns.entrySet().stream()
                 .map(entry -> entry.getKey() + " " + entry.getValue())
                 .collect(Collectors.joining(", "));
-        String query = "CREATE TABLE " + tableName + " (" + columnDefinitions + ")";
 
+        String query = "CREATE TABLE " + tableName + " (" + columnDefinitions + ")";
         executeUpdate(query);
         log(0, "Created table [" + tableName + "]");
     }
@@ -112,8 +112,8 @@ public class DatabaseManager {
     public void insertData(String tableName, Map<String, Object> data) throws SQLException {
         String columns = String.join(", ", data.keySet());
         String placeholders = data.keySet().stream().map(key -> "?").collect(Collectors.joining(", "));
-        String query = "INSERT INTO " + tableName + " (" + columns + ") VALUES (" + placeholders + ")";
 
+        String query = "INSERT INTO " + tableName + " (" + columns + ") VALUES (" + placeholders + ")";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             int i = 1;
             for (Object value : data.values()) {
