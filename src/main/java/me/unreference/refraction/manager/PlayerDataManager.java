@@ -35,7 +35,7 @@ public class PlayerDataManager {
             Map<String, Object> player = buildPlayerMap(data);
             databaseManager.insertData("players", player);
         } else {
-            log(1, "Static data already exists [" + data.name() + "]");
+            log(1, "Static data already exists [%s]", data.name());
         }
     }
 

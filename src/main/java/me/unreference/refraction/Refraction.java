@@ -20,7 +20,7 @@ public final class Refraction extends JavaPlugin {
         return Bukkit.getPluginManager().getPlugin("Refraction");
     }
 
-    public static void log(int severity, String message) {
+    public static void log(int severity, String message, Object... args) {
         Optional<String> callingClassName = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
                 .walk(frames -> frames
                         .skip(1)
@@ -30,7 +30,7 @@ public final class Refraction extends JavaPlugin {
                 );
 
         String caller = callingClassName.map(className -> "(" + className + "): ").orElse("");
-        String msg = caller + message;
+        String msg = caller + String.format(message, args);
 
         switch (severity) {
             case 0 -> getPlugin().getLogger().info(msg);

@@ -32,7 +32,7 @@ public class SpawnCommand extends AbstractCommand {
 
     @Override
     protected String getUsageMessage() {
-        return "Usage: /" + getAliasUsed();
+        return String.format("Usage: /" + getAliasUsed());
     }
 
     @Override

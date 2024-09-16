@@ -2,6 +2,7 @@ package me.unreference.refraction.manager;
 
 import me.unreference.refraction.data.PlayerData;
 import me.unreference.refraction.model.RankModel;
+import me.unreference.refraction.utility.MessageUtility;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -45,9 +46,9 @@ public class PlayerManager implements Listener {
             player.setOp(playerRank.isPermitted(autoOpPermission));
 
         } catch (SQLException exception) {
-            log(2, "Failed to manage player data [" + name + "]: " + exception.getMessage());
+            log(2, "Failed to manage player data [%s]: %s", name, exception.getMessage());
             log(2, Arrays.toString(exception.getStackTrace()));
-            player.kick();
+            player.kick(MessageUtility.format("Timed out"));
         }
 
         event.joinMessage(null);
@@ -63,7 +64,7 @@ public class PlayerManager implements Listener {
         try {
             playerDataManager.updateDynamic(UUID.fromString(uuid), ip, now);
         } catch (SQLException exception) {
-            log(2, "Failed to update dynamic data [" + player.getName() + "]");
+            log(2, "Failed to update dynamic data [%s]", player.getName());
             log(2, Arrays.toString(exception.getStackTrace()));
         }
 

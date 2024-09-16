@@ -33,7 +33,7 @@ public class SetSpawnCommand extends AbstractCommand {
 
     @Override
     protected String getUsageMessage() {
-        return "Usage: /" + getAliasUsed();
+        return String.format("Usage: /%s", getAliasUsed());
     }
 
     @Override

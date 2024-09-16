@@ -2,6 +2,7 @@ package me.unreference.refraction.command;
 
 import me.unreference.refraction.manager.RankManager;
 import me.unreference.refraction.model.RankModel;
+import me.unreference.refraction.utility.MessageUtility;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,7 +26,7 @@ public class RankCommand extends AbstractCommand {
 
         Player target = Bukkit.getPlayer(args[0]);
         if (target == null) {
-            sender.sendMessage("Player not found: " + args[0]);
+            sender.sendMessage("Player not found: %s", args[0]);
             return;
         }
 
@@ -34,21 +35,21 @@ public class RankCommand extends AbstractCommand {
         if (args.length == 1) {
             try {
                 RankModel rank = rankManager.getPlayerRank(target);
-                sender.sendMessage(target.getName() + "'s rank: " + rank.getId());
+                sender.sendMessage(MessageUtility.format("%s's rank: %s", target.getName(), rank.getId()));
             } catch (SQLException exception) {
                 sender.sendMessage("A database error occurred while attempting to fetch the target's rank.");
             }
         } else {
             RankModel newRank = rankManager.getRankFromId(args[1]);
             if (newRank == null) {
-                sender.sendMessage("Rank not found: " + args[1]);
+                sender.sendMessage("Rank not found: %s", args[1]);
                 return;
             }
 
             try {
                 rankManager.setPlayerRank(target, newRank);
-                sender.sendMessage("Set " + target.getName() + "'s rank to " + newRank.getId() + ".");
-                target.sendMessage("Your rank was set to " + newRank.getId() + ".");
+                sender.sendMessage(MessageUtility.format("Updated %s's rank to %s.", target.getName(), newRank.getId()));
+                target.sendMessage(MessageUtility.format("Your rank was updated to %s.", newRank.getId()));
             } catch (SQLException exception) {
                 sender.sendMessage("A database error occurred while attempting to set the target's rank.");
             }
@@ -76,7 +77,7 @@ public class RankCommand extends AbstractCommand {
 
     @Override
     protected String getUsageMessage() {
-        return "Usage: /" + aliasUsed + " <player> [rank]";
+        return String.format("Usage: /%s <player> [rank]", aliasUsed);
     }
 
     @Override

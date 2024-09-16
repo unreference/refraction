@@ -42,7 +42,6 @@ public class RankManager {
     public RankModel getPlayerRank(Player player) throws SQLException {
         DatabaseManager databaseManager = DatabaseManager.get();
         String uuid = player.getUniqueId().toString();
-
         try (ResultSet result = databaseManager.queryData("rank", "players", "uuid = ?", uuid)) {
             if (result.next()) {
                 for (RankModel rank : RankModel.values()) {
@@ -52,7 +51,7 @@ public class RankManager {
                 }
             }
         } catch (SQLException exception) {
-            log(2, "Failed to find rank [" + player + "]: " + Arrays.toString(exception.getStackTrace()));
+            log(2, "Failed to find rank [%s]: %s", player, exception.getMessage());
             log(2, Arrays.toString(exception.getStackTrace()));
             throw exception;
         }
@@ -63,14 +62,13 @@ public class RankManager {
     public void setPlayerRank(Player player, RankModel newRank) throws SQLException {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("rank", newRank.getId());
-
         DatabaseManager databaseManager = DatabaseManager.get();
         String uuid = player.getUniqueId().toString();
         try {
             databaseManager.updateData("players", data, "uuid", uuid);
-            log(0, "Updated rank [" + uuid + "] -> " + newRank.getId());
+            log(0, "Update rank [%s] -> %s", player.getName(), newRank.getId());
         } catch (SQLException exception) {
-            log(2, "Failed to update rank [" + uuid + "]: " + exception.getMessage());
+            log(2, "Failed to update rank [%s]: %s", player.getName(), exception.getMessage());
             log(2, Arrays.toString(exception.getStackTrace()));
             throw exception;
         }
