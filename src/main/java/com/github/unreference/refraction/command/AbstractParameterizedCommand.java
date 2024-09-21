@@ -131,7 +131,7 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
 
         RankManager rankManager = RankManager.get();
         try {
-            RankModel rank = rankManager.getPlayerRank(player);
+            RankModel rank = rankManager.getPlayerRank(player.getName());
             return rank.isPermitted(permission);
         } catch (SQLException exception) {
             log(2, "A database error occurred while attempting to check command permissions.");

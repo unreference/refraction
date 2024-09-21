@@ -54,7 +54,7 @@ public class CommandManager implements Listener {
         RankManager rankManager = RankManager.get();
 
         try {
-            RankModel rank = rankManager.getPlayerRank(player);
+            RankModel rank = rankManager.getPlayerRank(player.getName());
             CommandMap commandMap = Bukkit.getCommandMap();
             Collection<String> allowedCommands = new HashSet<>();
 

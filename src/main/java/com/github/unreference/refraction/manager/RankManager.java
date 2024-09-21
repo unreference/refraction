@@ -2,7 +2,6 @@ package com.github.unreference.refraction.manager;
 
 import com.github.unreference.refraction.Refraction;
 import com.github.unreference.refraction.model.RankModel;
-import org.bukkit.entity.Player;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,9 +37,10 @@ public class RankManager {
         return null;
     }
 
-    public RankModel getPlayerRank(Player player) throws SQLException {
+    public RankModel getPlayerRank(String name) throws SQLException {
         DatabaseManager databaseManager = DatabaseManager.get();
-        String uuid = player.getUniqueId().toString();
+        PlayerDataManager playerDataManager = PlayerDataManager.get(databaseManager);
+        String uuid = playerDataManager.getUuid(name).toString();
         try (ResultSet result = databaseManager.queryData("rank", "players", "uuid = ?", uuid)) {
             if (result.next()) {
                 for (RankModel rank : RankModel.values()) {
@@ -50,7 +50,7 @@ public class RankManager {
                 }
             }
         } catch (SQLException exception) {
-            Refraction.log(2, "Failed to find rank [%s]: %s", player, exception.getMessage());
+            Refraction.log(2, "Failed to find rank [%s]: %s", name, exception.getMessage());
             Refraction.log(2, Arrays.toString(exception.getStackTrace()));
             throw exception;
         }
@@ -58,16 +58,17 @@ public class RankManager {
         return null;
     }
 
-    public void setPlayerRank(Player player, RankModel newRank) throws SQLException {
+    public void setPlayerRank(String name, RankModel newRank) throws SQLException {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("rank", newRank.getId());
         DatabaseManager databaseManager = DatabaseManager.get();
-        String uuid = player.getUniqueId().toString();
+        PlayerDataManager playerDataManager = PlayerDataManager.get(databaseManager);
+        String uuid = playerDataManager.getUuid(name).toString();
         try {
             databaseManager.updateData("players", data, "uuid", uuid);
-            Refraction.log(0, "Update rank [%s] -> %s", player.getName(), newRank.getId());
+            Refraction.log(0, "Updated rank [%s] -> %s", name, newRank.getId());
         } catch (SQLException exception) {
-            Refraction.log(2, "Failed to update rank [%s]: %s", player.getName(), exception.getMessage());
+            Refraction.log(2, "Failed to update rank [%s]: %s", name, exception.getMessage());
             Refraction.log(2, Arrays.toString(exception.getStackTrace()));
             throw exception;
         }

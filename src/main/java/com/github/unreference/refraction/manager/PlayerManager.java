@@ -28,20 +28,19 @@ public class PlayerManager implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        String uuid = player.getUniqueId().toString();
+        UUID uuid = player.getUniqueId();
         String name = player.getName();
-        String ip = player.getAddress().getAddress().getHostAddress();
         LocalDateTime now = LocalDateTime.now();
 
         try {
-            if (playerDataManager.isNew(UUID.fromString(uuid))) {
+            if (playerDataManager.isNew(uuid)) {
                 RankManager rankManager = RankManager.get();
-                PlayerData data = new PlayerData(uuid, name, now, now, rankManager.getId(RankModel.DEFAULT));
+                PlayerData data = new PlayerData(uuid.toString(), name, now, now, rankManager.getId(RankModel.DEFAULT));
                 playerDataManager.insertStatic(data);
             }
 
             RankManager rankManager = RankManager.get();
-            RankModel playerRank = rankManager.getPlayerRank(player);
+            RankModel playerRank = rankManager.getPlayerRank(player.getName());
             player.setOp(playerRank.isPermitted(autoOpPermission));
 
         } catch (SQLException exception) {
@@ -57,11 +56,10 @@ public class PlayerManager implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         String uuid = player.getUniqueId().toString();
-        String ip = player.getAddress().getAddress().getHostAddress();
         LocalDateTime now = LocalDateTime.now();
 
         try {
-            playerDataManager.updateDynamic(UUID.fromString(uuid), ip, now);
+            playerDataManager.updateDynamic(UUID.fromString(uuid), now);
         } catch (SQLException exception) {
             Refraction.log(2, "Failed to update dynamic data [%s]", player.getName());
             Refraction.log(2, Arrays.toString(exception.getStackTrace()));

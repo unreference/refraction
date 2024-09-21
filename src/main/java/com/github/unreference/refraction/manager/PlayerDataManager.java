@@ -1,7 +1,9 @@
 package com.github.unreference.refraction.manager;
 
+import com.github.unreference.refraction.Refraction;
 import com.github.unreference.refraction.data.PlayerData;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -39,7 +41,7 @@ public class PlayerDataManager {
         }
     }
 
-    public void updateDynamic(UUID uuid, String ip, LocalDateTime lastPlayed) throws SQLException {
+    public void updateDynamic(UUID uuid, LocalDateTime lastPlayed) throws SQLException {
         Map<String, Object> player = new LinkedHashMap<>();
         player.put("last_played", lastPlayed);
         databaseManager.updateData("players", player, "uuid", uuid);
@@ -47,12 +49,42 @@ public class PlayerDataManager {
 
     public void create() throws SQLException {
         Map<String, String> columns = new LinkedHashMap<>();
-        columns.put("uuid", "CHAR(36) NOT NULL UNIQUE PRIMARY KEY");
-        columns.put("name", "CHAR(16) NOT NULL");
+        columns.put("uuid", "VARCHAR(36) NOT NULL UNIQUE PRIMARY KEY");
+        columns.put("name", "VARCHAR(16) NOT NULL");
         columns.put("first_played", "DATETIME(0) NOT NULL");
         columns.put("last_played", "DATETIME(0) NOT NULL");
         columns.put("rank", "CHAR(7) NOT NULL");
         databaseManager.createTable("players", columns);
+    }
+
+    public UUID getUuid(String name) {
+        try (ResultSet result = databaseManager.queryData("uuid", "players", "name = ?", name)) {
+            if (result.next()) {
+                String uuid = result.getString("uuid");
+                if (uuid != null) {
+                    return UUID.fromString(uuid);
+                }
+            }
+        } catch (SQLException exception) {
+            Refraction.log(1, "Failed to find player [%s]", name);
+        }
+
+        return null;
+    }
+
+    public String getName(UUID uuid) {
+        try (ResultSet result = databaseManager.queryData("name", "players", "uuid = ?", uuid.toString())) {
+            if (result.next()) {
+                String name = result.getString("name");
+                if (name != null) {
+                    return name;
+                }
+            }
+        } catch (SQLException exception) {
+            Refraction.log(1, "Failed to find name [%s]", uuid);
+        }
+
+        return null;
     }
 
     private Map<String, Object> buildPlayerMap(PlayerData data) {

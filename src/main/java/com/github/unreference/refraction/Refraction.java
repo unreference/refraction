@@ -53,7 +53,7 @@ public final class Refraction extends JavaPlugin {
 
             addListener(new PlayerManager(databaseManager));
             addListener(new CommandManager());
-        } catch (SQLException exception) {
+        } catch (SQLException | NullPointerException exception) {
             log(2, exception.getMessage());
             log(2, Arrays.toString(exception.getStackTrace()));
             isFatalError = true;
@@ -75,7 +75,7 @@ public final class Refraction extends JavaPlugin {
         DatabaseManager.get().close();
     }
 
-    private void addListener(Listener listener) {
+    private void addListener(Listener listener) throws NullPointerException {
         this.getServer().getPluginManager().registerEvents(listener, this);
     }
 

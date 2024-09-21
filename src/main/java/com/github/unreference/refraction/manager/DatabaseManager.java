@@ -60,7 +60,7 @@ public class DatabaseManager {
     private void createDatabase() throws SQLException {
         String query = String.format("CREATE DATABASE %s", name);
         executeUpdate(query);
-        Refraction.log(0, String.format("Created database [%s]", name));
+        Refraction.log(1, String.format("Created database [%s]", name));
     }
 
     public void close() {
@@ -93,7 +93,7 @@ public class DatabaseManager {
 
         String query = String.format("CREATE TABLE %s (%s)", tableName, columnDefinitions);
         executeUpdate(query);
-        Refraction.log(0, "Created table [%s]", tableName);
+        Refraction.log(1, "Created table [%s]", tableName);
     }
 
     public boolean tableExists(String tableName) throws SQLException {
