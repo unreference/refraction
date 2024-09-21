@@ -1,6 +1,6 @@
-package me.unreference.refraction.manager;
+package com.github.unreference.refraction.manager;
 
-import me.unreference.refraction.data.PlayerData;
+import com.github.unreference.refraction.data.PlayerData;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static me.unreference.refraction.Refraction.log;
+import static com.github.unreference.refraction.Refraction.log;
 
 public class PlayerDataManager {
     private static PlayerDataManager instance;

@@ -1,4 +1,4 @@
-package me.unreference.refraction.command;
+package com.github.unreference.refraction.command;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;

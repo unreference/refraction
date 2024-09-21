@@ -1,8 +1,9 @@
-package me.unreference.refraction.manager;
+package com.github.unreference.refraction.manager;
 
-import me.unreference.refraction.data.PlayerData;
-import me.unreference.refraction.model.RankModel;
-import me.unreference.refraction.utility.MessageUtility;
+import com.github.unreference.refraction.Refraction;
+import com.github.unreference.refraction.data.PlayerData;
+import com.github.unreference.refraction.model.RankModel;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,8 +14,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
-
-import static me.unreference.refraction.Refraction.log;
 
 public class PlayerManager implements Listener {
     private final PlayerDataManager playerDataManager;
@@ -46,9 +45,9 @@ public class PlayerManager implements Listener {
             player.setOp(playerRank.isPermitted(autoOpPermission));
 
         } catch (SQLException exception) {
-            log(2, "Failed to manage player data [%s]: %s", name, exception.getMessage());
-            log(2, Arrays.toString(exception.getStackTrace()));
-            player.kick(MessageUtility.format("Timed out"));
+            Refraction.log(2, "Failed to manage player data [%s]: %s", name, exception.getMessage());
+            Refraction.log(2, Arrays.toString(exception.getStackTrace()));
+            player.kick(Component.text("Timed out"));
         }
 
         event.joinMessage(null);
@@ -64,8 +63,8 @@ public class PlayerManager implements Listener {
         try {
             playerDataManager.updateDynamic(UUID.fromString(uuid), ip, now);
         } catch (SQLException exception) {
-            log(2, "Failed to update dynamic data [%s]", player.getName());
-            log(2, Arrays.toString(exception.getStackTrace()));
+            Refraction.log(2, "Failed to update dynamic data [%s]", player.getName());
+            Refraction.log(2, Arrays.toString(exception.getStackTrace()));
         }
 
         event.quitMessage(null);

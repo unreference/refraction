@@ -1,6 +1,7 @@
-package me.unreference.refraction.command;
+package com.github.unreference.refraction.command;
 
-import me.unreference.refraction.model.RankModel;
+import com.github.unreference.refraction.model.RankModel;
+import com.github.unreference.refraction.utility.MessageUtility;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,14 +17,14 @@ public class SetSpawnCommand extends AbstractCommand {
     @Override
     public void trigger(CommandSender sender, String[] args) {
         if (args.length != 0) {
-            sender.sendMessage(getUsageMessage());
+            MessageUtility.sendMessage(sender, getUsageMessage());
             return;
         }
 
         Player player = (Player) sender;
         Location location = player.getLocation();
         player.getWorld().setSpawnLocation(location);
-        player.sendMessage("Spawn set.");
+        MessageUtility.sendMessage(sender, "Spawn set.");
     }
 
     @Override

@@ -1,7 +1,7 @@
-package me.unreference.refraction.command;
+package com.github.unreference.refraction.command;
 
-import me.unreference.refraction.manager.RankManager;
-import me.unreference.refraction.model.RankModel;
+import com.github.unreference.refraction.manager.RankManager;
+import com.github.unreference.refraction.model.RankModel;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static me.unreference.refraction.Refraction.log;
+import static com.github.unreference.refraction.Refraction.log;
 
 public abstract class AbstractParameterizedCommand extends AbstractCommand {
     private final Map<String, CommandInterface> subcommands = new HashMap<>();

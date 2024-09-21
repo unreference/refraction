@@ -1,9 +1,9 @@
-package me.unreference.refraction.manager;
+package com.github.unreference.refraction.manager;
 
-import me.unreference.refraction.command.RankCommand;
-import me.unreference.refraction.command.SetSpawnCommand;
-import me.unreference.refraction.command.SpawnCommand;
-import me.unreference.refraction.model.RankModel;
+import com.github.unreference.refraction.command.RankCommand;
+import com.github.unreference.refraction.command.SetSpawnCommand;
+import com.github.unreference.refraction.command.SpawnCommand;
+import com.github.unreference.refraction.model.RankModel;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import static me.unreference.refraction.Refraction.log;
+import static com.github.unreference.refraction.Refraction.log;
 
 public class CommandManager implements Listener {
 

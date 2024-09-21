@@ -1,9 +1,9 @@
-package me.unreference.refraction;
+package com.github.unreference.refraction;
 
-import me.unreference.refraction.manager.CommandManager;
-import me.unreference.refraction.manager.DatabaseManager;
-import me.unreference.refraction.manager.PlayerDataManager;
-import me.unreference.refraction.manager.PlayerManager;
+import com.github.unreference.refraction.manager.CommandManager;
+import com.github.unreference.refraction.manager.DatabaseManager;
+import com.github.unreference.refraction.manager.PlayerDataManager;
+import com.github.unreference.refraction.manager.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;

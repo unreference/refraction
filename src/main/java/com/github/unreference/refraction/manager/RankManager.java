@@ -1,6 +1,7 @@
-package me.unreference.refraction.manager;
+package com.github.unreference.refraction.manager;
 
-import me.unreference.refraction.model.RankModel;
+import com.github.unreference.refraction.Refraction;
+import com.github.unreference.refraction.model.RankModel;
 import org.bukkit.entity.Player;
 
 import java.sql.ResultSet;
@@ -8,8 +9,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import static me.unreference.refraction.Refraction.log;
 
 public class RankManager {
     private static RankManager instance;
@@ -51,8 +50,8 @@ public class RankManager {
                 }
             }
         } catch (SQLException exception) {
-            log(2, "Failed to find rank [%s]: %s", player, exception.getMessage());
-            log(2, Arrays.toString(exception.getStackTrace()));
+            Refraction.log(2, "Failed to find rank [%s]: %s", player, exception.getMessage());
+            Refraction.log(2, Arrays.toString(exception.getStackTrace()));
             throw exception;
         }
 
@@ -66,10 +65,10 @@ public class RankManager {
         String uuid = player.getUniqueId().toString();
         try {
             databaseManager.updateData("players", data, "uuid", uuid);
-            log(0, "Update rank [%s] -> %s", player.getName(), newRank.getId());
+            Refraction.log(0, "Update rank [%s] -> %s", player.getName(), newRank.getId());
         } catch (SQLException exception) {
-            log(2, "Failed to update rank [%s]: %s", player.getName(), exception.getMessage());
-            log(2, Arrays.toString(exception.getStackTrace()));
+            Refraction.log(2, "Failed to update rank [%s]: %s", player.getName(), exception.getMessage());
+            Refraction.log(2, Arrays.toString(exception.getStackTrace()));
             throw exception;
         }
     }

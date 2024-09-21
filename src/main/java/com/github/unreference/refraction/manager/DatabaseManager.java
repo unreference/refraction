@@ -1,20 +1,19 @@
-package me.unreference.refraction.manager;
+package com.github.unreference.refraction.manager;
+
+import com.github.unreference.refraction.Refraction;
 
 import java.sql.*;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static me.unreference.refraction.Refraction.getPlugin;
-import static me.unreference.refraction.Refraction.log;
-
 public class DatabaseManager {
     private static DatabaseManager instance;
-    private final String host = getPlugin().getConfig().getString("database.host");
-    private final int port = getPlugin().getConfig().getInt("database.port");
-    private final String user = getPlugin().getConfig().getString("database.user");
-    private final String password = getPlugin().getConfig().getString("database.password");
-    private final String name = getPlugin().getConfig().getString("database.name");
+    private final String host = Refraction.getPlugin().getConfig().getString("database.host");
+    private final int port = Refraction.getPlugin().getConfig().getInt("database.port");
+    private final String user = Refraction.getPlugin().getConfig().getString("database.user");
+    private final String password = Refraction.getPlugin().getConfig().getString("database.password");
+    private final String name = Refraction.getPlugin().getConfig().getString("database.name");
     private Connection connection;
 
     private DatabaseManager() {
@@ -31,7 +30,7 @@ public class DatabaseManager {
     public void connect() throws SQLException {
         if (isConnectionClosed()) {
             connection = DriverManager.getConnection(String.format("jdbc:mysql://%s:%d", host, port), user, password);
-            log(0, String.format("Connected to server [%s:%d]", host, port));
+            Refraction.log(0, String.format("Connected to server [%s:%d]", host, port));
             initializeDatabase();
         }
     }
@@ -46,7 +45,7 @@ public class DatabaseManager {
         }
 
         connection.setCatalog(name);
-        log(0, String.format("Connected to database [%s]", name));
+        Refraction.log(0, String.format("Connected to database [%s]", name));
     }
 
     private boolean databaseExists() throws SQLException {
@@ -61,17 +60,17 @@ public class DatabaseManager {
     private void createDatabase() throws SQLException {
         String query = String.format("CREATE DATABASE %s", name);
         executeUpdate(query);
-        log(0, String.format("Created database [%s]", name));
+        Refraction.log(0, String.format("Created database [%s]", name));
     }
 
     public void close() {
         if (connection != null) {
             try {
                 connection.close();
-                log(0, "Closed the database connection.");
+                Refraction.log(0, "Closed the database connection.");
             } catch (SQLException exception) {
-                log(2, "Failed to close database connection: %s", exception.getMessage());
-                log(2, Arrays.toString(exception.getStackTrace()));
+                Refraction.log(2, "Failed to close database connection: %s", exception.getMessage());
+                Refraction.log(2, Arrays.toString(exception.getStackTrace()));
             }
         }
     }
@@ -84,7 +83,7 @@ public class DatabaseManager {
 
     public void createTable(String tableName, Map<String, String> columns) throws SQLException {
         if (tableExists(tableName)) {
-            log(0, "Found table [%s]", tableName);
+            Refraction.log(0, "Found table [%s]", tableName);
             return;
         }
 
@@ -94,7 +93,7 @@ public class DatabaseManager {
 
         String query = String.format("CREATE TABLE %s (%s)", tableName, columnDefinitions);
         executeUpdate(query);
-        log(0, "Created table [%s]", tableName);
+        Refraction.log(0, "Created table [%s]", tableName);
     }
 
     public boolean tableExists(String tableName) throws SQLException {

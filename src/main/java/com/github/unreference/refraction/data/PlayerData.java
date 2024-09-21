@@ -1,4 +1,4 @@
-package me.unreference.refraction.data;
+package com.github.unreference.refraction.data;
 
 import java.time.LocalDateTime;
 
