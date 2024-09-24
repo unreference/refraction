@@ -2,6 +2,7 @@ package com.github.unreference.refraction.manager;
 
 import com.github.unreference.refraction.Refraction;
 import com.github.unreference.refraction.data.PlayerData;
+import com.github.unreference.refraction.event.RankChangeEvent;
 import com.github.unreference.refraction.model.RankModel;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
@@ -21,7 +22,6 @@ public class PlayerManager implements Listener {
 
     public PlayerManager(DatabaseManager databaseManager) {
         this.playerDataManager = PlayerDataManager.get(databaseManager);
-
         RankModel.ADMIN.grantPermission(autoOpPermission, true);
     }
 
@@ -41,8 +41,14 @@ public class PlayerManager implements Listener {
 
             RankManager rankManager = RankManager.get();
             RankModel playerRank = rankManager.getPlayerRank(player.getName());
-            player.setOp(playerRank.isPermitted(autoOpPermission));
 
+            boolean wasOp = player.isOp();
+            player.setOp(playerRank.isPermitted(autoOpPermission));
+            boolean isOp = player.isOp();
+
+            if (isOp != wasOp) {
+                Refraction.log(1, "Updated operator status [%s] -> %s", player.getName(), isOp);
+            }
         } catch (SQLException exception) {
             Refraction.log(2, "Failed to manage player data [%s]: %s", name, exception.getMessage());
             Refraction.log(2, Arrays.toString(exception.getStackTrace()));
@@ -66,5 +72,25 @@ public class PlayerManager implements Listener {
         }
 
         event.quitMessage(null);
+    }
+
+    @EventHandler
+    public void onRankChange(RankChangeEvent event) {
+        Player player = event.getPlayer();
+        RankManager rankManager = RankManager.get();
+
+        try {
+            RankModel playerRank = rankManager.getPlayerRank(player.getName());
+            boolean wasOp = player.isOp();
+            player.setOp(playerRank.isPermitted(autoOpPermission));
+            boolean isOp = player.isOp();
+
+            if (isOp != wasOp) {
+                Refraction.log(1, "Updated operator status [%s] -> %s", player.getName(), isOp);
+            }
+        } catch (SQLException exception) {
+            Refraction.log(2, "Failed to update operator status [%s]: %s", player.getName(), exception.getMessage());
+            Refraction.log(2, Arrays.toString(exception.getStackTrace()));
+        }
     }
 }

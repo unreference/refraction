@@ -1,5 +1,6 @@
 package com.github.unreference.refraction.command;
 
+import com.github.unreference.refraction.event.RankChangeEvent;
 import com.github.unreference.refraction.manager.DatabaseManager;
 import com.github.unreference.refraction.manager.PlayerDataManager;
 import com.github.unreference.refraction.manager.RankManager;
@@ -7,10 +8,12 @@ import com.github.unreference.refraction.model.RankModel;
 import com.github.unreference.refraction.utility.MessageUtility;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class RankCommand extends AbstractCommand {
@@ -56,8 +59,10 @@ public class RankCommand extends AbstractCommand {
                 rankManager.setPlayerRank(targetName, newRank);
                 MessageUtility.sendMessage(sender, "Updated %s's rank to %s.", targetName, newRank.getId());
 
-                if (Bukkit.getPlayer(targetName) != null) {
-                    MessageUtility.sendMessage(Bukkit.getPlayer(targetName), "Your rank has been updated to %s.", newRank.getId());
+                Player targetPlayer = Bukkit.getPlayer(targetName);
+                if (targetPlayer != null) {
+                    MessageUtility.sendMessage(Objects.requireNonNull(Bukkit.getPlayer(targetName)), "Your rank has been updated to %s.", newRank.getId());
+                    Bukkit.getServer().getPluginManager().callEvent(new RankChangeEvent(targetPlayer, newRank));
                 }
             } catch (SQLException exception) {
                 MessageUtility.sendMessage(sender, "A database error occurred while attempting to set the target's rank.");
