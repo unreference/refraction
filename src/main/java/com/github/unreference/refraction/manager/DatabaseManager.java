@@ -3,7 +3,9 @@ package com.github.unreference.refraction.manager;
 import com.github.unreference.refraction.Refraction;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -131,22 +133,28 @@ public class DatabaseManager {
         }
     }
 
-    public void updateData(String tableName, Map<String, Object> data, String keyColumn, Object keyValue) throws SQLException {
-        String setClause = data.keySet().stream()
-                .map(key -> String.format("%s = ?", key))
-                .collect(Collectors.joining(", "));
+    public void updateData(String table, Map<String, Object> data, String conditionColumn, Object conditionValue) throws SQLException {
+        StringBuilder sql = new StringBuilder("UPDATE " + table + " SET ");
+        List<Object> params = new ArrayList<>();
 
-        String query = String.format("UPDATE %s SET %s WHERE %s = ?", tableName, setClause, keyColumn);
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            int i = 1;
-            for (Object value : data.values()) {
-                preparedStatement.setObject(i++, value);
+        for (String key : data.keySet()) {
+            sql.append(key).append(" = ?, ");
+            params.add(data.get(key));
+        }
+
+        sql.setLength(sql.length() - 2); // Remove trailing comma
+        sql.append(" WHERE ").append(conditionColumn).append(" = ?"); // Add WHERE clause
+        params.add(conditionValue); // Add condition value to params
+
+        try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                statement.setObject(i + 1, params.get(i));
             }
 
-            preparedStatement.setObject(i, keyValue);
-            preparedStatement.executeUpdate();
+            statement.executeUpdate();
         }
     }
+
 
     public ResultSet queryData(String select, String from, String where, String... parameters) throws SQLException {
         String query = String.format("SELECT %s FROM %s WHERE %s", select, from, where);

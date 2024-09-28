@@ -21,16 +21,18 @@ public final class Refraction extends JavaPlugin {
     }
 
     public static void log(int severity, String message, Object... args) {
-        Optional<String> callingClassName = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
+        Optional<String> callerInfo = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
                 .walk(frames -> frames
                         .skip(1)
                         .findFirst()
-                        .map(StackWalker.StackFrame::getDeclaringClass)
-                        .map(Class::getSimpleName)
-                );
+                        .map(frame -> {
+                            String className = frame.getDeclaringClass().getSimpleName();
+                            int lineNumber = frame.getLineNumber();
+                            return className + ".java:" + lineNumber;
+                        }));
 
-        String caller = callingClassName.map(className -> "(" + className + "): ").orElse("");
-        String msg = caller + String.format(message, args);
+        String callerDetails = callerInfo.map(className -> "(" + className + "): ").orElse("");
+        String msg = callerDetails + String.format(message, args);
 
         switch (severity) {
             case 0 -> getPlugin().getLogger().info(msg);

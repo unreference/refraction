@@ -39,6 +39,8 @@ public class PlayerManager implements Listener {
                 playerDataManager.insertStatic(data);
             }
 
+            playerDataManager.updateDynamic(uuid, now);
+
             RankManager rankManager = RankManager.get();
             RankModel playerRank = rankManager.getPlayerRank(player.getName());
 
