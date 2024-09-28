@@ -16,15 +16,15 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
     private final Map<String, CommandInterface> subcommands = new HashMap<>();
     private final boolean isPlayerRequired;
 
-    public AbstractParameterizedCommand(String name, String permission, boolean isPlayerRequired, String... aliases) {
-        super(name, permission, aliases);
+    public AbstractParameterizedCommand(String name, String prefix, String permission, boolean isPlayerRequired, String... aliases) {
+        super(name, prefix, permission, aliases);
         this.isPlayerRequired = isPlayerRequired;
 
         generatePermissions();
     }
 
-    public AbstractParameterizedCommand(String name, String permission, String... aliases) {
-        super(name, permission, aliases);
+    public AbstractParameterizedCommand(String name, String prefix, String permission, String... aliases) {
+        super(name, prefix, permission, aliases);
         this.isPlayerRequired = false;
 
         generatePermissions();

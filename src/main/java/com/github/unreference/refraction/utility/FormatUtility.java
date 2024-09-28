@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public class FormatUtility {
     private static final Pattern legacyColorPattern = Pattern.compile("&[a-fA-F0-9klmnor]");
     private static final Pattern hexColorPattern = Pattern.compile("#[a-fA-F0-9]{6}");
-    private static final Pattern decorationPattern = Pattern.compile("&[a-fA-F0-9klmnor]|#[a-fA-F0-9]{6}");
+    private static final Pattern formatPattern = Pattern.compile("&[a-fA-F0-9klmnor]|#[a-fA-F0-9]{6}");
 
     private static final List<TextColor> prideColors = List.of(
             Objects.requireNonNull(TextColor.fromHexString("#E40013")),
@@ -104,7 +104,7 @@ public class FormatUtility {
         int lastEnd = 0;
         Style currentStyle = Style.empty();
 
-        Matcher matcher = decorationPattern.matcher(message);
+        Matcher matcher = formatPattern.matcher(message);
         while (matcher.find()) {
             builder.append(Component.text(message.substring(lastEnd, matcher.start()), currentStyle));
 
@@ -136,7 +136,7 @@ public class FormatUtility {
     }
 
     private static boolean isOnlyFormatting(String message) {
-        String strippedMessage = decorationPattern.matcher(message).replaceAll("").trim();
+        String strippedMessage = formatPattern.matcher(message).replaceAll("").trim();
         return strippedMessage.isEmpty();
     }
 

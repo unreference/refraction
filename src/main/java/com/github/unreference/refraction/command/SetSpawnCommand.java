@@ -12,7 +12,7 @@ import java.util.List;
 public class SetSpawnCommand extends AbstractCommand {
 
     public SetSpawnCommand() {
-        super("setspawn", "refraction.command.setspawn");
+        super("setspawn", "Set Spawn", "refraction.command.setspawn");
     }
 
     @Override
@@ -25,7 +25,7 @@ public class SetSpawnCommand extends AbstractCommand {
         Player player = (Player) sender;
         Location location = player.getLocation();
         player.getWorld().setSpawnLocation(location);
-        sender.sendMessage(MessageUtility.getMessage("Spawn set."));
+        sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "Spawn set."));
     }
 
     @Override
@@ -35,7 +35,7 @@ public class SetSpawnCommand extends AbstractCommand {
 
     @Override
     protected Component getUsageMessage() {
-        return MessageUtility.getMessage("Usage: /%s", getAliasUsed());
+        return MessageUtility.getPrefixedMessage(getPrefix(), "Usage: /%s", getAliasUsed());
     }
 
     @Override

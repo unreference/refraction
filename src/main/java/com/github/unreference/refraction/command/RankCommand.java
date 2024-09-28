@@ -20,7 +20,7 @@ import java.util.UUID;
 public class RankCommand extends AbstractCommand {
 
     public RankCommand() {
-        super("rank", "refraction.command.rank");
+        super("rank", "Rank", "refraction.command.rank");
     }
 
     @Override
@@ -35,7 +35,7 @@ public class RankCommand extends AbstractCommand {
 
         UUID targetUuid = playerDataManager.getUuid(targetInput);
         if (targetUuid == null) {
-            sender.sendMessage(MessageUtility.getMessage("Player not found: %s"));
+            sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "Player not found: %s", args[0]));
             return;
         }
 
@@ -45,28 +45,28 @@ public class RankCommand extends AbstractCommand {
         if (args.length == 1) {
             try {
                 RankModel rank = rankManager.getPlayerRank(targetName);
-                sender.sendMessage(MessageUtility.getMessage("%s's rank: %s", targetName, rank.getId()));
+                sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "%s's rank: %s", targetName, rank.getId()));
             } catch (SQLException exception) {
-                sender.sendMessage(MessageUtility.getMessage("A database error occurred while attempting to fetch the target's rank."));
+                sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "A database error occurred while attempting to fetch the target's rank."));
             }
         } else {
             RankModel newRank = rankManager.getRankFromId(args[1]);
             if (newRank == null) {
-                sender.sendMessage(MessageUtility.getMessage("Rank not found: %s", args[1]));
+                sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "Rank not found: %s", args[1]));
                 return;
             }
 
             try {
                 rankManager.setPlayerRank(targetName, newRank);
-                sender.sendMessage(MessageUtility.getMessage("Updated %s's rank to %s.", targetName, newRank.getId()));
+                sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "Updated %s's rank to %s.", targetName, newRank.getId()));
 
                 Player targetPlayer = Bukkit.getPlayer(targetName);
                 if (targetPlayer != null) {
-                    Objects.requireNonNull(Bukkit.getPlayer(targetName)).sendMessage(MessageUtility.getMessage("Your rank has been updated to %s.", newRank.getId()));
+                    Objects.requireNonNull(Bukkit.getPlayer(targetName)).sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "Your rank has been updated to %s.", newRank.getId()));
                     Bukkit.getServer().getPluginManager().callEvent(new RankChangeEvent(targetPlayer, newRank));
                 }
             } catch (SQLException exception) {
-                sender.sendMessage(MessageUtility.getMessage("A database error occurred while attempting to set the target's rank."));
+                sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "A database error occurred while attempting to set the target's rank."));
             }
         }
     }
@@ -92,7 +92,7 @@ public class RankCommand extends AbstractCommand {
 
     @Override
     protected Component getUsageMessage() {
-        return MessageUtility.getMessage("Usage: /%s <player> [rank]", aliasUsed);
+        return MessageUtility.getPrefixedMessage(getPrefix(), "Usage: /%s <player> [rank]", aliasUsed);
     }
 
     @Override

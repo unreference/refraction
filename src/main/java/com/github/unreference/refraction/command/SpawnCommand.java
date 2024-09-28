@@ -12,7 +12,7 @@ import java.util.List;
 public class SpawnCommand extends AbstractCommand {
 
     public SpawnCommand() {
-        super("spawn", "refraction.command.spawn");
+        super("spawn", "Spawn", "refraction.command.spawn");
     }
 
     @Override
@@ -34,7 +34,7 @@ public class SpawnCommand extends AbstractCommand {
 
     @Override
     protected Component getUsageMessage() {
-        return MessageUtility.getMessage("Usage: /" + getAliasUsed());
+        return MessageUtility.getPrefixedMessage(getPrefix(), "Usage: /" + getAliasUsed());
     }
 
     @Override

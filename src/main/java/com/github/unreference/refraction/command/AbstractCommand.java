@@ -13,15 +13,17 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractCommand extends Command implements CommandInterface {
     private final String name;
+    private final String prefix;
     private final String permission;
     private final List<String> aliases;
     protected String aliasUsed;
     protected String mainAliasUsed;
 
-    protected AbstractCommand(@NotNull String name, String permission, String... aliases) {
+    public AbstractCommand(String name, String prefix, String permission, String... aliases) {
         super(name);
 
         this.name = name;
+        this.prefix = prefix;
         this.permission = permission;
         this.aliases = Arrays.asList(aliases);
 
@@ -45,6 +47,10 @@ public abstract class AbstractCommand extends Command implements CommandInterfac
 
     public @NotNull String getName() {
         return name;
+    }
+
+    public String getPrefix() {
+        return prefix;
     }
 
     public String getPermission() {

@@ -5,10 +5,14 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public class MessageUtility {
-    public static Component getMessage(Component component) {
+    public static Component getPrefixedMessage(String prefix, String message, Object... args) {
+        Component bodyPrefix = FormatUtility.getPrideMessage(prefix + ">");
+        Component body = FormatUtility.getFormattedComponent(message, args);
         TextComponent.Builder builder = Component.text();
 
-        builder.append(component).colorIfAbsent(NamedTextColor.WHITE);
+        builder.append(bodyPrefix);
+        builder.appendSpace();
+        builder.append(body).colorIfAbsent(NamedTextColor.GRAY);
         return builder.build();
     }
 
