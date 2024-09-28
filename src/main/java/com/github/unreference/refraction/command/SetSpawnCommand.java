@@ -32,7 +32,13 @@ public class SetSpawnCommand extends AbstractCommand {
 
         if (args.length == 0) {
             world.setSpawnLocation(playerLocation);
-            sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "Set &b%s's &7spawn to &bXYZ&7: &b%.0f &7/ &b%.0f &7/ &b%.0f&7.", world.getName(), world.getSpawnLocation().getX(), world.getSpawnLocation().getY(), world.getSpawnLocation().getZ()));
+            sender.sendMessage(MessageUtility.getPrefixedMessage(
+                    getPrefix(),
+                    "Set &b%s's &7spawn to &bXYZ&7: &b%.0f &7/ &b%.0f &7/ &b%.0f&7.",
+                    world.getName(),
+                    world.getSpawnLocation().getX(),
+                    world.getSpawnLocation().getY(),
+                    world.getSpawnLocation().getZ()));
             return;
         } else if (args.length == 3) {
             try {
@@ -42,7 +48,13 @@ public class SetSpawnCommand extends AbstractCommand {
 
                 Location location = new Location(world, x, y, z);
                 world.setSpawnLocation(location);
-                sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "Set &b%s's &7spawn to &bXYZ&7: &b%.0f &7/ &b%.0f &7/ &b%.0f&7.", world.getName(), world.getSpawnLocation().getX(), world.getSpawnLocation().getY(), world.getSpawnLocation().getZ()));
+                sender.sendMessage(MessageUtility.getPrefixedMessage(
+                        getPrefix(),
+                        "Set &b%s's &7spawn to &bXYZ&7: &b%.0f &7/ &b%.0f &7/ &b%.0f&7.",
+                        world.getName(),
+                        world.getSpawnLocation().getX(),
+                        world.getSpawnLocation().getY(),
+                        world.getSpawnLocation().getZ()));
                 return;
             } catch (NumberFormatException exception) {
                 sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "Invalid coordinates."));
@@ -64,7 +76,13 @@ public class SetSpawnCommand extends AbstractCommand {
 
             Location location = new Location(world, x, y, z);
             world.setSpawnLocation(location);
-            sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "Set &b%s's &7spawn to &bXYZ&7: &b%.0f &7/ &b%.0f &7/ &b%.0f&7.", world.getName(), world.getSpawnLocation().getX(), world.getSpawnLocation().getY(), world.getSpawnLocation().getZ()));
+            sender.sendMessage(MessageUtility.getPrefixedMessage(
+                    getPrefix(),
+                    "Set &b%s's &7spawn to &bXYZ&7: &b%.0f &7/ &b%.0f &7/ &b%.0f&7.",
+                    world.getName(),
+                    world.getSpawnLocation().getX(),
+                    world.getSpawnLocation().getY(),
+                    world.getSpawnLocation().getZ()));
         } catch (NumberFormatException exception) {
             sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "Invalid coordinates."));
         }
@@ -77,7 +95,7 @@ public class SetSpawnCommand extends AbstractCommand {
         if (args.length == 1) {
             suggestions = Refraction.getPlugin().getServer().getWorlds().stream()
                     .map(World::getName)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toCollection(ArrayList::new));
             String currentArg = args[0];
             filterTab(suggestions, currentArg);
         }
@@ -87,7 +105,8 @@ public class SetSpawnCommand extends AbstractCommand {
 
     @Override
     protected Component getUsageMessage() {
-        return MessageUtility.getPrefixedMessage(getPrefix(), "Usage: /%s [coordinates|world] <coordinates>", getAliasUsed());
+        return MessageUtility.getPrefixedMessage(
+                getPrefix(), "Usage: /%s [coordinates|world] <coordinates>", getAliasUsed());
     }
 
     @Override

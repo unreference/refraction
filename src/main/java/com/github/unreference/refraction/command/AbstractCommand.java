@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ public abstract class AbstractCommand extends Command implements CommandInterfac
     protected String aliasUsed;
     protected String mainAliasUsed;
 
-    public AbstractCommand(String name, String prefix, String permission, String... aliases) {
+    protected AbstractCommand(String name, String prefix, String permission, String... aliases) {
         super(name);
 
         this.name = name;
@@ -29,9 +30,6 @@ public abstract class AbstractCommand extends Command implements CommandInterfac
 
         generatePermissions();
     }
-
-    @Override
-    public abstract void trigger(CommandSender sender, String[] args);
 
     @Override
     public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, String[] args) {
@@ -45,6 +43,7 @@ public abstract class AbstractCommand extends Command implements CommandInterfac
         return true;
     }
 
+    @Override
     public @NotNull String getName() {
         return name;
     }
@@ -53,10 +52,12 @@ public abstract class AbstractCommand extends Command implements CommandInterfac
         return prefix;
     }
 
+    @Override
     public String getPermission() {
         return permission;
     }
 
+    @Override
     public @NotNull List<String> getAliases() {
         return aliases;
     }
@@ -80,7 +81,7 @@ public abstract class AbstractCommand extends Command implements CommandInterfac
     }
 
     public List<String> getOnlinePlayers() {
-        return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
+        return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public void filterTab(List<String> suggestions, String arg) {

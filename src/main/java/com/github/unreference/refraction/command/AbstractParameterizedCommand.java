@@ -16,14 +16,14 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
     private final Map<String, CommandInterface> subcommands = new HashMap<>();
     private final boolean isPlayerRequired;
 
-    public AbstractParameterizedCommand(String name, String prefix, String permission, boolean isPlayerRequired, String... aliases) {
+    protected AbstractParameterizedCommand(String name, String prefix, String permission, boolean isPlayerRequired, String... aliases) {
         super(name, prefix, permission, aliases);
         this.isPlayerRequired = isPlayerRequired;
 
         generatePermissions();
     }
 
-    public AbstractParameterizedCommand(String name, String prefix, String permission, String... aliases) {
+    protected AbstractParameterizedCommand(String name, String prefix, String permission, String... aliases) {
         super(name, prefix, permission, aliases);
         this.isPlayerRequired = false;
 
@@ -32,44 +32,17 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
 
     @Override
     public void trigger(CommandSender sender, String[] args) {
-        if (isPlayerRequired) {
-            if (args.length == 0) {
-                execute(sender, args);
-                return;
-            } else if (args.length == 1) {
-                execute(sender, args);
-                return;
-            } else {
-                String action = args[1];
-                CommandInterface subcommand = subcommands.get(action);
-                if (subcommand != null) {
-                    subcommand.setAliasUsed(action);
-                    subcommand.setMainAliasUsed(getAliasUsed());
-                    if (isPermitted(sender, subcommand.getPermission())) {
-                        subcommand.trigger(sender, Arrays.copyOfRange(args, 0, args.length));
-                        return;
-                    }
-                }
-            }
-        } else {
-            if (args.length == 0) {
-                execute(sender, args);
-                return;
-            } else {
-                String action = args[0];
-                CommandInterface subcommand = subcommands.get(action);
-                if (subcommand != null) {
-                    subcommand.setAliasUsed(action);
-                    subcommand.setMainAliasUsed(getAliasUsed());
-                    if (isPermitted(sender, subcommand.getPermission())) {
-                        subcommand.trigger(sender, Arrays.copyOfRange(args, 1, args.length));
-                        return;
-                    }
-                }
-            }
+
+        if (args.length == 0) {
+            execute(sender, args);
+            return;
         }
 
-        execute(sender, args);
+        if (isPlayerRequired) {
+            handleSubcommand(sender, args, 1);
+        } else {
+            handleSubcommand(sender, args, 0);
+        }
     }
 
     @Override
@@ -139,11 +112,28 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
         }
     }
 
+    private void handleSubcommand(CommandSender sender, String[] args, int offset) {
+        String action = args[offset];
+
+        CommandInterface subcommand = subcommands.get(action);
+        if (subcommand != null) {
+            subcommand.setAliasUsed(action);
+            subcommand.setMainAliasUsed(getMainAliasUsed());
+
+            if (isPermitted(sender, subcommand.getPermission())) {
+                subcommand.trigger(sender, Arrays.copyOfRange(args, offset + 1, args.length));
+                return;
+            }
+
+            execute(sender, args);
+        }
+    }
+
     private List<String> getPermittedSubcommands(CommandSender sender) {
         return subcommands.entrySet().stream()
                 .filter(entry -> isPermitted(sender, entry.getValue().getPermission()))
                 .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     protected void addSubcommand(CommandInterface subcommand) {

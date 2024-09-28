@@ -100,9 +100,9 @@ public class DatabaseManager {
 
     public boolean tableExists(String tableName) throws SQLException {
         String query = String.format("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '%s' AND table_name = '%s'", name, tableName);
-        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+        try (Statement statement = connection.createStatement(); ResultSet result = statement.executeQuery(query)) {
+            if (result.next()) {
+                return result.getInt(1) > 0;
             }
         }
 
@@ -137,14 +137,14 @@ public class DatabaseManager {
         StringBuilder sql = new StringBuilder("UPDATE " + table + " SET ");
         List<Object> params = new ArrayList<>();
 
-        for (String key : data.keySet()) {
-            sql.append(key).append(" = ?, ");
-            params.add(data.get(key));
+        for (Map.Entry<String, Object> entry : data.entrySet()) {
+            sql.append(entry.getKey()).append(" = ?, ");
+            params.add(data.get(entry.getKey()));
         }
 
-        sql.setLength(sql.length() - 2); // Remove trailing comma
-        sql.append(" WHERE ").append(conditionColumn).append(" = ?"); // Add WHERE clause
-        params.add(conditionValue); // Add condition value to params
+        sql.setLength(sql.length() - 2);
+        sql.append(" WHERE ").append(conditionColumn).append(" = ?");
+        params.add(conditionValue);
 
         try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) {

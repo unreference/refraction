@@ -45,9 +45,11 @@ public class RankCommand extends AbstractCommand {
         if (args.length == 1) {
             try {
                 RankModel rank = rankManager.getPlayerRank(targetName);
-                sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "&b%s's &7rank: &b%s", targetName, rank.getId()));
+                sender.sendMessage(MessageUtility.getPrefixedMessage(
+                        getPrefix(), "&b%s's &7rank: &b%s", targetName, rank.getId()));
             } catch (SQLException exception) {
-                sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "A database error occurred while attempting to fetch the target's rank."));
+                sender.sendMessage(MessageUtility.getPrefixedMessage(
+                        getPrefix(), "A database error occurred while attempting to fetch the target's rank."));
             }
         } else {
             RankModel newRank = rankManager.getRankFromId(args[1]);
@@ -58,15 +60,19 @@ public class RankCommand extends AbstractCommand {
 
             try {
                 rankManager.setPlayerRank(targetName, newRank);
-                sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "Set &b%s's &7rank to &b%s&7.", targetName, newRank.getId()));
+                sender.sendMessage(MessageUtility.getPrefixedMessage(
+                        getPrefix(), "Set &b%s's &7rank to &b%s&7.", targetName, newRank.getId()));
 
                 Player targetPlayer = Bukkit.getPlayer(targetName);
                 if (targetPlayer != null) {
-                    Objects.requireNonNull(Bukkit.getPlayer(targetName)).sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "Your rank has been updated to &b%s&7.", newRank.getId()));
+                    Objects.requireNonNull(Bukkit.getPlayer(targetName))
+                            .sendMessage(MessageUtility.getPrefixedMessage(
+                                    getPrefix(), "Your rank has been updated to &b%s&7.", newRank.getId()));
                     Bukkit.getServer().getPluginManager().callEvent(new RankChangeEvent(targetPlayer, newRank));
                 }
             } catch (SQLException exception) {
-                sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "A database error occurred while attempting to set the target's rank."));
+                sender.sendMessage(MessageUtility.getPrefixedMessage(
+                        getPrefix(), "A database error occurred while attempting to set the target's rank."));
             }
         }
     }

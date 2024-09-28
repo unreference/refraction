@@ -17,7 +17,6 @@ public class FormatUtility {
     private static final Pattern legacyColorPattern = Pattern.compile("&[a-fA-F0-9klmnor]");
     private static final Pattern hexColorPattern = Pattern.compile("#[a-fA-F0-9]{6}");
     private static final Pattern formatPattern = Pattern.compile("&[a-fA-F0-9klmnor]|#[a-fA-F0-9]{6}");
-
     private static final List<TextColor> prideColors = List.of(
             Objects.requireNonNull(TextColor.fromHexString("#E40013")),
             Objects.requireNonNull(TextColor.fromHexString("#FD8D20")),
@@ -26,6 +25,9 @@ public class FormatUtility {
             Objects.requireNonNull(TextColor.fromHexString("#114EFC")),
             Objects.requireNonNull(TextColor.fromHexString("#770288"))
     );
+
+    private FormatUtility() {
+    }
 
     public static Component getFormattedComponent(String message, Object... args) {
         message = String.format(message, args);
@@ -110,23 +112,9 @@ public class FormatUtility {
 
             String match = matcher.group();
             if (legacyColorPattern.matcher(match).matches()) {
-                char legacyCode = match.charAt(1);
-                if (legacyCode == 'r') {
-                    currentStyle = Style.empty().color(NamedTextColor.WHITE);
-                } else {
-                    NamedTextColor namedColor = getColorFromLegacy(legacyCode);
-                    if (namedColor != null) {
-                        currentStyle = currentStyle.color(namedColor);
-                    } else {
-                        TextDecoration decoration = getDecorationFromLegacy(legacyCode);
-                        if (decoration != null) {
-                            currentStyle = currentStyle.decorate(decoration);
-                        }
-                    }
-                }
+                currentStyle = handleLegacyColor(match, currentStyle);
             } else if (hexColorPattern.matcher(match).matches()) {
-                TextColor hexColor = TextColor.fromHexString(match);
-                currentStyle = currentStyle.color(hexColor);
+                currentStyle = handleHexColor(match, currentStyle);
             }
 
             lastEnd = matcher.end();
@@ -134,6 +122,30 @@ public class FormatUtility {
 
         builder.append(Component.text(message.substring(lastEnd), currentStyle));
     }
+
+    private static Style handleLegacyColor(String match, Style currentStyle) {
+        char legacyCode = match.charAt(1);
+        if (legacyCode == 'r') {
+            return Style.empty().color(NamedTextColor.WHITE);
+        } else {
+            NamedTextColor namedColor = getColorFromLegacy(legacyCode);
+            if (namedColor != null) {
+                return currentStyle.color(namedColor);
+            } else {
+                TextDecoration decoration = getDecorationFromLegacy(legacyCode);
+                if (decoration != null) {
+                    return currentStyle.decorate(decoration);
+                }
+            }
+        }
+        return currentStyle;
+    }
+
+    private static Style handleHexColor(String match, Style currentStyle) {
+        TextColor hexColor = TextColor.fromHexString(match);
+        return currentStyle.color(hexColor);
+    }
+
 
     private static boolean isOnlyFormatting(String message) {
         String strippedMessage = formatPattern.matcher(message).replaceAll("").trim();

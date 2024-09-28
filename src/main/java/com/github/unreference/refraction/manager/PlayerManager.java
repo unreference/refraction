@@ -17,12 +17,12 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class PlayerManager implements Listener {
+    private static final String PERMISSION_AUTO_OP = "refraction.server.auto-operator";
     private final PlayerDataManager playerDataManager;
-    private final String autoOpPermission = "refraction.server.auto-operator";
 
     public PlayerManager(DatabaseManager databaseManager) {
         this.playerDataManager = PlayerDataManager.get(databaseManager);
-        RankModel.ADMIN.grantPermission(autoOpPermission, true);
+        RankModel.ADMIN.grantPermission(PERMISSION_AUTO_OP, true);
     }
 
     @EventHandler
@@ -45,7 +45,7 @@ public class PlayerManager implements Listener {
             RankModel playerRank = rankManager.getPlayerRank(player.getName());
 
             boolean wasOp = player.isOp();
-            player.setOp(playerRank.isPermitted(autoOpPermission));
+            player.setOp(playerRank.isPermitted(PERMISSION_AUTO_OP));
             boolean isOp = player.isOp();
 
             if (isOp != wasOp) {
@@ -85,7 +85,7 @@ public class PlayerManager implements Listener {
         try {
             RankModel playerRank = rankManager.getPlayerRank(player.getName());
             boolean wasOp = player.isOp();
-            player.setOp(playerRank.isPermitted(autoOpPermission));
+            player.setOp(playerRank.isPermitted(PERMISSION_AUTO_OP));
             boolean isOp = player.isOp();
 
             if (isOp != wasOp) {
