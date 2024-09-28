@@ -41,8 +41,9 @@ public class PlayerDataManager {
         }
     }
 
-    public void updateDynamic(UUID uuid, LocalDateTime lastPlayed) throws SQLException {
+    public void updateDynamic(UUID uuid, String name, LocalDateTime lastPlayed) throws SQLException {
         Map<String, Object> data = new LinkedHashMap<>();
+        data.put("name", name);
         data.put("last_played", lastPlayed);
         databaseManager.updateData("players", data, "uuid", uuid.toString());
     }

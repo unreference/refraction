@@ -39,7 +39,7 @@ public class PlayerManager implements Listener {
                 playerDataManager.insertStatic(data);
             }
 
-            playerDataManager.updateDynamic(uuid, now);
+            playerDataManager.updateDynamic(uuid, name, now);
 
             RankManager rankManager = RankManager.get();
             RankModel playerRank = rankManager.getPlayerRank(player.getName());
@@ -63,11 +63,12 @@ public class PlayerManager implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        String uuid = player.getUniqueId().toString();
+        String name = player.getName();
+        UUID uuid = player.getUniqueId();
         LocalDateTime now = LocalDateTime.now();
 
         try {
-            playerDataManager.updateDynamic(UUID.fromString(uuid), now);
+            playerDataManager.updateDynamic(uuid, name, now);
         } catch (SQLException exception) {
             Refraction.log(2, "Failed to update dynamic data [%s]", player.getName());
             Refraction.log(2, Arrays.toString(exception.getStackTrace()));
