@@ -2,6 +2,7 @@ package com.github.unreference.refraction.command;
 
 import com.github.unreference.refraction.model.RankModel;
 import com.github.unreference.refraction.utility.MessageUtility;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,7 +18,7 @@ public class SpawnCommand extends AbstractCommand {
     @Override
     public void trigger(CommandSender sender, String[] args) {
         if (args.length != 0) {
-            MessageUtility.sendMessage(sender, getUsageMessage());
+            sender.sendMessage(getUsageMessage());
             return;
         }
 
@@ -32,8 +33,8 @@ public class SpawnCommand extends AbstractCommand {
     }
 
     @Override
-    protected String getUsageMessage() {
-        return String.format("Usage: /" + getAliasUsed());
+    protected Component getUsageMessage() {
+        return MessageUtility.getMessage("Usage: /" + getAliasUsed());
     }
 
     @Override

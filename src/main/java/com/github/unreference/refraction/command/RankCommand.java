@@ -6,6 +6,7 @@ import com.github.unreference.refraction.manager.PlayerDataManager;
 import com.github.unreference.refraction.manager.RankManager;
 import com.github.unreference.refraction.model.RankModel;
 import com.github.unreference.refraction.utility.MessageUtility;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,7 +26,7 @@ public class RankCommand extends AbstractCommand {
     @Override
     public void trigger(CommandSender sender, String[] args) {
         if (args.length < 1 || args.length > 2) {
-            MessageUtility.sendMessage(sender, getUsageMessage());
+            sender.sendMessage(getUsageMessage());
             return;
         }
 
@@ -34,7 +35,7 @@ public class RankCommand extends AbstractCommand {
 
         UUID targetUuid = playerDataManager.getUuid(targetInput);
         if (targetUuid == null) {
-            MessageUtility.sendMessage(sender, "Player not found: %s", args[0]);
+            sender.sendMessage(MessageUtility.getMessage("Player not found: %s"));
             return;
         }
 
@@ -44,28 +45,28 @@ public class RankCommand extends AbstractCommand {
         if (args.length == 1) {
             try {
                 RankModel rank = rankManager.getPlayerRank(targetName);
-                MessageUtility.sendMessage(sender, "%s's rank: %s", targetName, rank.getId());
+                sender.sendMessage(MessageUtility.getMessage("%s's rank: %s", targetName, rank.getId()));
             } catch (SQLException exception) {
-                MessageUtility.sendMessage(sender, "A database error occurred while attempting to fetch the target's rank.");
+                sender.sendMessage(MessageUtility.getMessage("A database error occurred while attempting to fetch the target's rank."));
             }
         } else {
             RankModel newRank = rankManager.getRankFromId(args[1]);
             if (newRank == null) {
-                MessageUtility.sendMessage(sender, "Rank not found: %s", args[1]);
+                sender.sendMessage(MessageUtility.getMessage("Rank not found: %s", args[1]));
                 return;
             }
 
             try {
                 rankManager.setPlayerRank(targetName, newRank);
-                MessageUtility.sendMessage(sender, "Updated %s's rank to %s.", targetName, newRank.getId());
+                sender.sendMessage(MessageUtility.getMessage("Updated %s's rank to %s.", targetName, newRank.getId()));
 
                 Player targetPlayer = Bukkit.getPlayer(targetName);
                 if (targetPlayer != null) {
-                    MessageUtility.sendMessage(Objects.requireNonNull(Bukkit.getPlayer(targetName)), "Your rank has been updated to %s.", newRank.getId());
+                    Objects.requireNonNull(Bukkit.getPlayer(targetName)).sendMessage(MessageUtility.getMessage("Your rank has been updated to %s.", newRank.getId()));
                     Bukkit.getServer().getPluginManager().callEvent(new RankChangeEvent(targetPlayer, newRank));
                 }
             } catch (SQLException exception) {
-                MessageUtility.sendMessage(sender, "A database error occurred while attempting to set the target's rank.");
+                sender.sendMessage(MessageUtility.getMessage("A database error occurred while attempting to set the target's rank."));
             }
         }
     }
@@ -90,8 +91,8 @@ public class RankCommand extends AbstractCommand {
     }
 
     @Override
-    protected String getUsageMessage() {
-        return String.format("Usage: /%s <player> [rank]", aliasUsed);
+    protected Component getUsageMessage() {
+        return MessageUtility.getMessage("Usage: /%s <player> [rank]", aliasUsed);
     }
 
     @Override

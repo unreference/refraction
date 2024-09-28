@@ -1,5 +1,6 @@
 package com.github.unreference.refraction.command;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -80,7 +81,7 @@ public abstract class AbstractCommand extends Command implements CommandInterfac
         suggestions.removeIf(suggestion -> !suggestion.toLowerCase().startsWith(arg.toLowerCase()));
     }
 
-    protected abstract String getUsageMessage();
+    protected abstract Component getUsageMessage();
 
     protected abstract void generatePermissions();
 }

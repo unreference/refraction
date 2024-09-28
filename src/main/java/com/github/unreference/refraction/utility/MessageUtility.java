@@ -1,15 +1,15 @@
 package com.github.unreference.refraction.utility;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 public class MessageUtility {
-    public static void sendMessage(Player target, String message, Object... args) {
-        target.sendMessage(Component.text(String.format(message, args)));
-    }
+    public static Component getMessage(String message, Object... args) {
+        Component body = FormatUtility.getFormattedComponent(message, args);
+        TextComponent.Builder builder = Component.text();
 
-    public static void sendMessage(CommandSender target, String message, Object... args) {
-        target.sendMessage(Component.text(String.format(message, args)));
+        builder.append(body).colorIfAbsent(NamedTextColor.WHITE);
+        return builder.build();
     }
 }
