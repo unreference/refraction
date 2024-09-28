@@ -5,6 +5,13 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public class MessageUtility {
+    public static Component getMessage(Component component) {
+        TextComponent.Builder builder = Component.text();
+
+        builder.append(component).colorIfAbsent(NamedTextColor.WHITE);
+        return builder.build();
+    }
+
     public static Component getMessage(String message, Object... args) {
         Component body = FormatUtility.getFormattedComponent(message, args);
         TextComponent.Builder builder = Component.text();

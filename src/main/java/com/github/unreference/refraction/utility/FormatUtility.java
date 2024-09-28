@@ -6,26 +6,26 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
+import java.awt.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FormatUtility {
-    private static final Pattern legacyPattern = Pattern.compile("&[a-fA-F0-9klmnor]");
-    private static final Pattern hexPattern = Pattern.compile("#[a-fA-F0-9]{6}");
-    private static final Pattern formatPattern = Pattern.compile("&[a-fA-F0-9klmnor]|#[a-fA-F0-9]{6}");
+    private static final Pattern legacyColorPattern = Pattern.compile("&[a-fA-F0-9klmnor]");
+    private static final Pattern hexColorPattern = Pattern.compile("#[a-fA-F0-9]{6}");
+    private static final Pattern decorationPattern = Pattern.compile("&[a-fA-F0-9klmnor]|#[a-fA-F0-9]{6}");
 
-    public static Component getFormattedComponent(Component component) {
-        String plainText = PlainTextComponentSerializer.plainText().serialize(component);
-        if (isOnlyFormatting(plainText)) {
-            return Component.text(plainText);
-        }
-
-        TextComponent.Builder builder = Component.text();
-        formatComponent(component, builder);
-        return builder.build();
-    }
+    private static final List<TextColor> prideColors = List.of(
+            Objects.requireNonNull(TextColor.fromHexString("#E40013")),
+            Objects.requireNonNull(TextColor.fromHexString("#FD8D20")),
+            Objects.requireNonNull(TextColor.fromHexString("#FEEE2E")),
+            Objects.requireNonNull(TextColor.fromHexString("#0C8222")),
+            Objects.requireNonNull(TextColor.fromHexString("#114EFC")),
+            Objects.requireNonNull(TextColor.fromHexString("#770288"))
+    );
 
     public static Component getFormattedComponent(String message, Object... args) {
         message = String.format(message, args);
@@ -38,58 +38,78 @@ public class FormatUtility {
         return builder.build();
     }
 
-    private static void formatComponent(Component component, TextComponent.Builder builder) {
-        if (component instanceof TextComponent) {
-            String content = ((TextComponent) component).content();
-            int lastEnd = 0;
-            Style currentStyle = Style.empty();
+    public static Component getPrideMessage(String message, Object... args) {
+        message = String.format(message, args);
 
-            Matcher matcher = formatPattern.matcher(content);
-            while (matcher.find()) {
-                builder.append(Component.text(content.substring(lastEnd, matcher.start()), currentStyle));
+        List<TextColor> adjustedColors = new java.util.ArrayList<>(List.of());
 
-                String match = matcher.group();
-                if (legacyPattern.matcher(match).matches()) {
-                    char legacyCode = match.charAt(1);
-                    if (legacyCode == 'r') {
-                        currentStyle = Style.empty().color(NamedTextColor.WHITE);
-                    } else {
-                        NamedTextColor namedColor = getColorFromLegacy(legacyCode);
-                        if (namedColor != null) {
-                            currentStyle = currentStyle.color(namedColor);
-                        } else {
-                            TextDecoration decoration = getDecorationFromLegacy(legacyCode);
-                            if (decoration != null) {
-                                currentStyle = currentStyle.decorate(decoration);
-                            }
-                        }
-                    }
-                } else if (hexPattern.matcher(match).matches()) {
-                    TextColor hexColor = TextColor.fromHexString(match);
-                    currentStyle = currentStyle.color(hexColor);
-                }
-
-                lastEnd = matcher.end();
-            }
-
-            builder.append(Component.text(content.substring(lastEnd), currentStyle));
+        for (TextColor prideColor : prideColors) {
+            adjustedColors.add(setHsb(prideColor, 0.0f, 0.0f, 1.0f));
         }
 
-        for (Component child : component.children()) {
-            formatComponent(child, builder);
+        return getGradientMessage(message, adjustedColors);
+    }
+
+    public static Component getGradientMessage(String message, List<TextColor> colors, Object... args) {
+        message = String.format(message, args);
+
+        TextComponent.Builder builder = Component.text();
+        int length = message.length();
+
+        for (int i = 0; i < length; i++) {
+            char c = message.charAt(i);
+
+            float proportion = (float) i / (float) length;
+            TextColor color = interpolateColors(proportion, colors);
+
+            builder.append(Component.text(c, color));
         }
+
+        return builder.build();
+    }
+
+    private static TextColor setHsb(TextColor color, float hue, float saturation, float brightness) {
+        float[] hsb = new float[3];
+        Color.RGBtoHSB(color.red(), color.green(), color.blue(), hsb);
+        hsb[0] = Math.max(hsb[0], hue);
+        hsb[1] = Math.max(hsb[1], saturation);
+        hsb[2] = Math.max(hsb[2], brightness);
+
+        int rgb = Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
+        return TextColor.color((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
+    }
+
+    private static TextColor interpolateColors(float proportion, List<TextColor> colors) {
+        int numColors = colors.size();
+        float proportionScaled = proportion * (numColors - 1);
+
+        int index = (int) proportionScaled;
+        float interpolation = proportionScaled - index;
+
+        TextColor startColor = colors.get(index);
+        TextColor endColor = colors.get(Math.min(index + 1, numColors - 1));
+
+        return blendColors(startColor, endColor, interpolation);
+    }
+
+    private static TextColor blendColors(TextColor startColor, TextColor endColor, float proportion) {
+        int red = (int) (startColor.red() + proportion * (endColor.red() - startColor.red()));
+        int green = (int) (startColor.green() + proportion * (endColor.green() - startColor.green()));
+        int blue = (int) (startColor.blue() + proportion * (endColor.blue() - startColor.blue()));
+
+        return TextColor.color(red, green, blue);
     }
 
     private static void formatComponent(String message, TextComponent.Builder builder) {
         int lastEnd = 0;
         Style currentStyle = Style.empty();
 
-        Matcher matcher = formatPattern.matcher(message);
+        Matcher matcher = decorationPattern.matcher(message);
         while (matcher.find()) {
             builder.append(Component.text(message.substring(lastEnd, matcher.start()), currentStyle));
 
             String match = matcher.group();
-            if (legacyPattern.matcher(match).matches()) {
+            if (legacyColorPattern.matcher(match).matches()) {
                 char legacyCode = match.charAt(1);
                 if (legacyCode == 'r') {
                     currentStyle = Style.empty().color(NamedTextColor.WHITE);
@@ -104,7 +124,7 @@ public class FormatUtility {
                         }
                     }
                 }
-            } else if (hexPattern.matcher(match).matches()) {
+            } else if (hexColorPattern.matcher(match).matches()) {
                 TextColor hexColor = TextColor.fromHexString(match);
                 currentStyle = currentStyle.color(hexColor);
             }
@@ -116,7 +136,7 @@ public class FormatUtility {
     }
 
     private static boolean isOnlyFormatting(String message) {
-        String strippedMessage = formatPattern.matcher(message).replaceAll("").trim();
+        String strippedMessage = decorationPattern.matcher(message).replaceAll("").trim();
         return strippedMessage.isEmpty();
     }
 
