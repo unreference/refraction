@@ -17,6 +17,7 @@ public class FormatUtility {
     private static final Pattern legacyColorPattern = Pattern.compile("&[a-fA-F0-9klmnor]");
     private static final Pattern hexColorPattern = Pattern.compile("#[a-fA-F0-9]{6}");
     private static final Pattern formatPattern = Pattern.compile("&[a-fA-F0-9klmnor]|#[a-fA-F0-9]{6}");
+
     private static final List<TextColor> prideColors = List.of(
             Objects.requireNonNull(TextColor.fromHexString("#E40013")),
             Objects.requireNonNull(TextColor.fromHexString("#FD8D20")),
@@ -46,7 +47,8 @@ public class FormatUtility {
         List<TextColor> adjustedColors = new java.util.ArrayList<>(List.of());
 
         for (TextColor prideColor : prideColors) {
-            adjustedColors.add(setHsb(prideColor, 0.0f, 0.0f, 1.0f));
+            adjustedColors.add(adjustHsb(prideColor, 0.0f,
+                    0.0f, 1.0f));
         }
 
         return getGradientMessage(message, adjustedColors);
@@ -70,7 +72,7 @@ public class FormatUtility {
         return builder.build();
     }
 
-    private static TextColor setHsb(TextColor color, float hue, float saturation, float brightness) {
+    private static TextColor adjustHsb(TextColor color, float hue, float saturation, float brightness) {
         float[] hsb = new float[3];
         Color.RGBtoHSB(color.red(), color.green(), color.blue(), hsb);
         hsb[0] = Math.max(hsb[0], hue);
@@ -145,7 +147,6 @@ public class FormatUtility {
         TextColor hexColor = TextColor.fromHexString(match);
         return currentStyle.color(hexColor);
     }
-
 
     private static boolean isOnlyFormatting(String message) {
         String strippedMessage = formatPattern.matcher(message).replaceAll("").trim();

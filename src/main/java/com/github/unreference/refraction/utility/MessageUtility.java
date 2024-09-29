@@ -5,7 +5,8 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public class MessageUtility {
-    private MessageUtility() {}
+    private MessageUtility() {
+    }
 
     public static Component getPrefixedMessage(String prefix, String message, Object... args) {
         Component bodyPrefix = FormatUtility.getPrideMessage(prefix + ">");

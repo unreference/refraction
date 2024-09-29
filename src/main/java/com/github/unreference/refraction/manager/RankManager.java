@@ -12,7 +12,8 @@ import java.util.Map;
 public class RankManager {
     private static RankManager instance;
 
-    private RankManager() {}
+    private RankManager() {
+    }
 
     public static RankManager get() {
         if (instance == null) {
