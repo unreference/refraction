@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public enum RankModel {
+public enum Rank {
     DEFAULT("Default", null),
 
     ADMIN("Admin", null, DEFAULT),
@@ -13,12 +13,12 @@ public enum RankModel {
 
     private final String id;
     private final String prefix;
-    private final RankModel parent;
+    private final Rank parent;
 
-    private final Map<String, RankPermissionModel> grantedPermissions;
+    private final Map<String, RankPermission> grantedPermissions;
     private final Set<String> revokedPermissions;
 
-    RankModel(String id, String prefix) {
+    Rank(String id, String prefix) {
         this.id = id;
         this.prefix = prefix;
         this.parent = null;
@@ -26,7 +26,7 @@ public enum RankModel {
         this.revokedPermissions = new HashSet<>();
     }
 
-    RankModel(String id, String prefix, RankModel parent) {
+    Rank(String id, String prefix, Rank parent) {
         this.id = id;
         this.prefix = prefix;
         this.parent = parent;
@@ -34,12 +34,26 @@ public enum RankModel {
         this.revokedPermissions = new HashSet<>();
     }
 
+    public static String getId(Rank rank) {
+        return rank.getId();
+    }
+
+    public static Rank getRankFromId(String id) {
+        for (Rank rank : Rank.values()) {
+            if (rank.getId().equalsIgnoreCase(id)) {
+                return rank;
+            }
+        }
+
+        return null;
+    }
+
     public String getId() {
         return id;
     }
 
     public void grantPermission(String permission, boolean isInheritable) {
-        grantedPermissions.put(permission, new RankPermissionModel(isInheritable));
+        grantedPermissions.put(permission, new RankPermission(isInheritable));
     }
 
     public void revokePermission(String permission) {
@@ -52,13 +66,13 @@ public enum RankModel {
             return false; // Explicitly revoked permission
         }
 
-        RankPermissionModel perm = grantedPermissions.get(permission);
+        RankPermission perm = grantedPermissions.get(permission);
         if (perm != null) {
             return true; // Explicitly granted permission
         }
 
         if (parent != null && parent.isPermitted(permission)) {
-            RankPermissionModel parentPermission = parent.grantedPermissions.get(permission);
+            RankPermission parentPermission = parent.grantedPermissions.get(permission);
 
             if (parentPermission != null && parentPermission.isInheritable()) {
                 grantedPermissions.put(permission, parentPermission);

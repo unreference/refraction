@@ -1,4 +1,4 @@
-package com.github.unreference.refraction.utility;
+package com.github.unreference.refraction.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FormatUtility {
+public class FormatUtil {
     private static final Pattern legacyColorPattern = Pattern.compile("&[a-fA-F0-9klmnor]");
     private static final Pattern hexColorPattern = Pattern.compile("#[a-fA-F0-9]{6}");
     private static final Pattern formatPattern = Pattern.compile("&[a-fA-F0-9klmnor]|#[a-fA-F0-9]{6}");
@@ -27,7 +27,7 @@ public class FormatUtility {
             Objects.requireNonNull(TextColor.fromHexString("#770288"))
     );
 
-    private FormatUtility() {
+    private FormatUtil() {
     }
 
     public static Component getFormattedComponent(String message, Object... args) {

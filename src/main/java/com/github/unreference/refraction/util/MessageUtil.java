@@ -1,16 +1,16 @@
-package com.github.unreference.refraction.utility;
+package com.github.unreference.refraction.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 
-public class MessageUtility {
-    private MessageUtility() {
+public class MessageUtil {
+    private MessageUtil() {
     }
 
     public static Component getPrefixedMessage(String prefix, String message, Object... args) {
-        Component bodyPrefix = FormatUtility.getPrideMessage(prefix + ">");
-        Component body = FormatUtility.getFormattedComponent(message, args);
+        Component bodyPrefix = FormatUtil.getPrideMessage(prefix + ">");
+        Component body = FormatUtil.getFormattedComponent(message, args);
         TextComponent.Builder builder = Component.text();
 
         builder.append(bodyPrefix);
@@ -20,7 +20,7 @@ public class MessageUtility {
     }
 
     public static Component getMessage(String message, Object... args) {
-        Component body = FormatUtility.getFormattedComponent(message, args);
+        Component body = FormatUtil.getFormattedComponent(message, args);
         TextComponent.Builder builder = Component.text();
 
         builder.append(body).colorIfAbsent(NamedTextColor.WHITE);

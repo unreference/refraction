@@ -1,8 +1,9 @@
-package com.github.unreference.refraction.command;
+package com.github.unreference.refraction.command.impl;
 
 import com.github.unreference.refraction.Refraction;
-import com.github.unreference.refraction.model.RankModel;
-import com.github.unreference.refraction.utility.MessageUtility;
+import com.github.unreference.refraction.command.AbstractCommand;
+import com.github.unreference.refraction.model.Rank;
+import com.github.unreference.refraction.util.MessageUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -32,7 +33,7 @@ public class SetSpawnCommand extends AbstractCommand {
 
         if (args.length == 0) {
             world.setSpawnLocation(playerLocation);
-            sender.sendMessage(MessageUtility.getPrefixedMessage(
+            sender.sendMessage(MessageUtil.getPrefixedMessage(
                     getPrefix(),
                     "Set &b%s's &7spawn to &bXYZ&7: &b%.0f &7/ &b%.0f &7/ &b%.0f&7.",
                     world.getName(),
@@ -48,7 +49,7 @@ public class SetSpawnCommand extends AbstractCommand {
 
                 Location location = new Location(world, x, y, z);
                 world.setSpawnLocation(location);
-                sender.sendMessage(MessageUtility.getPrefixedMessage(
+                sender.sendMessage(MessageUtil.getPrefixedMessage(
                         getPrefix(),
                         "Set &b%s's &7spawn to &bXYZ&7: &b%.0f &7/ &b%.0f &7/ &b%.0f&7.",
                         world.getName(),
@@ -57,7 +58,7 @@ public class SetSpawnCommand extends AbstractCommand {
                         world.getSpawnLocation().getZ()));
                 return;
             } catch (NumberFormatException exception) {
-                sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "Invalid coordinates."));
+                sender.sendMessage(MessageUtil.getPrefixedMessage(getPrefix(), "Invalid coordinates."));
                 return;
             }
         }
@@ -65,7 +66,7 @@ public class SetSpawnCommand extends AbstractCommand {
         String worldInput = args[0];
         world = Refraction.getPlugin().getServer().getWorld(worldInput);
         if (world == null) {
-            sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "World not found: &b%s", worldInput));
+            sender.sendMessage(MessageUtil.getPrefixedMessage(getPrefix(), "World not found: &b%s", worldInput));
             return;
         }
 
@@ -76,7 +77,7 @@ public class SetSpawnCommand extends AbstractCommand {
 
             Location location = new Location(world, x, y, z);
             world.setSpawnLocation(location);
-            sender.sendMessage(MessageUtility.getPrefixedMessage(
+            sender.sendMessage(MessageUtil.getPrefixedMessage(
                     getPrefix(),
                     "Set &b%s's &7spawn to &bXYZ&7: &b%.0f &7/ &b%.0f &7/ &b%.0f&7.",
                     world.getName(),
@@ -84,7 +85,7 @@ public class SetSpawnCommand extends AbstractCommand {
                     world.getSpawnLocation().getY(),
                     world.getSpawnLocation().getZ()));
         } catch (NumberFormatException exception) {
-            sender.sendMessage(MessageUtility.getPrefixedMessage(getPrefix(), "Invalid coordinates."));
+            sender.sendMessage(MessageUtil.getPrefixedMessage(getPrefix(), "Invalid coordinates."));
         }
     }
 
@@ -105,12 +106,12 @@ public class SetSpawnCommand extends AbstractCommand {
 
     @Override
     protected Component getUsageMessage() {
-        return MessageUtility.getPrefixedMessage(
+        return MessageUtil.getPrefixedMessage(
                 getPrefix(), "Usage: /%s [coordinates|world] <coordinates>", getAliasUsed());
     }
 
     @Override
     protected void generatePermissions() {
-        RankModel.ADMIN.grantPermission(getPermission(), true);
+        Rank.ADMIN.grantPermission(getPermission(), true);
     }
 }

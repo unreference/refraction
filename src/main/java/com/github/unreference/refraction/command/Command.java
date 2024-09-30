@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public interface CommandInterface {
+public interface Command {
 
     String getName();
 

@@ -1,9 +1,11 @@
-package com.github.unreference.refraction.manager;
+package com.github.unreference.refraction.listener;
 
-import com.github.unreference.refraction.command.RankCommand;
-import com.github.unreference.refraction.command.SetSpawnCommand;
-import com.github.unreference.refraction.command.SpawnCommand;
-import com.github.unreference.refraction.model.RankModel;
+import com.github.unreference.refraction.Refraction;
+import com.github.unreference.refraction.command.impl.RankCommand;
+import com.github.unreference.refraction.command.impl.SetSpawnCommand;
+import com.github.unreference.refraction.command.impl.SpawnCommand;
+import com.github.unreference.refraction.model.Rank;
+import com.github.unreference.refraction.service.PlayerDataRepositoryService;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -13,16 +15,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerCommandSendEvent;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
-import static com.github.unreference.refraction.Refraction.log;
+public class CommandListener implements Listener {
 
-public class CommandManager implements Listener {
-
-    public CommandManager() {
+    public CommandListener() {
         registerCommand(new SetSpawnCommand());
         registerCommand(new SpawnCommand());
         registerCommand(new RankCommand());
@@ -51,33 +49,28 @@ public class CommandManager implements Listener {
     }
 
     private Collection<String> getAllowedCommands(Player player) {
-        RankManager rankManager = RankManager.get();
+        PlayerDataRepositoryService playerDataRepositoryService = Refraction.getPlayerDataRepositoryService();
 
-        try {
-            RankModel rank = rankManager.getPlayerRank(player.getName());
-            CommandMap commandMap = Bukkit.getCommandMap();
-            Collection<String> allowedCommands = new HashSet<>();
+        Rank rank = Rank.getRankFromId(playerDataRepositoryService.getRank(player.getName()));
+        CommandMap commandMap = Bukkit.getCommandMap();
+        Collection<String> allowedCommands = new HashSet<>();
 
-            if (player.isOp()) {
-                for (Command command : commandMap.getKnownCommands().values()) {
+        if (player.isOp()) {
+            for (Command command : commandMap.getKnownCommands().values()) {
+                allowedCommands.add(command.getName());
+                allowedCommands.addAll(command.getAliases());
+            }
+        } else {
+            for (Command command : commandMap.getKnownCommands().values()) {
+                if (rank.isPermitted(command.getPermission())) {
                     allowedCommands.add(command.getName());
                     allowedCommands.addAll(command.getAliases());
                 }
-            } else {
-                for (Command command : commandMap.getKnownCommands().values()) {
-                    if (rank.isPermitted(command.getPermission())) {
-                        allowedCommands.add(command.getName());
-                        allowedCommands.addAll(command.getAliases());
-                    }
-                }
             }
-
-            return allowedCommands;
-
-        } catch (SQLException exception) {
-            log(2, "A database error occurred while attempting to determine allowed commands.");
-            return List.of();
         }
+
+        return allowedCommands;
+
     }
 
     private void registerCommand(Command command) {

@@ -1,9 +1,10 @@
 package com.github.unreference.refraction;
 
-import com.github.unreference.refraction.manager.CommandManager;
-import com.github.unreference.refraction.manager.DatabaseManager;
-import com.github.unreference.refraction.manager.PlayerDataManager;
-import com.github.unreference.refraction.manager.PlayerManager;
+import com.github.unreference.refraction.data.repository.PlayerDataRepository;
+import com.github.unreference.refraction.listener.CommandListener;
+import com.github.unreference.refraction.listener.PlayerListener;
+import com.github.unreference.refraction.service.DatabaseService;
+import com.github.unreference.refraction.service.PlayerDataRepositoryService;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -14,7 +15,10 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public final class Refraction extends JavaPlugin {
+    private static DatabaseService databaseService;
+    private static PlayerDataRepositoryService playerDataRepositoryService;
     boolean isFatalError = false;
+
 
     public static Plugin getPlugin() {
         return Bukkit.getPluginManager().getPlugin("Refraction");
@@ -41,20 +45,29 @@ public final class Refraction extends JavaPlugin {
         }
     }
 
+    public static DatabaseService getDatabaseService() {
+        return databaseService;
+    }
+
+    public static PlayerDataRepositoryService getPlayerDataRepositoryService() {
+        return playerDataRepositoryService;
+    }
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
 
-        DatabaseManager databaseManager = DatabaseManager.get();
-
         try {
-            databaseManager.connect();
+            databaseService = new DatabaseService();
 
-            PlayerDataManager playerDataManager = PlayerDataManager.get(databaseManager);
-            playerDataManager.create();
+            PlayerDataRepository playerDataRepository = new PlayerDataRepository(databaseService);
+            playerDataRepositoryService = new PlayerDataRepositoryService(playerDataRepository);
 
-            addListener(new PlayerManager(databaseManager));
-            addListener(new CommandManager());
+            databaseService.connect();
+            playerDataRepositoryService.create();
+
+            registerListener(new PlayerListener());
+            registerListener(new CommandListener());
         } catch (SQLException | NullPointerException exception) {
             log(2, exception.getMessage());
             log(2, Arrays.toString(exception.getStackTrace()));
@@ -74,12 +87,10 @@ public final class Refraction extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        DatabaseManager.get().close();
+        databaseService.close();
     }
 
-    private void addListener(Listener listener) throws NullPointerException {
+    private void registerListener(Listener listener) throws NullPointerException {
         this.getServer().getPluginManager().registerEvents(listener, this);
     }
-
-
 }

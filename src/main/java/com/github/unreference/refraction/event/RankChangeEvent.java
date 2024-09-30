@@ -1,6 +1,6 @@
 package com.github.unreference.refraction.event;
 
-import com.github.unreference.refraction.model.RankModel;
+import com.github.unreference.refraction.model.Rank;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -9,9 +9,9 @@ import org.jetbrains.annotations.NotNull;
 public class RankChangeEvent extends Event {
     private static final HandlerList handlerList = new HandlerList();
     private final Player player;
-    private final RankModel newRank;
+    private final Rank newRank;
 
-    public RankChangeEvent(Player player, RankModel newRank) {
+    public RankChangeEvent(Player player, Rank newRank) {
         this.player = player;
         this.newRank = newRank;
     }
@@ -29,7 +29,7 @@ public class RankChangeEvent extends Event {
         return player;
     }
 
-    public RankModel getNewRank() {
+    public Rank getNewRank() {
         return newRank;
     }
 }

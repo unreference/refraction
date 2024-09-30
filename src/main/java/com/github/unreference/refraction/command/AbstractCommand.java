@@ -2,7 +2,6 @@ package com.github.unreference.refraction.command;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class AbstractCommand extends Command implements CommandInterface {
+public abstract class AbstractCommand extends org.bukkit.command.Command implements Command {
     private final String name;
     private final String prefix;
     private final String permission;
