@@ -1,6 +1,7 @@
 package com.github.unreference.refraction.listener;
 
 import com.github.unreference.refraction.Refraction;
+import com.github.unreference.refraction.command.impl.DiceRollCommand;
 import com.github.unreference.refraction.command.impl.RankCommand;
 import com.github.unreference.refraction.command.impl.SetSpawnCommand;
 import com.github.unreference.refraction.command.impl.SpawnCommand;
@@ -24,6 +25,7 @@ public class CommandListener implements Listener {
         registerCommand(new SetSpawnCommand());
         registerCommand(new SpawnCommand());
         registerCommand(new RankCommand());
+        registerCommand(new DiceRollCommand());
     }
 
     @EventHandler

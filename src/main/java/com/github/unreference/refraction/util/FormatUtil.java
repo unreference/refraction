@@ -140,6 +140,7 @@ public class FormatUtil {
                 }
             }
         }
+
         return currentStyle;
     }
 

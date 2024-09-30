@@ -2,6 +2,7 @@ package com.github.unreference.refraction;
 
 import com.github.unreference.refraction.data.repository.PlayerDataRepository;
 import com.github.unreference.refraction.listener.CommandListener;
+import com.github.unreference.refraction.listener.DiceRollListener;
 import com.github.unreference.refraction.listener.PlayerListener;
 import com.github.unreference.refraction.service.DatabaseService;
 import com.github.unreference.refraction.service.PlayerDataRepositoryService;
@@ -68,6 +69,7 @@ public final class Refraction extends JavaPlugin {
 
             registerListener(new PlayerListener());
             registerListener(new CommandListener());
+            registerListener(new DiceRollListener());
         } catch (SQLException | NullPointerException exception) {
             log(2, exception.getMessage());
             log(2, Arrays.toString(exception.getStackTrace()));
