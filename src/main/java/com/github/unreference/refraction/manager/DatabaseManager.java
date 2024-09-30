@@ -1,4 +1,4 @@
-package com.github.unreference.refraction.service;
+package com.github.unreference.refraction.manager;
 
 import com.github.unreference.refraction.Refraction;
 
@@ -8,13 +8,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class DatabaseService {
+public class DatabaseManager {
+    private static DatabaseManager instance;
+
     private final String host = Refraction.getPlugin().getConfig().getString("database.host");
     private final int port = Refraction.getPlugin().getConfig().getInt("database.port");
     private final String user = Refraction.getPlugin().getConfig().getString("database.user");
     private final String password = Refraction.getPlugin().getConfig().getString("database.password");
     private final String name = Refraction.getPlugin().getConfig().getString("database.name");
     private Connection connection;
+
+    private DatabaseManager() {
+    }
+
+    public static DatabaseManager get() {
+        if (instance == null) {
+            instance = new DatabaseManager();
+        }
+
+        return instance;
+    }
 
     public void connect() throws SQLException {
         if (isConnectionClosed()) {

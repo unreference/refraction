@@ -1,8 +1,8 @@
 package com.github.unreference.refraction.data.repository;
 
 import com.github.unreference.refraction.data.PlayerData;
+import com.github.unreference.refraction.manager.DatabaseManager;
 import com.github.unreference.refraction.model.Rank;
-import com.github.unreference.refraction.service.DatabaseService;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,10 +12,17 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PlayerDataRepository {
-    private final DatabaseService databaseService;
+    private static PlayerDataRepository instance;
 
-    public PlayerDataRepository(DatabaseService databaseService) {
-        this.databaseService = databaseService;
+    private PlayerDataRepository() {
+    }
+
+    public static PlayerDataRepository get() {
+        if (instance == null) {
+            instance = new PlayerDataRepository();
+        }
+
+        return instance;
     }
 
     public void createTable() throws SQLException {
@@ -25,27 +32,27 @@ public class PlayerDataRepository {
         columns.put("first_played", "DATETIME(0) NOT NULL");
         columns.put("last_played", "DATETIME(0) NOT NULL");
         columns.put("rank", "VARCHAR(7) NOT NULL");
-        databaseService.createTable("players", columns);
+        DatabaseManager.get().createTable("players", columns);
     }
 
     public boolean exists(UUID id) throws SQLException {
-        return databaseService.recordExists("players", "uuid", id.toString());
+        return DatabaseManager.get().recordExists("players", "uuid", id.toString());
     }
 
     public void insert(PlayerData data) throws SQLException {
         Map<String, Object> playerMap = buildPlayerMap(data);
-        databaseService.insertData("players", playerMap);
+        DatabaseManager.get().insertData("players", playerMap);
     }
 
     public void updateLastPlayed(UUID id, String name, LocalDateTime lastPlayed) throws SQLException {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("name", name);
         data.put("last_played", lastPlayed);
-        databaseService.updateData("players", data, "uuid", id.toString());
+        DatabaseManager.get().updateData("players", data, "uuid", id.toString());
     }
 
     public UUID getId(String name) throws SQLException {
-        try (ResultSet result = databaseService.queryData("uuid", "players", "name = ?", name)) {
+        try (ResultSet result = DatabaseManager.get().queryData("uuid", "players", "name = ?", name)) {
             if (result.next()) {
                 return UUID.fromString(result.getString("uuid"));
             }
@@ -55,7 +62,7 @@ public class PlayerDataRepository {
     }
 
     public String getName(UUID id) throws SQLException {
-        try (ResultSet result = databaseService.queryData("name", "players", "uuid = ?", id.toString())) {
+        try (ResultSet result = DatabaseManager.get().queryData("name", "players", "uuid = ?", id.toString())) {
             if (result.next()) {
                 return result.getString("name");
             }
@@ -65,7 +72,7 @@ public class PlayerDataRepository {
     }
 
     public String getRank(UUID id) throws SQLException {
-        try (ResultSet result = databaseService.queryData("rank", "players", "uuid = ?", id.toString())) {
+        try (ResultSet result = DatabaseManager.get().queryData("rank", "players", "uuid = ?", id.toString())) {
             if (result.next()) {
                 return result.getString("rank");
             }
@@ -75,7 +82,7 @@ public class PlayerDataRepository {
     }
 
     public String getRank(String name) throws SQLException {
-        try (ResultSet result = databaseService.queryData("rank", "players", "name = ?", name)) {
+        try (ResultSet result = DatabaseManager.get().queryData("rank", "players", "name = ?", name)) {
             if (result.next()) {
                 return result.getString("rank");
             }
@@ -87,13 +94,13 @@ public class PlayerDataRepository {
     public void setRank(UUID id, Rank newRank) throws SQLException {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("rank", newRank.getId());
-        databaseService.updateData("players", data, "uuid", id.toString());
+        DatabaseManager.get().updateData("players", data, "uuid", id.toString());
     }
 
     public void setRank(String name, Rank newRank) throws SQLException {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("rank", newRank.getId());
-        databaseService.updateData("players", data, "name", name);
+        DatabaseManager.get().updateData("players", data, "name", name);
     }
 
     private Map<String, Object> buildPlayerMap(PlayerData data) {

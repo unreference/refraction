@@ -1,12 +1,11 @@
 package com.github.unreference.refraction.listener;
 
-import com.github.unreference.refraction.Refraction;
-import com.github.unreference.refraction.command.impl.DiceRollCommand;
 import com.github.unreference.refraction.command.impl.RankCommand;
+import com.github.unreference.refraction.command.impl.RouletteCommand;
 import com.github.unreference.refraction.command.impl.SetSpawnCommand;
 import com.github.unreference.refraction.command.impl.SpawnCommand;
+import com.github.unreference.refraction.manager.PlayerDataRepositoryManager;
 import com.github.unreference.refraction.model.Rank;
-import com.github.unreference.refraction.service.PlayerDataRepositoryService;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -25,7 +24,7 @@ public class CommandListener implements Listener {
         registerCommand(new SetSpawnCommand());
         registerCommand(new SpawnCommand());
         registerCommand(new RankCommand());
-        registerCommand(new DiceRollCommand());
+        registerCommand(new RouletteCommand());
     }
 
     @EventHandler
@@ -51,9 +50,7 @@ public class CommandListener implements Listener {
     }
 
     private Collection<String> getAllowedCommands(Player player) {
-        PlayerDataRepositoryService playerDataRepositoryService = Refraction.getPlayerDataRepositoryService();
-
-        Rank rank = Rank.getRankFromId(playerDataRepositoryService.getRank(player.getName()));
+        Rank rank = Rank.getRankFromId(PlayerDataRepositoryManager.get().getRank(player.getName()));
         CommandMap commandMap = Bukkit.getCommandMap();
         Collection<String> allowedCommands = new HashSet<>();
 

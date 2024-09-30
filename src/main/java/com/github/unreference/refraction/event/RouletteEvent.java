@@ -5,12 +5,12 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class DiceRollEvent extends Event {
+public class RouletteEvent extends Event {
     public static final HandlerList handlerList = new HandlerList();
     private final Player player;
     private final int result;
 
-    public DiceRollEvent(Player player, int result) {
+    public RouletteEvent(Player player, int result) {
         this.player = player;
         this.result = result;
     }

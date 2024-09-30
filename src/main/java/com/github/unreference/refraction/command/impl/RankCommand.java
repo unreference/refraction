@@ -1,10 +1,9 @@
 package com.github.unreference.refraction.command.impl;
 
-import com.github.unreference.refraction.Refraction;
 import com.github.unreference.refraction.command.AbstractCommand;
 import com.github.unreference.refraction.event.RankChangeEvent;
+import com.github.unreference.refraction.manager.PlayerDataRepositoryManager;
 import com.github.unreference.refraction.model.Rank;
-import com.github.unreference.refraction.service.PlayerDataRepositoryService;
 import com.github.unreference.refraction.util.MessageUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -30,19 +29,17 @@ public class RankCommand extends AbstractCommand {
         }
 
         String targetInput = args[0];
-        PlayerDataRepositoryService playerDataManager = Refraction.getPlayerDataRepositoryService();
 
-        UUID targetId = playerDataManager.getId(targetInput);
+        UUID targetId = PlayerDataRepositoryManager.get().getId(targetInput);
         if (targetId == null) {
             sender.sendMessage(MessageUtil.getPrefixedMessage(getPrefix(), "Player not found: &b%s", args[0]));
             return;
         }
 
-        String targetName = playerDataManager.getName(targetId);
-        PlayerDataRepositoryService playerDataRepositoryService = Refraction.getPlayerDataRepositoryService();
+        String targetName = PlayerDataRepositoryManager.get().getName(targetId);
 
         if (args.length == 1) {
-            Rank rank = Rank.getRankFromId(playerDataRepositoryService.getRank(targetName));
+            Rank rank = Rank.getRankFromId(PlayerDataRepositoryManager.get().getRank(targetName));
             sender.sendMessage(MessageUtil.getPrefixedMessage(getPrefix(), "&b%s's &7rank: &b%s", targetName, rank.getId()));
         } else {
             Rank newRank = Rank.getRankFromId(args[1]);
@@ -51,7 +48,7 @@ public class RankCommand extends AbstractCommand {
                 return;
             }
 
-            playerDataRepositoryService.setRank(targetName, newRank);
+            PlayerDataRepositoryManager.get().setRank(targetName, newRank);
             sender.sendMessage(MessageUtil.getPrefixedMessage(
                     getPrefix(), "Set &b%s's &7rank to &b%s&7.", targetName, newRank.getId()));
 

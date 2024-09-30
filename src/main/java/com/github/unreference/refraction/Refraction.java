@@ -1,12 +1,14 @@
 package com.github.unreference.refraction;
 
-import com.github.unreference.refraction.data.repository.PlayerDataRepository;
 import com.github.unreference.refraction.listener.CommandListener;
-import com.github.unreference.refraction.listener.DiceRollListener;
 import com.github.unreference.refraction.listener.PlayerListener;
-import com.github.unreference.refraction.service.DatabaseService;
-import com.github.unreference.refraction.service.PlayerDataRepositoryService;
+import com.github.unreference.refraction.manager.DatabaseManager;
+import com.github.unreference.refraction.manager.PlayerDataRepositoryManager;
+import com.github.unreference.refraction.model.Rank;
+import com.github.unreference.refraction.util.MessageUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,8 +18,6 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public final class Refraction extends JavaPlugin {
-    private static DatabaseService databaseService;
-    private static PlayerDataRepositoryService playerDataRepositoryService;
     boolean isFatalError = false;
 
 
@@ -46,50 +46,65 @@ public final class Refraction extends JavaPlugin {
         }
     }
 
-    public static DatabaseService getDatabaseService() {
-        return databaseService;
-    }
-
-    public static PlayerDataRepositoryService getPlayerDataRepositoryService() {
-        return playerDataRepositoryService;
-    }
-
     @Override
     public void onEnable() {
         saveDefaultConfig();
 
         try {
-            databaseService = new DatabaseService();
-
-            PlayerDataRepository playerDataRepository = new PlayerDataRepository(databaseService);
-            playerDataRepositoryService = new PlayerDataRepositoryService(playerDataRepository);
-
-            databaseService.connect();
-            playerDataRepositoryService.create();
+            DatabaseManager.get().connect();
+            PlayerDataRepositoryManager.get().create();
 
             registerListener(new PlayerListener());
             registerListener(new CommandListener());
-            registerListener(new DiceRollListener());
         } catch (SQLException | NullPointerException exception) {
             log(2, exception.getMessage());
             log(2, Arrays.toString(exception.getStackTrace()));
             isFatalError = true;
         }
 
+        if (!isFatalError && getServer().hasWhitelist()) {
+            log(1, "***************************************");
+            log(1, "  The whitelist is currently enabled.  ");
+            log(1, "          Is this intentional?         ");
+            log(1, "***************************************");
+
+            if (!getServer().getOnlinePlayers().isEmpty()) {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    Rank rank = Rank.getRankFromId(PlayerDataRepositoryManager.get().getRank(player.getName()));
+                    if (rank != Rank.ADMIN && rank != Rank.OWNER) {
+                        player.kick(Component.text("The server is currently offline for maintenance and upgrades.\nPlease check back soon!"));
+                    }
+                }
+
+                MessageUtil.broadcastMessage(MessageUtil.getPrefixedMessage("Refraction", "The whitelist is currently enabled. Is this intentional?"));
+            }
+        }
+
         if (isFatalError) {
             log(2, "***************************************");
             log(2, "One or more fatal errors have occurred.");
-            log(2, "          Whitelist enabled.          ");
+            log(2, "          Whitelist enabled.           ");
             log(2, "***************************************");
 
             getServer().setWhitelist(true);
             getServer().setWhitelistEnforced(true);
+
+            if (!getServer().getOnlinePlayers().isEmpty()) {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    Rank rank = Rank.getRankFromId(PlayerDataRepositoryManager.get().getRank(player.getName()));
+                    if (rank != Rank.ADMIN && rank != Rank.OWNER) {
+                        player.kick(Component.text("The server is currently offline for maintenance and upgrades.\nPlease check back soon!"));
+                    }
+                }
+
+                MessageUtil.broadcastMessage(MessageUtil.getPrefixedMessage("Refraction", "One or more fatal errors have occurred. Whitelist enabled."));
+            }
         }
     }
 
     @Override
     public void onDisable() {
-        databaseService.close();
+        DatabaseManager.get().close();
     }
 
     private void registerListener(Listener listener) throws NullPointerException {

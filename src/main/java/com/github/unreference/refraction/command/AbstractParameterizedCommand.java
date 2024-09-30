@@ -1,8 +1,7 @@
 package com.github.unreference.refraction.command;
 
-import com.github.unreference.refraction.Refraction;
+import com.github.unreference.refraction.manager.PlayerDataRepositoryManager;
 import com.github.unreference.refraction.model.Rank;
-import com.github.unreference.refraction.service.PlayerDataRepositoryService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -100,8 +99,7 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
             return true;
         }
 
-        PlayerDataRepositoryService playerDataRepositoryService = Refraction.getPlayerDataRepositoryService();
-        Rank rank = Rank.getRankFromId(playerDataRepositoryService.getRank(player.getName()));
+        Rank rank = Rank.getRankFromId(PlayerDataRepositoryManager.get().getRank(player.getName()));
         return rank.isPermitted(permission);
     }
 
