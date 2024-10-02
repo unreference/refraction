@@ -15,6 +15,13 @@ public abstract class AbstractSpin {
     this.isPositive = isPositive;
   }
 
+  protected AbstractSpin(String id, String name, boolean isPositive) {
+    this.id = id;
+    this.name = name;
+    this.duration = -1;
+    this.isPositive = isPositive;
+  }
+
   public String getId() {
     return id;
   }
@@ -25,6 +32,10 @@ public abstract class AbstractSpin {
 
   public int getDuration() {
     return duration;
+  }
+
+  public boolean isTimed() {
+    return duration != -1;
   }
 
   public boolean isPositive() {

@@ -9,7 +9,6 @@ import com.github.unreference.refraction.roulette.spin.AbstractSpin;
 import com.github.unreference.refraction.util.MessageUtil;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -84,7 +83,7 @@ public class RouletteCommand extends AbstractCommand {
   }
 
   private void applySpin(Player player, Player target, String spinId) {
-    AbstractSpin perk = getSpinFromId(spinId);
+    AbstractSpin perk = SpinManager.getSpinFromId(spinId);
     if (perk == null) {
       player.sendMessage(
           MessageUtil.getPrefixedMessage(getPrefix(), "Perk not found: &b%s", spinId));
@@ -93,15 +92,6 @@ public class RouletteCommand extends AbstractCommand {
 
     getForcedMessage(player, target, perk);
     applySpin(target, perk);
-  }
-
-  private AbstractSpin getSpinFromId(String spinId) {
-    for (AbstractSpin p : SpinManager.get().getSpins()) {
-      if (Objects.equals(spinId, p.getId())) {
-        return p;
-      }
-    }
-    return null;
   }
 
   private void applySpin(Player player, AbstractSpin spin) {
@@ -155,12 +145,12 @@ public class RouletteCommand extends AbstractCommand {
     return suggestions;
   }
 
-  private void broadcastFlavorText(AbstractSpin perk, Player player) {
+  private void broadcastFlavorText(AbstractSpin spin, Player player) {
     String announcement;
-    if (perk.isPositive()) {
-      announcement = FlavorTextManager.get().getPositiveText(player.getName(), perk.getName());
+    if (spin.isPositive()) {
+      announcement = FlavorTextManager.get().getPositiveText(player.getName(), spin.getName());
     } else {
-      announcement = FlavorTextManager.get().getNegativeText(player.getName(), perk.getName());
+      announcement = FlavorTextManager.get().getNegativeText(player.getName(), spin.getName());
     }
 
     MessageUtil.broadcastMessage(MessageUtil.getPrefixedMessage(getPrefix(), announcement));

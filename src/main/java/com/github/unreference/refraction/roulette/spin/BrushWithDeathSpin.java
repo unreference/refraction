@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 public class BrushWithDeathSpin extends AbstractSpin {
   public BrushWithDeathSpin() {
-    super("brushWithDeath", "Brush with Death", -1, false);
+    super("brush_with_death", "Brush with Death", false);
   }
 
   @Override

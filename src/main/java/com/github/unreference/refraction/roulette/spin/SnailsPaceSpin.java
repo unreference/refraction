@@ -4,19 +4,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class SpeedBoostSpin extends AbstractSpin {
-  public SpeedBoostSpin(int duration) {
-    super("speed_boost", "Speed Boost", duration, true);
+public class SnailsPaceSpin extends AbstractSpin {
+  public SnailsPaceSpin(int duration) {
+    super("snail_pace", "Snail's Pace", duration, false);
   }
 
   @Override
   public void apply(Player player) {
     player.addPotionEffect(
-        new PotionEffect(PotionEffectType.SPEED, duration * 20, 0, false, false, false));
+        new PotionEffect(PotionEffectType.SLOWNESS, duration * 20, 4, false, false, false));
   }
 
   @Override
   public void remove(Player player) {
-    player.removePotionEffect(PotionEffectType.SPEED);
+    player.removePotionEffect(PotionEffectType.SLOWNESS);
   }
 }
