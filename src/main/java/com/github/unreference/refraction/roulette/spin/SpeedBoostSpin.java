@@ -12,7 +12,7 @@ public class SpeedBoostSpin extends AbstractSpin {
   @Override
   public void apply(Player player) {
     player.addPotionEffect(
-        new PotionEffect(PotionEffectType.SPEED, duration * 20, 0, false, false, false));
+        new PotionEffect(PotionEffectType.SPEED, getDuration() * 20, 0, false, false, false));
   }
 
   @Override

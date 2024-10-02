@@ -3,10 +3,10 @@ package com.github.unreference.refraction.roulette.spin;
 import org.bukkit.entity.Player;
 
 public abstract class AbstractSpin {
-  public final String id;
-  public final String name;
-  public final int duration;
-  public final boolean isPositive;
+  private final String id;
+  private final String name;
+  private final int duration;
+  private final boolean isPositive;
 
   protected AbstractSpin(String id, String name, int duration, boolean isPositive) {
     this.id = id;

@@ -12,7 +12,7 @@ public class SnailsPaceSpin extends AbstractSpin {
   @Override
   public void apply(Player player) {
     player.addPotionEffect(
-        new PotionEffect(PotionEffectType.SLOWNESS, duration * 20, 4, false, false, false));
+        new PotionEffect(PotionEffectType.SLOWNESS, getDuration() * 20, 4, false, false, false));
   }
 
   @Override
