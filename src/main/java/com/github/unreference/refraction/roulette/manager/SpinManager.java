@@ -10,16 +10,16 @@ import java.util.Random;
 public class SpinManager {
   private static SpinManager instance;
 
-  private final List<AbstractSpin> perks = new ArrayList<>();
+  private final List<AbstractSpin> spins = new ArrayList<>();
   private final Random random;
 
   private SpinManager() {
     this.random = new Random();
 
     // Positive
-    addPerk(new SpeedBoostSpin(60));
+    addSpin(new SpeedBoostSpin(60));
     // Negative
-    addPerk(new BrushWithDeathSpin());
+    addSpin(new BrushWithDeathSpin());
   }
 
   public static SpinManager get() {
@@ -31,14 +31,14 @@ public class SpinManager {
   }
 
   public AbstractSpin getRandomPerk() {
-    return perks.get(random.nextInt(perks.size()));
+    return spins.get(random.nextInt(spins.size()));
   }
 
-  public List<AbstractSpin> getPerks() {
-    return perks;
+  public List<AbstractSpin> getSpins() {
+    return spins;
   }
 
-  private void addPerk(AbstractSpin perk) {
-    perks.add(perk);
+  private void addSpin(AbstractSpin perk) {
+    spins.add(perk);
   }
 }

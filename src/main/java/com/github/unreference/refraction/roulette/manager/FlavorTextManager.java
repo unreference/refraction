@@ -31,7 +31,7 @@ public class FlavorTextManager {
           "&c%s &7asked the universe for favor, but got a &c%s&7 in return!",
           "&c%s &7reached for the stars, only to grasp a &c%s&7!",
           "&c%s &7rolled the cosmic dice but landed on a &c%s&7 instead!",
-          "&c%s &7navigated the paths of chance, but fate took a wrong turn to &c%s&7!",
+          "&c%s &7navigated the paths of chance, but fate took a wrong turn to a &c%s&7!",
           "&c%s &7sought the treasure of luck but ended with a mere &c%s&7!");
 
   private FlavorTextManager() {}

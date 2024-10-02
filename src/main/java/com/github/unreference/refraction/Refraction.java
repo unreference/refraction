@@ -34,8 +34,8 @@ public final class Refraction extends JavaPlugin {
                         .map(
                             frame -> {
                               String className = frame.getDeclaringClass().getSimpleName();
-                              int lineNumber = frame.getLineNumber();
-                              return className + ".java:" + lineNumber;
+                              int line = frame.getLineNumber();
+                              return className + ".java:" + line;
                             }));
 
     String callerDetails = callerInfo.map(className -> "(" + className + "): ").orElse("");
@@ -124,7 +124,8 @@ public final class Refraction extends JavaPlugin {
         if (rank != Rank.ADMIN && rank != Rank.OWNER) {
           player.kick(
               Component.text(
-                  "The server is currently offline for maintenance and upgrades.\nPlease check back soon!"));
+                  "The server is currently offline for maintenance and upgrades.\n"
+                      + "Please check back soon!"));
         }
       }
 

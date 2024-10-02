@@ -36,72 +36,98 @@ public class RouletteCommand extends AbstractCommand {
   @Override
   public void trigger(CommandSender sender, String[] args) {
     Player player = (Player) sender;
-    AbstractSpin perk = SpinManager.get().getRandomPerk();
+    AbstractSpin spin = SpinManager.get().getRandomPerk();
 
     if (args.length == 0) {
-      perk.apply(player);
-      broadcastFlavorText(perk, player);
+      applySpin(player, spin);
       return;
     }
 
+    if (!isPermittedToForce(player)) {
+      player.sendMessage(getRealUsageMessage(player));
+      return;
+    }
+
+    if (!isValidUsage(args)) {
+      player.sendMessage(getRealUsageMessage(player));
+      return;
+    }
+
+    Player target = getTarget(player, args[0]);
+    if (target == null) return;
+
+    if (args.length == 1) {
+      getForcedMessage(player, target, spin);
+      applySpin(target, spin);
+    } else {
+      applySpin(player, target, args[1]);
+    }
+  }
+
+  private boolean isPermittedToForce(Player player) {
     Rank rank = Rank.getRankFromId(PlayerDataRepositoryManager.get().getRank(player.getName()));
-    if (!rank.isPermitted(PERMISSION_ROULETTE_FORCE)) {
-      player.sendMessage(getRealUsageMessage(player));
-      return;
-    }
+    return rank.isPermitted(PERMISSION_ROULETTE_FORCE);
+  }
 
-    if (args.length > 2) {
-      player.sendMessage(getRealUsageMessage(player));
-      return;
-    }
+  private boolean isValidUsage(String[] args) {
+    return args.length <= 2;
+  }
 
-    String targetInput = args[0];
+  private Player getTarget(Player player, String targetInput) {
     Player target = Bukkit.getPlayer(targetInput);
     if (target == null) {
       player.sendMessage(
-          MessageUtil.getPrefixedMessage(getPrefix(), "Player not found: &b%s", args[0]));
+          MessageUtil.getPrefixedMessage(getPrefix(), "Player not found: &b%s", targetInput));
+    }
+
+    return target;
+  }
+
+  private void applySpin(Player player, Player target, String spinId) {
+    AbstractSpin perk = getSpinFromId(spinId);
+    if (perk == null) {
+      player.sendMessage(
+          MessageUtil.getPrefixedMessage(getPrefix(), "Perk not found: &b%s", spinId));
       return;
     }
 
-    if (args.length == 1) {
-      perk.apply(target);
-      player.sendMessage(
-          MessageUtil.getPrefixedMessage(
-              getPrefix(),
-              "Forced %s%s &7to roll %s%s&7.",
-              perk.isPositive() ? "&b" : "&c",
-              target.getName(),
-              perk.isPositive() ? "&b" : "&c",
-              perk.getName()));
-      broadcastFlavorText(perk, target);
-    } else {
-      String perkId = args[1];
-      for (AbstractSpin p : SpinManager.get().getPerks()) {
-        if (Objects.equals(perkId, p.getId())) {
-          perk = p;
-          break;
-        } else {
-          perk = null;
-        }
-      }
+    getForcedMessage(player, target, perk);
+    applySpin(target, perk);
+  }
 
-      if (perk == null) {
-        player.sendMessage(
-            MessageUtil.getPrefixedMessage(getPrefix(), "Perk not found: &b%s", args[1]));
-        return;
+  private AbstractSpin getSpinFromId(String spinId) {
+    for (AbstractSpin p : SpinManager.get().getSpins()) {
+      if (Objects.equals(spinId, p.getId())) {
+        return p;
       }
-
-      perk.apply(target);
-      player.sendMessage(
-          MessageUtil.getPrefixedMessage(
-              getPrefix(),
-              "Forced %s%s &7to roll %s%s&7.",
-              perk.isPositive() ? "&b" : "&c",
-              target.getName(),
-              perk.isPositive() ? "&b" : "&c",
-              perk.getName()));
-      broadcastFlavorText(perk, target);
     }
+    return null;
+  }
+
+  private void applySpin(Player player, AbstractSpin spin) {
+    spin.apply(player);
+    broadcastFlavorText(spin, player);
+  }
+
+  private void getForcedMessage(Player player, Player target, AbstractSpin spin) {
+    player.sendMessage(
+        MessageUtil.getPrefixedMessage(
+            getPrefix(),
+            "Forced %s%s &7to roll %s%s&7.",
+            spin.isPositive() ? "&b" : "&c",
+            target.getName(),
+            spin.isPositive() ? "&b" : "&c",
+            spin.getName()));
+  }
+
+  private Component getRealUsageMessage(Player player) {
+    Rank rank = Rank.getRankFromId(PlayerDataRepositoryManager.get().getRank(player.getName()));
+    boolean isPermittedToForce = rank.isPermitted(PERMISSION_ROULETTE_FORCE);
+    return MessageUtil.getPrefixedMessage(
+        getPrefix(),
+        "Usage: /%s %s",
+        getAliasUsed(),
+        !isPermittedToForce ? "" : "[<player>] [<spin>]");
   }
 
   @Override
@@ -119,7 +145,7 @@ public class RouletteCommand extends AbstractCommand {
       String currentArg = args[0];
       filterTab(suggestions, currentArg);
     } else if (args.length == 2) {
-      for (AbstractSpin perk : SpinManager.get().getPerks()) {
+      for (AbstractSpin perk : SpinManager.get().getSpins()) {
         suggestions.add(perk.getId());
         String currentArg = args[1];
         filterTab(suggestions, currentArg);
@@ -138,15 +164,5 @@ public class RouletteCommand extends AbstractCommand {
     }
 
     MessageUtil.broadcastMessage(MessageUtil.getPrefixedMessage(getPrefix(), announcement));
-  }
-
-  private Component getRealUsageMessage(Player player) {
-    Rank rank = Rank.getRankFromId(PlayerDataRepositoryManager.get().getRank(player.getName()));
-    boolean isPermittedToForce = rank.isPermitted(PERMISSION_ROULETTE_FORCE);
-    return MessageUtil.getPrefixedMessage(
-        getPrefix(),
-        "Usage: /%s %s",
-        getAliasUsed(),
-        !isPermittedToForce ? "" : "[<player>] [<perk>]");
   }
 }
