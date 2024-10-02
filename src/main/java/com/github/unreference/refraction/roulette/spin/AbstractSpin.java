@@ -8,7 +8,7 @@ public abstract class AbstractSpin {
   public final int duration;
   public final boolean isPositive;
 
-  public AbstractSpin(String id, String name, int duration, boolean isPositive) {
+  protected AbstractSpin(String id, String name, int duration, boolean isPositive) {
     this.id = id;
     this.name = name;
     this.duration = duration;

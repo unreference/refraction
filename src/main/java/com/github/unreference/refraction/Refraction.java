@@ -52,71 +52,89 @@ public final class Refraction extends JavaPlugin {
   public void onEnable() {
     saveDefaultConfig();
 
-    try {
-      DatabaseManager.get().connect();
-      PlayerDataRepositoryManager.get().create();
-
-      registerListener(new PlayerListener());
-      registerListener(new CommandListener());
-    } catch (SQLException | NullPointerException exception) {
-      log(2, exception.getMessage());
-      log(2, Arrays.toString(exception.getStackTrace()));
-      isFatalError = true;
-    }
-
-    if (!isFatalError && getServer().hasWhitelist()) {
-      log(1, "***************************************");
-      log(1, "  The whitelist is currently enabled.  ");
-      log(1, "          Is this intentional?         ");
-      log(1, "***************************************");
-
-      if (!getServer().getOnlinePlayers().isEmpty()) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-          Rank rank =
-              Rank.getRankFromId(PlayerDataRepositoryManager.get().getRank(player.getName()));
-          if (rank != Rank.ADMIN && rank != Rank.OWNER) {
-            player.kick(
-                Component.text(
-                    "The server is currently offline for maintenance and upgrades.\nPlease check back soon!"));
-          }
-        }
-
-        MessageUtil.broadcastMessage(
-            MessageUtil.getPrefixedMessage(
-                "Refraction", "The whitelist is currently enabled. Is this intentional?"));
-      }
-    }
-
-    if (isFatalError) {
-      log(2, "***************************************");
-      log(2, "One or more fatal errors have occurred.");
-      log(2, "          Whitelist enabled.           ");
-      log(2, "***************************************");
-
-      getServer().setWhitelist(true);
-      getServer().setWhitelistEnforced(true);
-
-      if (!getServer().getOnlinePlayers().isEmpty()) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-          Rank rank =
-              Rank.getRankFromId(PlayerDataRepositoryManager.get().getRank(player.getName()));
-          if (rank != Rank.ADMIN && rank != Rank.OWNER) {
-            player.kick(
-                Component.text(
-                    "The server is currently offline for maintenance and upgrades.\nPlease check back soon!"));
-          }
-        }
-
-        MessageUtil.broadcastMessage(
-            MessageUtil.getPrefixedMessage(
-                "Refraction", "One or more fatal errors have occurred. Whitelist enabled."));
-      }
+    if (isConnectionSuccessful()) {
+      registerListeners();
+      handleWhitelist();
     }
   }
 
   @Override
   public void onDisable() {
     DatabaseManager.get().close();
+  }
+
+  private boolean isConnectionSuccessful() {
+    try {
+      DatabaseManager.get().connect();
+      PlayerDataRepositoryManager.get().create();
+      return true;
+    } catch (SQLException | NullPointerException exception) {
+      logError(exception);
+      return false;
+    }
+  }
+
+  private void registerListeners() {
+    registerListener(new PlayerListener());
+    registerListener(new CommandListener());
+  }
+
+  private void handleWhitelist() {
+    if (getServer().hasWhitelist()) {
+      logWhitelistIntent();
+      kickNonAdmins();
+    }
+
+    if (isFatalError) {
+      logFatalError();
+      enforceWhitelist();
+      kickNonAdmins();
+    }
+  }
+
+  private void logError(Exception exception) {
+    log(2, exception.getMessage());
+    log(2, Arrays.toString(exception.getStackTrace()));
+    isFatalError = true;
+  }
+
+  private void logWhitelistIntent() {
+    log(1, "***************************************");
+    log(1, "  The whitelist is currently enabled.  ");
+    log(1, "          Is this intentional?         ");
+    log(1, "***************************************");
+  }
+
+  private void logFatalError() {
+    log(2, "***************************************");
+    log(2, "One or more fatal errors have occurred.");
+    log(2, "          Whitelist enabled.           ");
+    log(2, "***************************************");
+  }
+
+  private void enforceWhitelist() {
+    getServer().setWhitelist(true);
+    getServer().setWhitelistEnforced(true);
+  }
+
+  private void kickNonAdmins() {
+    if (!getServer().getOnlinePlayers().isEmpty()) {
+      for (Player player : Bukkit.getOnlinePlayers()) {
+        Rank rank = Rank.getRankFromId(PlayerDataRepositoryManager.get().getRank(player.getName()));
+        if (rank != Rank.ADMIN && rank != Rank.OWNER) {
+          player.kick(
+              Component.text(
+                  "The server is currently offline for maintenance and upgrades.\nPlease check back soon!"));
+        }
+      }
+
+      MessageUtil.broadcastMessage(
+          MessageUtil.getPrefixedMessage(
+              "Refraction",
+              isFatalError
+                  ? "One or more fatal errors have occurred. Whitelist enabled."
+                  : "The whitelist is currently enabled. Is this intentional?"));
+    }
   }
 
   private void registerListener(Listener listener) throws NullPointerException {
