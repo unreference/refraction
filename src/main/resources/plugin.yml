@@ -1,4 +1,4 @@
 name: Refraction
-version: '1.0-SNAPSHOT'
+version: ${version}
 main: com.github.unreference.refraction.Refraction
 api-version: '1.21'

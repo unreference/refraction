@@ -4,7 +4,28 @@ plugins {
 }
 
 group = 'com.github.unreference.refraction'
-version = '1.0-SNAPSHOT'
+
+def getGitCommitId = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+        standardOutput = stdout
+    }
+
+    return stdout.toString().trim()
+}
+
+def getGitBranchName = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--abbrev-ref', 'HEAD'
+        standardOutput = stdout
+    }
+
+    return stdout.toString().trim()
+}
+
+version = "${getGitBranchName()}-${getGitCommitId}"
 
 dependencies {
     paperweight.paperDevBundle("1.21.1-R0.1-SNAPSHOT")
