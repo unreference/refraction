@@ -209,4 +209,16 @@ public enum Rank {
 
     return false;
   }
+
+  public String getPrefix() {
+    return prefix;
+  }
+
+  public NamedTextColor getPrefixColor() {
+    return prefixColor;
+  }
+
+  public boolean isPrimary() {
+    return isPrimary;
+  }
 }
