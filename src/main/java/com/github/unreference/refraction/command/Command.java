@@ -15,7 +15,7 @@ public interface Command {
 
   void setMainAliasUsed(String alias);
 
-  void trigger(CommandSender sender, String[] args);
+  void trigger(CommandContext context);
 
   List<String> tab(CommandSender sender, String alias, String[] args);
 }

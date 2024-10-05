@@ -1,8 +1,8 @@
 package com.github.unreference.refraction.listener;
 
 import com.github.unreference.refraction.Refraction;
-import com.github.unreference.refraction.data.PlayerData;
-import com.github.unreference.refraction.data.manager.PlayerDataRepositoryManager;
+import com.github.unreference.refraction.data.Account;
+import com.github.unreference.refraction.data.manager.AccountRepositoryManager;
 import com.github.unreference.refraction.event.RankChangeEvent;
 import com.github.unreference.refraction.model.Rank;
 import java.time.LocalDateTime;
@@ -27,15 +27,15 @@ public class PlayerListener implements Listener {
     String name = player.getName();
     LocalDateTime now = LocalDateTime.now();
 
-    if (PlayerDataRepositoryManager.get().isNew(uuid)) {
-      PlayerData data = new PlayerData(uuid.toString(), name, now, now, Rank.getId(Rank.DEFAULT));
-      PlayerDataRepositoryManager.get().register(data);
+    if (AccountRepositoryManager.get().isNew(uuid)) {
+      Account data = new Account(uuid.toString(), name, now, now, Rank.getId(Rank.DEFAULT));
+      AccountRepositoryManager.get().register(data);
     }
 
-    PlayerDataRepositoryManager.get().update(uuid, name, now);
+    AccountRepositoryManager.get().update(uuid, name, now);
 
     Rank playerRank =
-        Rank.getRankFromId(PlayerDataRepositoryManager.get().getRank(player.getName()));
+        Rank.getRankFromId(AccountRepositoryManager.get().getPrimaryRank(player.getName()));
 
     boolean wasOp = player.isOp();
     player.setOp(playerRank.isPermitted(PERMISSION_AUTO_OP));
@@ -55,7 +55,7 @@ public class PlayerListener implements Listener {
     UUID uuid = player.getUniqueId();
     LocalDateTime now = LocalDateTime.now();
 
-    PlayerDataRepositoryManager.get().update(uuid, name, now);
+    AccountRepositoryManager.get().update(uuid, name, now);
     event.quitMessage(null);
   }
 
@@ -63,7 +63,7 @@ public class PlayerListener implements Listener {
   public void onRankChange(RankChangeEvent event) {
     Player player = event.getPlayer();
 
-    Rank rank = Rank.getRankFromId(PlayerDataRepositoryManager.get().getRank(player.getName()));
+    Rank rank = Rank.getRankFromId(AccountRepositoryManager.get().getPrimaryRank(player.getName()));
     boolean wasOp = player.isOp();
     player.setOp(rank.isPermitted(PERMISSION_AUTO_OP));
     boolean isOp = player.isOp();

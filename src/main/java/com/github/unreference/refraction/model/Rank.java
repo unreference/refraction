@@ -7,7 +7,7 @@ import java.util.Set;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public enum Rank {
-  DEFAULT("default"),
+  DEFAULT("default", true),
 
   // A first step into the fantastical stories of the mist\n
   // that just might turn out to be true.\n\n
@@ -58,7 +58,7 @@ public enum Rank {
 
   // Build Leads are leaders of the Mineplex Build Team.\n
   // They oversee the creation of new maps and manage Builders.
-  BUILD_LEAD("build_lead", "BuildLead", NamedTextColor.BLUE, DEFAULT, true),
+  BUILD_LEAD("build_lead", "BuildLead", NamedTextColor.BLUE, BUILDER, true),
 
   // Trainees are Moderators in training.\n
   // Their duties include enforcing the rules\n
@@ -120,16 +120,6 @@ public enum Rank {
 
   private final Map<String, RankPermission> grantedPermissions;
   private final Set<String> revokedPermissions;
-
-  Rank(String id) {
-    this.id = id;
-    this.prefix = null;
-    this.prefixColor = null;
-    this.parent = null;
-    this.isPrimary = true;
-    this.grantedPermissions = new HashMap<>();
-    this.revokedPermissions = new HashSet<>();
-  }
 
   Rank(String id, boolean isPrimary) {
     this.id = id;

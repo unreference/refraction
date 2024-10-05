@@ -1,7 +1,7 @@
 package com.github.unreference.refraction;
 
+import com.github.unreference.refraction.data.manager.AccountRepositoryManager;
 import com.github.unreference.refraction.data.manager.DatabaseManager;
-import com.github.unreference.refraction.data.manager.PlayerDataRepositoryManager;
 import com.github.unreference.refraction.listener.CommandListener;
 import com.github.unreference.refraction.listener.PlayerListener;
 import com.github.unreference.refraction.model.Rank;
@@ -66,7 +66,7 @@ public final class Refraction extends JavaPlugin {
   private boolean isConnectionSuccessful() {
     try {
       DatabaseManager.get().connect();
-      PlayerDataRepositoryManager.get().create();
+      AccountRepositoryManager.get().create();
       return true;
     } catch (SQLException | NullPointerException exception) {
       logError(exception);
@@ -120,7 +120,7 @@ public final class Refraction extends JavaPlugin {
   private void kickNonAdmins() {
     if (!getServer().getOnlinePlayers().isEmpty()) {
       for (Player player : Bukkit.getOnlinePlayers()) {
-        Rank rank = Rank.getRankFromId(PlayerDataRepositoryManager.get().getRank(player.getName()));
+        Rank rank = Rank.getRankFromId(AccountRepositoryManager.get().getPrimaryRank(player.getName()));
         if (rank != Rank.ADMIN && rank != Rank.OWNER) {
           player.kick(
               Component.text(

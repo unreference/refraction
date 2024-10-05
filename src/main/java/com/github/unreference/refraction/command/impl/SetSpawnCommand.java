@@ -1,6 +1,7 @@
 package com.github.unreference.refraction.command.impl;
 
 import com.github.unreference.refraction.command.AbstractCommand;
+import com.github.unreference.refraction.command.CommandContext;
 import com.github.unreference.refraction.model.Rank;
 import com.github.unreference.refraction.util.MessageUtil;
 import java.util.List;
@@ -17,7 +18,10 @@ public class SetSpawnCommand extends AbstractCommand {
   }
 
   @Override
-  public void trigger(CommandSender sender, String[] args) {
+  public void trigger(CommandContext context) {
+    String[] args = context.getArgs();
+    CommandSender sender = context.getSender();
+
     if (args.length != 0 && args.length != 3) {
       sender.sendMessage(getUsageMessage());
       return;

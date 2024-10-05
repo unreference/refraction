@@ -1,9 +1,9 @@
 package com.github.unreference.refraction.listener;
 
-import com.github.unreference.refraction.command.impl.RankCommand;
 import com.github.unreference.refraction.command.impl.SetSpawnCommand;
 import com.github.unreference.refraction.command.impl.SpawnCommand;
-import com.github.unreference.refraction.data.manager.PlayerDataRepositoryManager;
+import com.github.unreference.refraction.command.impl.rank.RanksCommand;
+import com.github.unreference.refraction.data.manager.AccountRepositoryManager;
 import com.github.unreference.refraction.model.Rank;
 import java.util.Collection;
 import java.util.HashSet;
@@ -21,7 +21,7 @@ public class CommandListener implements Listener {
   public CommandListener() {
     registerCommand(new SetSpawnCommand());
     registerCommand(new SpawnCommand());
-    registerCommand(new RankCommand());
+    registerCommand(new RanksCommand());
   }
 
   @EventHandler
@@ -47,7 +47,7 @@ public class CommandListener implements Listener {
   }
 
   private Collection<String> getAllowedCommands(Player player) {
-    Rank rank = Rank.getRankFromId(PlayerDataRepositoryManager.get().getRank(player.getName()));
+    Rank rank = Rank.getRankFromId(AccountRepositoryManager.get().getPrimaryRank(player.getName()));
     CommandMap commandMap = Bukkit.getCommandMap();
     Collection<String> allowedCommands = new HashSet<>();
 

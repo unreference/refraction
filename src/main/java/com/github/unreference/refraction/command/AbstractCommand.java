@@ -38,7 +38,10 @@ public abstract class AbstractCommand extends org.bukkit.command.Command impleme
   @Override
   public boolean execute(@NotNull CommandSender sender, @NotNull String alias, String[] args) {
     setAliasUsed(alias);
-    trigger(sender, args);
+
+    CommandContext context = new CommandContext(sender, args);
+
+    trigger(context);
     return true;
   }
 

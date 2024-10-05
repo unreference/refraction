@@ -1,22 +1,22 @@
 package com.github.unreference.refraction.data.manager;
 
 import com.github.unreference.refraction.Refraction;
-import com.github.unreference.refraction.data.PlayerData;
-import com.github.unreference.refraction.data.repository.PlayerDataRepository;
+import com.github.unreference.refraction.data.Account;
+import com.github.unreference.refraction.data.repository.AccountRepository;
 import com.github.unreference.refraction.model.Rank;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 
-public class PlayerDataRepositoryManager {
-  private static PlayerDataRepositoryManager instance;
+public class AccountRepositoryManager {
+  private static AccountRepositoryManager instance;
 
-  private PlayerDataRepositoryManager() {}
+  private AccountRepositoryManager() {}
 
-  public static PlayerDataRepositoryManager get() {
+  public static AccountRepositoryManager get() {
     if (instance == null) {
-      instance = new PlayerDataRepositoryManager();
+      instance = new AccountRepositoryManager();
     }
 
     return instance;
@@ -24,7 +24,7 @@ public class PlayerDataRepositoryManager {
 
   public void create() {
     try {
-      PlayerDataRepository.get().createTable();
+      AccountRepository.get().createTable();
     } catch (SQLException exception) {
       Refraction.log(2, "Failed creating table: %s", exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
@@ -33,7 +33,7 @@ public class PlayerDataRepositoryManager {
 
   public boolean isNew(UUID id) {
     try {
-      return !PlayerDataRepository.get().exists(id);
+      return !AccountRepository.get().exists(id);
     } catch (SQLException exception) {
       Refraction.log(
           2, "Failed to check if player (uuid=%s) exists: %s", id, exception.getMessage());
@@ -42,10 +42,10 @@ public class PlayerDataRepositoryManager {
     }
   }
 
-  public void register(PlayerData data) {
+  public void register(Account data) {
     try {
       if (isNew(UUID.fromString(data.uuid()))) {
-        PlayerDataRepository.get().insert(data);
+        AccountRepository.get().insert(data);
       } else {
         Refraction.log(1, "Player (name=%s) already exists", data.name());
       }
@@ -56,9 +56,9 @@ public class PlayerDataRepositoryManager {
     }
   }
 
-  public void update(UUID uuid, String name, LocalDateTime lastPlayed) {
+  public void update(UUID id, String name, LocalDateTime lastPlayed) {
     try {
-      PlayerDataRepository.get().updateLastPlayed(uuid, name, lastPlayed);
+      AccountRepository.get().updateLastPlayed(id, name, lastPlayed);
     } catch (SQLException exception) {
       Refraction.log(2, "Failed to update last played (name=%s): %s", name, exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
@@ -67,7 +67,7 @@ public class PlayerDataRepositoryManager {
 
   public UUID getId(String name) {
     try {
-      return PlayerDataRepository.get().getId(name);
+      return AccountRepository.get().getId(name);
     } catch (SQLException exception) {
       Refraction.log(2, "Failed getting ID (name=%s): %s", name, exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
@@ -77,7 +77,7 @@ public class PlayerDataRepositoryManager {
 
   public String getName(UUID id) {
     try {
-      return PlayerDataRepository.get().getName(id);
+      return AccountRepository.get().getName(id);
     } catch (SQLException exception) {
       Refraction.log(2, "Failed getting name (uuid=%s): %s", id, exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
@@ -85,40 +85,40 @@ public class PlayerDataRepositoryManager {
     }
   }
 
-  public String getRank(UUID id) {
+  public String getPrimaryRank(UUID id) {
     try {
-      return PlayerDataRepository.get().getRank(id);
+      return AccountRepository.get().getPrimaryRank(id);
     } catch (SQLException exception) {
-      Refraction.log(2, "Failed getting rank (uuid=%s): %s", id, exception.getMessage());
+      Refraction.log(2, "Failed getting primary rank (uuid=%s): %s", id, exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
       return null;
     }
   }
 
-  public String getRank(String name) {
+  public String getPrimaryRank(String name) {
     try {
-      return PlayerDataRepository.get().getRank(name);
+      return AccountRepository.get().getPrimaryRank(name);
     } catch (SQLException exception) {
-      Refraction.log(2, "Failed getting rank (name=%s): %s", name, exception.getMessage());
+      Refraction.log(2, "Failed getting primary rank (name=%s): %s", name, exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
       return null;
     }
   }
 
-  public void setRank(UUID id, Rank newRank) {
+  public void setPrimaryRank(UUID id, Rank newPrimary) {
     try {
-      PlayerDataRepository.get().setRank(id, newRank);
+      AccountRepository.get().setRank(id, newPrimary);
     } catch (SQLException exception) {
-      Refraction.log(2, "Failed setting rank (uuid=%s): %s", id, exception.getMessage());
+      Refraction.log(2, "Failed setting primary rank (uuid=%s): %s", id, exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
     }
   }
 
-  public void setRank(String name, Rank newRank) {
+  public void setPrimaryRank(String name, Rank newPrimary) {
     try {
-      PlayerDataRepository.get().setRank(name, newRank);
+      AccountRepository.get().setRank(name, newPrimary);
     } catch (SQLException exception) {
-      Refraction.log(2, "Failed setting rank (name=%s): %s", name, exception.getMessage());
+      Refraction.log(2, "Failed setting primary rank (name=%s): %s", name, exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
     }
   }
