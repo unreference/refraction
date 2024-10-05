@@ -1,10 +1,9 @@
 package com.github.unreference.refraction.listener;
 
 import com.github.unreference.refraction.command.impl.RankCommand;
-import com.github.unreference.refraction.command.impl.RouletteCommand;
 import com.github.unreference.refraction.command.impl.SetSpawnCommand;
 import com.github.unreference.refraction.command.impl.SpawnCommand;
-import com.github.unreference.refraction.manager.PlayerDataRepositoryManager;
+import com.github.unreference.refraction.data.manager.PlayerDataRepositoryManager;
 import com.github.unreference.refraction.model.Rank;
 import java.util.Collection;
 import java.util.HashSet;
@@ -23,7 +22,6 @@ public class CommandListener implements Listener {
     registerCommand(new SetSpawnCommand());
     registerCommand(new SpawnCommand());
     registerCommand(new RankCommand());
-    registerCommand(new RouletteCommand());
   }
 
   @EventHandler

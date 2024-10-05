@@ -1,6 +1,6 @@
 package com.github.unreference.refraction.command;
 
-import com.github.unreference.refraction.manager.PlayerDataRepositoryManager;
+import com.github.unreference.refraction.data.manager.PlayerDataRepositoryManager;
 import com.github.unreference.refraction.model.Rank;
 import java.util.*;
 import java.util.stream.Collectors;

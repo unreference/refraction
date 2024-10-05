@@ -1,4 +1,4 @@
-package com.github.unreference.refraction.manager;
+package com.github.unreference.refraction.data.manager;
 
 import com.github.unreference.refraction.Refraction;
 import com.github.unreference.refraction.data.PlayerData;

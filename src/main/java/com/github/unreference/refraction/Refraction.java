@@ -1,9 +1,9 @@
 package com.github.unreference.refraction;
 
+import com.github.unreference.refraction.data.manager.DatabaseManager;
+import com.github.unreference.refraction.data.manager.PlayerDataRepositoryManager;
 import com.github.unreference.refraction.listener.CommandListener;
 import com.github.unreference.refraction.listener.PlayerListener;
-import com.github.unreference.refraction.manager.DatabaseManager;
-import com.github.unreference.refraction.manager.PlayerDataRepositoryManager;
 import com.github.unreference.refraction.model.Rank;
 import com.github.unreference.refraction.util.MessageUtil;
 import java.sql.SQLException;

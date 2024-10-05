@@ -2,8 +2,8 @@ package com.github.unreference.refraction.listener;
 
 import com.github.unreference.refraction.Refraction;
 import com.github.unreference.refraction.data.PlayerData;
+import com.github.unreference.refraction.data.manager.PlayerDataRepositoryManager;
 import com.github.unreference.refraction.event.RankChangeEvent;
-import com.github.unreference.refraction.manager.PlayerDataRepositoryManager;
 import com.github.unreference.refraction.model.Rank;
 import java.time.LocalDateTime;
 import java.util.UUID;
