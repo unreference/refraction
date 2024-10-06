@@ -6,9 +6,7 @@ import com.github.unreference.refraction.model.Rank;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class AccountRanksRepository {
   private static AccountRanksRepository instance;
@@ -93,32 +91,47 @@ public class AccountRanksRepository {
   }
 
   public void setRank(UUID id, Rank newRank) throws SQLException {
-    // Step 1: Retrieve the current primary rank, if any
     Integer currentPrimaryId = getId(id.toString());
-
-    // Step 2: Update the primary rank
     Map<String, Object> data = new LinkedHashMap<>();
     data.put("rank", newRank.getId());
-    data.put("is_primary", true); // Ensure this is set as the primary rank
+    data.put("is_primary", true);
 
     if (currentPrimaryId != null) {
-      // If a primary rank exists, update it
       DatabaseManager.get()
           .update("account_ranks", data, "account_id = ? AND is_primary = ?", id.toString(), true);
     } else {
-      // If no primary rank exists, insert a new primary rank
       AccountRanksRecord primary =
           new AccountRanksRecord(id.toString(), newRank.getId(), true, null);
       insert(primary);
     }
 
-    updateSubRanks(id, newRank);
+    updateSubranks(id);
   }
 
-  private void updateSubRanks(UUID id, Rank newRank) throws SQLException {
+  private void updateSubranks(UUID id) throws SQLException {
     DatabaseManager.get()
         .execute(
             "DELETE FROM account_ranks WHERE account_id = ? AND is_primary = false", id.toString());
+  }
+
+  public List<Rank> getSubranks(UUID id) throws SQLException {
+    List<Rank> subranks = new ArrayList<>();
+
+    try (ResultSet result =
+        DatabaseManager.get()
+            .query(
+                "rank", "account_ranks", "account_id = ? AND is_primary = FALSE", id.toString())) {
+      while (result.next()) {
+        String rankId = result.getString("rank");
+        Rank rank = Rank.getRankFromId(rankId);
+
+        if (rank != null) {
+          subranks.add(rank);
+        }
+      }
+    }
+
+    return subranks;
   }
 
   public void addRank(UUID id, Rank rank) throws SQLException {

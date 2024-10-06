@@ -9,6 +9,7 @@ import com.github.unreference.refraction.util.MessageUtil;
 import java.util.List;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 
 public class RanksInfoCommand extends AbstractCommand {
@@ -39,14 +40,34 @@ public class RanksInfoCommand extends AbstractCommand {
 
     String targetName = context.getTargetName();
     UUID targetId = AccountsRepositoryManager.get().getId(targetName);
-    String primaryRank = AccountRanksRepositoryManager.get().getRank(targetId);
+    String rank = AccountRanksRepositoryManager.get().getRank(targetId);
+    List<Rank> subranks = AccountRanksRepositoryManager.get().getSubranks(targetId);
 
-    sender.sendMessage(MessageUtil.getPrefixedMessage(getPrefix(), "Info: %s", targetName));
-    sender.sendMessage(MessageUtil.getMessage("- Primary: &e%s", primaryRank));
+    sender.sendMessage(
+        MessageUtil.getPrefixedMessage(getPrefix(), "Rank Information for %s:", targetName));
+    sender.sendMessage(MessageUtil.getMessage("- Primary: &e%s", rank));
+    sender.sendMessage(
+        MessageUtil.getMessage("- Subranks (%s): ", subranks.size()).append(formatRanks(subranks)));
   }
 
   @Override
   public List<String> tab(CommandSender sender, String alias, String[] args) {
     return List.of();
+  }
+
+  private Component formatRanks(List<Rank> ranks) {
+    Component ranksComponent = Component.empty().colorIfAbsent(NamedTextColor.GRAY);
+
+    for (int i = 0; i < ranks.size(); i++) {
+      Rank rank = ranks.get(i);
+
+      ranksComponent = ranksComponent.append(Component.text(rank.getId(), NamedTextColor.YELLOW));
+
+      if (i < ranks.size() - 1) {
+        ranksComponent = ranksComponent.append(Component.text(", "));
+      }
+    }
+
+    return ranksComponent;
   }
 }

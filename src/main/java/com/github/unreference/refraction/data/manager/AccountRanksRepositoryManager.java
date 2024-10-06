@@ -5,8 +5,7 @@ import com.github.unreference.refraction.data.AccountRanksRecord;
 import com.github.unreference.refraction.data.repository.AccountRanksRepository;
 import com.github.unreference.refraction.model.Rank;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
 
 public class AccountRanksRepositoryManager {
   private static AccountRanksRepositoryManager instance;
@@ -65,6 +64,16 @@ public class AccountRanksRepositoryManager {
       Refraction.log(2, "Failed getting rank (uuid=%s): %s", id, exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
       return null;
+    }
+  }
+
+  public List<Rank> getSubranks(UUID id) {
+    try {
+      return AccountRanksRepository.get().getSubranks(id);
+    } catch (SQLException exception) {
+      Refraction.log(2, "Failed getting subranks (uuid=%s): %s", id, exception.getMessage());
+      Refraction.log(2, Arrays.toString(exception.getStackTrace()));
+      return List.of();
     }
   }
 
