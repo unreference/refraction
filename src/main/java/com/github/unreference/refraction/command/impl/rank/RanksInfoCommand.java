@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender;
 
 public class RanksInfoCommand extends AbstractCommand {
   public RanksInfoCommand() {
-    super("info", "Ranks", "refraction.command.rank.info", true, "i");
+    super("info", "Ranks", "refraction.command.ranks.info", true, "i");
   }
 
   @Override

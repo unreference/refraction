@@ -4,24 +4,24 @@ import com.github.unreference.refraction.model.Rank;
 
 public class AccountRanksRecord {
   private int id;
-  private String account_id;
+  private String accountId;
   private String rank;
   private boolean isPrimary;
   private Integer parentId;
 
   public AccountRanksRecord(String uuid, String rank, Integer parentId) {
-    this.account_id = uuid;
+    this.accountId = uuid;
     this.rank = rank;
     this.isPrimary = Rank.getRankFromId(rank).isPrimary();
     this.parentId = parentId;
   }
 
   public String getAccountId() {
-    return account_id;
+    return accountId;
   }
 
-  public void setAccount_id(String account_id) {
-    this.account_id = account_id;
+  public void setAccountId(String account_id) {
+    this.accountId = account_id;
   }
 
   public String getRank() {

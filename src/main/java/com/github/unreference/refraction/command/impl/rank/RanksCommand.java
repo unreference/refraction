@@ -11,6 +11,7 @@ public class RanksCommand extends AbstractParameterizedCommand {
     super("ranks", "Ranks", "refraction.command.ranks", true, "permissions", "perms");
 
     addSubcommand(new RanksSetCommand());
+    addSubcommand(new RanksAddCommand());
     addSubcommand(new RanksInfoCommand());
     addSubcommand(new RanksListCommand());
   }
@@ -21,6 +22,10 @@ public class RanksCommand extends AbstractParameterizedCommand {
     sender.sendMessage(
         MessageUtil.getMessageWithHover(
                 "- /%s <player> set <rank>", "Sets a player's primary rank.", getAliasUsed())
+            .color(Rank.ADMIN.getPrefixColor()));
+    sender.sendMessage(
+        MessageUtil.getMessageWithHover(
+                "- /%s <player> add <rank>", "Adds a subsidiary rank to a player.", getAliasUsed())
             .color(Rank.ADMIN.getPrefixColor()));
     sender.sendMessage(
         MessageUtil.getMessageWithHover(

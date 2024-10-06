@@ -76,4 +76,13 @@ public class AccountRanksRepositoryManager {
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
     }
   }
+
+  public void addRank(UUID id, Rank rank) {
+    try {
+      AccountRanksRepository.get().addRank(id, rank);
+    } catch (SQLException exception) {
+      Refraction.log(2, "Failed adding rank (uuid=%s): %s", id, exception.getMessage());
+      Refraction.log(2, Arrays.toString(exception.getStackTrace()));
+    }
+  }
 }

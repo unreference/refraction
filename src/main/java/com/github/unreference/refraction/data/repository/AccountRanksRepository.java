@@ -80,12 +80,32 @@ public class AccountRanksRepository {
     return null;
   }
 
+  private Integer getId(String accountId) throws SQLException {
+    try (ResultSet result =
+        DatabaseManager.get()
+            .query("id", "account_ranks", "account_id = ? AND is_primary = TRUE", accountId)) {
+      if (result.next()) {
+        return result.getInt("id");
+      }
+
+      return null;
+    }
+  }
+
   public void setRank(UUID id, Rank newRank) throws SQLException {
     if (newRank.isPrimary()) {
       Map<String, Object> data = new LinkedHashMap<>();
       data.put("rank", newRank.getId());
       data.put("is_primary", newRank.isPrimary());
       DatabaseManager.get().update("account_ranks", data, "account_id", id.toString());
+    }
+  }
+
+  public void addRank(UUID id, Rank rank) throws SQLException {
+    if (!rank.isPrimary()) {
+      Integer parentId = getId(id.toString());
+      AccountRanksRecord subsidiary = new AccountRanksRecord(id.toString(), rank.getId(), parentId);
+      insert(subsidiary);
     }
   }
 
