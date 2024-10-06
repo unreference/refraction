@@ -60,7 +60,7 @@ public class AccountsRepository {
     Map<String, Object> data = new LinkedHashMap<>();
     data.put("name", name);
     data.put("last_played", lastPlayed);
-    DatabaseManager.get().update("accounts", data, "uuid", id.toString());
+    DatabaseManager.get().update("accounts", data, "uuid = ?", id.toString());
   }
 
   public UUID getId(String name) throws SQLException {

@@ -1,7 +1,5 @@
 package com.github.unreference.refraction.data;
 
-import com.github.unreference.refraction.model.Rank;
-
 public class AccountRanksRecord {
   private int id;
   private String accountId;
@@ -9,19 +7,26 @@ public class AccountRanksRecord {
   private boolean isPrimary;
   private Integer parentId;
 
-  public AccountRanksRecord(String uuid, String rank, Integer parentId) {
+  public AccountRanksRecord(String uuid, String rank, boolean isPrimary, Integer parentId) {
     this.accountId = uuid;
     this.rank = rank;
-    this.isPrimary = Rank.getRankFromId(rank).isPrimary();
+    this.isPrimary = isPrimary;
     this.parentId = parentId;
+  }
+
+  public AccountRanksRecord(String uuid, String rank, boolean isPrimary) {
+    this.accountId = uuid;
+    this.rank = rank;
+    this.isPrimary = isPrimary;
+    this.parentId = null;
   }
 
   public String getAccountId() {
     return accountId;
   }
 
-  public void setAccountId(String account_id) {
-    this.accountId = account_id;
+  public void setAccountId(String accountId) {
+    this.accountId = accountId;
   }
 
   public String getRank() {

@@ -41,7 +41,7 @@ public class RanksInfoCommand extends AbstractCommand {
     UUID targetId = AccountsRepositoryManager.get().getId(targetName);
     String primaryRank = AccountRanksRepositoryManager.get().getRank(targetId);
 
-    sender.sendMessage(MessageUtil.getPrefixedMessage(getPrefix(), "Info: &e%s", targetName));
+    sender.sendMessage(MessageUtil.getPrefixedMessage(getPrefix(), "Info: %s", targetName));
     sender.sendMessage(MessageUtil.getMessage("- Primary: &e%s", primaryRank));
   }
 

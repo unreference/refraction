@@ -104,8 +104,6 @@ public enum Rank {
   OWNER("owner", "Owner", NamedTextColor.DARK_RED, LEADER, true),
 
   RC("rc", false),
-  CMA("cma", false),
-  CM("cm", CMA, false),
   STMA("stma", false),
   STM("stm", STMA, false),
   QAT("qat", false),

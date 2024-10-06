@@ -32,7 +32,7 @@ public class PlayerListener implements Listener {
     if (AccountsRepositoryManager.get().isNew(uuid)) {
       AccountsRecord accountsData = new AccountsRecord(uuid.toString(), name, 0, 0, now, now);
       AccountRanksRecord accountRanksData =
-          new AccountRanksRecord(uuid.toString(), Rank.DEFAULT.getId(), null);
+          new AccountRanksRecord(uuid.toString(), Rank.DEFAULT.getId(), Rank.DEFAULT.isPrimary());
       AccountsRepositoryManager.get().register(accountsData);
       AccountRanksRepositoryManager.get().register(accountRanksData);
     }

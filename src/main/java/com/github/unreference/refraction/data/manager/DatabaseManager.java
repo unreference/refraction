@@ -3,6 +3,7 @@ package com.github.unreference.refraction.data.manager;
 import com.github.unreference.refraction.Refraction;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -91,7 +92,7 @@ public class DatabaseManager {
   }
 
   public void update(
-      String table, Map<String, Object> data, String conditionColumn, Object conditionValue)
+      String table, Map<String, Object> data, String condition, Object... conditionValues)
       throws SQLException {
     StringBuilder sql = new StringBuilder("UPDATE " + table + " SET ");
     List<Object> params = new ArrayList<>();
@@ -102,8 +103,9 @@ public class DatabaseManager {
     }
 
     sql.setLength(sql.length() - 2);
-    sql.append(" WHERE ").append(conditionColumn).append(" = ?");
-    params.add(conditionValue);
+    sql.append(" WHERE ").append(condition);
+
+    params.addAll(Arrays.asList(conditionValues));
 
     try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
       for (int i = 0; i < params.size(); i++) {
