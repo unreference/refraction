@@ -14,7 +14,7 @@ import org.bukkit.command.CommandSender;
 
 public class RanksListCommand extends AbstractCommand {
   public RanksListCommand() {
-    super("list", "Ranks", "refraction.command.ranks.list", false);
+    super("list", "Ranks", "refraction.command.ranks.list", false, "ls");
   }
 
   @Override
