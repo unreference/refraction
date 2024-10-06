@@ -4,6 +4,7 @@ import com.github.unreference.refraction.data.AccountsRecord;
 import com.github.unreference.refraction.data.manager.DatabaseManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -32,7 +33,18 @@ public class AccountsRepository {
     columns.put("last_played", "DATETIME(0) NOT NULL");
 
     DatabaseManager.get().createTable("accounts", columns);
-    DatabaseManager.get().execute("CREATE UNIQUE INDEX name_index ON accounts(name)");
+
+    if (!indexExists("accounts", "name_index")) {
+      DatabaseManager.get().execute("CREATE UNIQUE INDEX name_index ON accounts(name)");
+    }
+  }
+
+  private boolean indexExists(String tableName, String indexName) throws SQLException {
+    String query = String.format("SHOW INDEX FROM %s WHERE Key_name = '%s'", tableName, indexName);
+    try (Statement statement = DatabaseManager.get().getConnection().createStatement();
+        ResultSet result = statement.executeQuery(query)) {
+      return result.next();
+    }
   }
 
   public boolean exists(UUID id) throws SQLException {

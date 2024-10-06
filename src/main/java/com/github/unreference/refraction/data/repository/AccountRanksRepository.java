@@ -5,6 +5,7 @@ import com.github.unreference.refraction.data.manager.DatabaseManager;
 import com.github.unreference.refraction.model.Rank;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -31,12 +32,32 @@ public class AccountRanksRepository {
     columns.put("parent_id", "INT DEFAULT NULL");
 
     DatabaseManager.get().createTable("account_ranks", columns);
-    DatabaseManager.get().execute("CREATE INDEX account_index ON account_ranks(account_id)");
-    DatabaseManager.get().execute("CREATE INDEX rank_index ON account_ranks(rank)");
-    DatabaseManager.get().execute("CREATE INDEX parent_rank_index ON account_ranks(parent_id)");
-    DatabaseManager.get()
-        .execute(
-            "CREATE UNIQUE INDEX subsidiary_index ON account_ranks(account_id, rank, is_primary)");
+
+    if (!indexExists("account_ranks", "account_index")) {
+      DatabaseManager.get().execute("CREATE INDEX account_index ON account_ranks(account_id)");
+    }
+
+    if (!indexExists("account_ranks", "rank_index")) {
+      DatabaseManager.get().execute("CREATE INDEX rank_index ON account_ranks(rank)");
+    }
+
+    if (!indexExists("account_ranks", "parent_rank_index")) {
+      DatabaseManager.get().execute("CREATE INDEX parent_rank_index ON account_ranks(parent_id)");
+    }
+
+    if (!indexExists("account_ranks", "subsidiary_index")) {
+      DatabaseManager.get()
+          .execute(
+              "CREATE UNIQUE INDEX subsidiary_index ON account_ranks(account_id, rank, is_primary)");
+    }
+  }
+
+  private boolean indexExists(String tableName, String indexName) throws SQLException {
+    String query = String.format("SHOW INDEX FROM %s WHERE Key_name = '%s'", tableName, indexName);
+    try (Statement statement = DatabaseManager.get().getConnection().createStatement();
+        ResultSet result = statement.executeQuery(query)) {
+      return result.next();
+    }
   }
 
   public boolean exists(UUID id) throws SQLException {

@@ -19,7 +19,7 @@ public class PlayerListener implements Listener {
   private static final String PERMISSION_AUTO_OP = "refraction.server.auto-operator";
 
   public PlayerListener() {
-    Rank.ADMIN.grantPermission(PERMISSION_AUTO_OP, true);
+    Rank.LEADER.grantPermission(PERMISSION_AUTO_OP, true);
   }
 
   @EventHandler

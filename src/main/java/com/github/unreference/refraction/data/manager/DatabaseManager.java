@@ -174,4 +174,8 @@ public class DatabaseManager {
 
     return false;
   }
+
+  public Connection getConnection() {
+    return connection;
+  }
 }

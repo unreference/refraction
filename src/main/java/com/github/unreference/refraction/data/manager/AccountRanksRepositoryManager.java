@@ -35,7 +35,7 @@ public class AccountRanksRepositoryManager {
       return !AccountRanksRepository.get().exists(id);
     } catch (SQLException exception) {
       Refraction.log(
-              2, "Failed to check if player (uuid=%s) exists: %s", id, exception.getMessage());
+          2, "Failed to check if player (uuid=%s) exists: %s", id, exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
       return false;
     }
@@ -50,7 +50,10 @@ public class AccountRanksRepositoryManager {
       }
     } catch (SQLException exception) {
       Refraction.log(
-              2, "Failed to register new player (uuid=%s): %s", data.getAccountId(), exception.getMessage());
+          2,
+          "Failed to register new player (uuid=%s): %s",
+          data.getAccountId(),
+          exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
     }
   }
@@ -59,8 +62,7 @@ public class AccountRanksRepositoryManager {
     try {
       return AccountRanksRepository.get().getRank(id);
     } catch (SQLException exception) {
-      Refraction.log(2, "Failed getting rank (uuid=%s): %s", id,
-              exception.getMessage());
+      Refraction.log(2, "Failed getting rank (uuid=%s): %s", id, exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
       return null;
     }
@@ -70,8 +72,7 @@ public class AccountRanksRepositoryManager {
     try {
       AccountRanksRepository.get().setRank(id, newRank);
     } catch (SQLException exception) {
-      Refraction.log(2, "Failed setting rank (uuid=%s): %s", id,
-              exception.getMessage());
+      Refraction.log(2, "Failed setting rank (uuid=%s): %s", id, exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
     }
   }
