@@ -93,20 +93,53 @@ public class AccountRanksRepository {
   }
 
   public void setRank(UUID id, Rank newRank) throws SQLException {
-    if (newRank.isPrimary()) {
-      Map<String, Object> data = new LinkedHashMap<>();
-      data.put("rank", newRank.getId());
-      data.put("is_primary", newRank.isPrimary());
-      DatabaseManager.get().update("account_ranks", data, "account_id = ?", id.toString());
+    // Step 1: Retrieve the current primary rank, if any
+    Integer currentPrimaryId = getId(id.toString());
+
+    // Step 2: Update the primary rank
+    Map<String, Object> data = new LinkedHashMap<>();
+    data.put("rank", newRank.getId());
+    data.put("is_primary", true); // Ensure this is set as the primary rank
+
+    if (currentPrimaryId != null) {
+      // If a primary rank exists, update it
+      DatabaseManager.get()
+          .update("account_ranks", data, "account_id = ? AND is_primary = ?", id.toString(), true);
+    } else {
+      // If no primary rank exists, insert a new primary rank
+      AccountRanksRecord primary =
+          new AccountRanksRecord(id.toString(), newRank.getId(), true, null);
+      insert(primary);
     }
+
+    updateSubRanks(id, newRank);
+  }
+
+  private void updateSubRanks(UUID id, Rank newRank) throws SQLException {
+    DatabaseManager.get()
+        .execute(
+            "DELETE FROM account_ranks WHERE account_id = ? AND is_primary = false", id.toString());
   }
 
   public void addRank(UUID id, Rank rank) throws SQLException {
-    if (!rank.isPrimary()) {
-      Integer parentId = getId(id.toString());
-      AccountRanksRecord subsidiary =
-          new AccountRanksRecord(id.toString(), rank.getId(), false, parentId);
-      insert(subsidiary);
+    Integer parentId = getId(id.toString());
+
+    if (parentId != null) {
+      try (ResultSet result =
+          DatabaseManager.get()
+              .query(
+                  "id",
+                  "account_ranks",
+                  "account_id = ? AND rank = ? AND is_primary = FALSE",
+                  id.toString(),
+                  rank.getId())) {
+
+        if (!result.next()) {
+          AccountRanksRecord subsidiary =
+              new AccountRanksRecord(id.toString(), rank.getId(), false, parentId);
+          insert(subsidiary);
+        }
+      }
     }
   }
 

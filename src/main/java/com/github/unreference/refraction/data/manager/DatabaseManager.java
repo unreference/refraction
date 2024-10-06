@@ -156,11 +156,15 @@ public class DatabaseManager {
     Refraction.log(1, "Created database [%s]", name);
   }
 
-  public void execute(String query) throws SQLException {
-    try (Statement statement = connection.createStatement()) {
-      statement.executeUpdate(query);
+  public void execute(String query, Object... params) throws SQLException {
+    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+      for (int i = 0; i < params.length; i++) {
+        preparedStatement.setObject(i + 1, params[i]);
+      }
+      preparedStatement.executeUpdate();
     }
   }
+
 
   private boolean isTableCreated(String tableName) throws SQLException {
     String query =
