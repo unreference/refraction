@@ -13,9 +13,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class RanksSetCommand extends AbstractCommand {
-
   public RanksSetCommand() {
-    super("set", "Ranks", "refraction.command.ranks.set");
+    super("set", "Ranks", "refraction.command.ranks.set", true);
   }
 
   @Override

@@ -15,6 +15,7 @@ public abstract class AbstractCommand extends org.bukkit.command.Command impleme
   private final String prefix;
   private final String permission;
   private final List<String> aliases;
+  private final boolean isTargetRequired;
   protected String aliasUsed;
   protected String mainAliasUsed;
 
@@ -24,6 +25,20 @@ public abstract class AbstractCommand extends org.bukkit.command.Command impleme
     this.name = name;
     this.prefix = prefix;
     this.permission = permission;
+    this.isTargetRequired = false;
+    this.aliases = Arrays.asList(aliases);
+
+    generatePermissions();
+  }
+
+  protected AbstractCommand(
+      String name, String prefix, String permission, boolean isTargetRequired, String... aliases) {
+    super(name);
+
+    this.name = name;
+    this.prefix = prefix;
+    this.permission = permission;
+    this.isTargetRequired = isTargetRequired;
     this.aliases = Arrays.asList(aliases);
 
     generatePermissions();
@@ -39,7 +54,7 @@ public abstract class AbstractCommand extends org.bukkit.command.Command impleme
   public boolean execute(@NotNull CommandSender sender, @NotNull String alias, String[] args) {
     setAliasUsed(alias);
 
-    CommandContext context = new CommandContext(sender, args);
+    CommandContext context = new CommandContext(sender, null, null, args);
 
     trigger(context);
     return true;
@@ -95,4 +110,8 @@ public abstract class AbstractCommand extends org.bukkit.command.Command impleme
   protected abstract Component getUsageMessage();
 
   protected abstract void generatePermissions();
+
+  public boolean isTargetRequired() {
+    return isTargetRequired;
+  }
 }

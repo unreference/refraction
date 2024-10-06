@@ -120,7 +120,8 @@ public final class Refraction extends JavaPlugin {
   private void kickNonAdmins() {
     if (!getServer().getOnlinePlayers().isEmpty()) {
       for (Player player : Bukkit.getOnlinePlayers()) {
-        Rank rank = Rank.getRankFromId(AccountRepositoryManager.get().getPrimaryRank(player.getName()));
+        Rank rank =
+            Rank.getRankFromId(AccountRepositoryManager.get().getPrimaryRank(player.getName()));
         if (rank != Rank.ADMIN && rank != Rank.OWNER) {
           player.kick(
               Component.text(

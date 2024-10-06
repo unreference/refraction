@@ -11,6 +11,8 @@ public interface Command {
 
   List<String> getAliases();
 
+  boolean isTargetRequired();
+
   void setAliasUsed(String alias);
 
   void setMainAliasUsed(String alias);

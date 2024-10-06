@@ -8,14 +8,8 @@ public class CommandContext {
   private final String[] args;
   protected String targetName;
 
-  public CommandContext(CommandSender sender, String[] args) {
-    this.sender = sender;
-    this.targetName = null;
-    this.subcommand = null;
-    this.args = args;
-  }
-
-  public CommandContext(CommandSender sender, String targetName, String subcommand, String[] args) {
+  protected CommandContext(
+      CommandSender sender, String targetName, String subcommand, String[] args) {
     this.sender = sender;
     this.targetName = targetName;
     this.subcommand = subcommand;

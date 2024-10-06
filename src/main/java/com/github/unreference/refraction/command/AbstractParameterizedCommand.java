@@ -21,68 +21,85 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
     generatePermissions();
   }
 
-  protected AbstractParameterizedCommand(
-      String name, String prefix, String permission, String... aliases) {
-    super(name, prefix, permission, aliases);
-    this.isTargetRequired = false;
-
-    generatePermissions();
-  }
-
   @Override
   public void trigger(CommandContext context) {
-    if (context.getArgs().length == 0) {
-      execute(context.getSender(), context.getArgs());
+    String[] args = context.getArgs();
+    CommandSender sender = context.getSender();
+
+    if (args.length == 0) {
+      execute(sender, args);
       return;
     }
 
-    if (isTargetRequired) {
-      String targetInput = context.getArgs()[0];
-      UUID targetId = AccountRepositoryManager.get().getId(targetInput);
+    String firstArg = args[0].toLowerCase();
+    Command subcommand = subcommands.get(firstArg);
 
-      if (targetId == null) {
-        context
-            .getSender()
-            .sendMessage(
-                MessageUtil.getPrefixedMessage(
-                    getPrefix(), "Player not found: &e%s", context.getArgs()[0]));
+    if (subcommand != null) {
+      if (subcommand.isTargetRequired()) {
+        if (args.length < 2) {
+          execute(sender, args);
+          return;
+        }
+
+        handleSubcommandWithTarget(sender, args);
+        return;
+      } else {
+        handleSubcommand(sender, args, 0);
         return;
       }
-
-      context.setTargetName(AccountRepositoryManager.get().getName(targetId));
-      handleSubcommand(context.getSender(), context.getArgs(), 1);
-    } else {
-      handleSubcommand(context.getSender(), context.getArgs(), 0);
     }
+
+    UUID targetId = AccountRepositoryManager.get().getId(firstArg);
+    boolean isFirstArgTarget = targetId != null;
+
+    if (isFirstArgTarget && args.length > 1) {
+      String secondArg = args[1].toLowerCase();
+      subcommand = subcommands.get(secondArg);
+
+      if (subcommand != null && subcommand.isTargetRequired()) {
+        handleSubcommandWithTarget(sender, args);
+        return;
+      }
+    }
+
+    execute(sender, args);
   }
 
   @Override
   public List<String> tab(CommandSender sender, String alias, String[] args) {
-    if (isTargetRequired) {
-      if (args.length == 1) {
-        List<String> suggestions = new ArrayList<>(getOnlinePlayers());
-        filterTab(suggestions, args[0]);
-        return suggestions;
-      } else if (args.length == 2) {
-        List<String> suggestions = new ArrayList<>(getPermittedSubcommands(sender));
+    List<String> suggestions = new ArrayList<>();
+
+    if (args.length == 1) {
+      subcommands.values().stream()
+          .filter(
+              subcommand ->
+                  !subcommand.isTargetRequired() && isPermitted(sender, subcommand.getPermission()))
+          .forEach(subcommand -> suggestions.add(subcommand.getName().toLowerCase()));
+
+      suggestions.addAll(getOnlinePlayers());
+      filterTab(suggestions, args[0]);
+      return suggestions;
+    }
+
+    if (args.length == 2) {
+      UUID targetId = AccountRepositoryManager.get().getId(args[0]);
+
+      if (targetId != null) {
+        subcommands.values().stream()
+            .filter(
+                subcommand ->
+                    subcommand.isTargetRequired()
+                        && isPermitted(sender, subcommand.getPermission()))
+            .forEach(subcommand -> suggestions.add(subcommand.getName().toLowerCase()));
+
         filterTab(suggestions, args[1]);
-        return suggestions;
-      } else {
-        Command subcommand = subcommands.get(args[1].toLowerCase());
-        if (subcommand != null) {
-          return subcommand.tab(sender, alias, Arrays.copyOfRange(args, 2, args.length));
-        }
       }
+
+      return suggestions;
     } else {
-      if (args.length == 1) {
-        List<String> suggestions = new ArrayList<>(getPermittedSubcommands(sender));
-        filterTab(suggestions, args[0]);
-        return suggestions;
-      } else {
-        Command subcommand = subcommands.get(args[0].toLowerCase());
-        if (subcommand != null) {
-          return subcommand.tab(sender, alias, Arrays.copyOfRange(args, 1, args.length));
-        }
+      Command subcommand = subcommands.get(args[1]);
+      if (subcommand != null) {
+        return subcommand.tab(sender, alias, Arrays.copyOfRange(args, 2, args.length));
       }
     }
 
@@ -93,9 +110,7 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
   public boolean execute(
       @NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) {
     setAliasUsed(alias);
-
-    CommandContext context = new CommandContext(sender, args);
-
+    CommandContext context = new CommandContext(sender, null, null, args);
     trigger(context);
     return true;
   }
@@ -115,14 +130,28 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
     return rank.isPermitted(permission);
   }
 
-  private void handleSubcommand(CommandSender sender, String[] args, int offset) {
+  private void handleSubcommandWithTarget(CommandSender sender, String[] args) {
+    String targetInput = args[0];
+    UUID targetId = AccountRepositoryManager.get().getId(targetInput);
+
+    if (targetId == null) {
+      sender.sendMessage(
+          MessageUtil.getPrefixedMessage(getPrefix(), "Player not found: &e%s", args[0]));
+      return;
+    }
+
+    String targetName = AccountRepositoryManager.get().getName(targetId);
+    handleSubcommand(sender, args, 1, targetName);
+  }
+
+  private void handleSubcommand(
+      CommandSender sender, String[] args, int offset, String targetName) {
     if (args.length <= offset) {
       execute(sender, args);
       return;
     }
 
-    String targetName = isTargetRequired ? args[0] : null;
-    String action = args[offset];
+    String action = args[offset].toLowerCase();
     Command subcommand = subcommands.get(action);
 
     if (subcommand != null) {
@@ -132,6 +161,33 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
       CommandContext context =
           new CommandContext(
               sender, targetName, action, Arrays.copyOfRange(args, offset + 1, args.length));
+
+      if (isPermitted(sender, subcommand.getPermission())) {
+        subcommand.trigger(context);
+      } else {
+        execute(sender, args);
+      }
+    } else {
+      execute(sender, args);
+    }
+  }
+
+  private void handleSubcommand(CommandSender sender, String[] args, int offset) {
+    if (args.length <= offset) {
+      execute(sender, args);
+      return;
+    }
+
+    String action = args[offset];
+    Command subcommand = subcommands.get(action);
+
+    if (subcommand != null) {
+      subcommand.setAliasUsed(action);
+      subcommand.setMainAliasUsed(getAliasUsed());
+
+      CommandContext context =
+          new CommandContext(
+              sender, null, action, Arrays.copyOfRange(args, offset + 1, args.length));
 
       if (isPermitted(sender, subcommand.getPermission())) {
         subcommand.trigger(context);
