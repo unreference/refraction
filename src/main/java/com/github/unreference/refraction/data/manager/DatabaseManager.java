@@ -33,7 +33,7 @@ public class DatabaseManager {
           DriverManager.getConnection(
               String.format("jdbc:mysql://%s:%d", host, port), user, password);
       Refraction.log(0, "Connected to server [%s:%d]", host, port);
-      initializeDatabase();
+      initialize();
     }
   }
 
@@ -49,7 +49,7 @@ public class DatabaseManager {
   }
 
   public void createTable(String tableName, Map<String, String> columns) throws SQLException {
-    if (tableExists(tableName)) {
+    if (isTableCreated(tableName)) {
       Refraction.log(0, "Found table [%s]", tableName);
       return;
     }
@@ -60,11 +60,11 @@ public class DatabaseManager {
             .collect(Collectors.joining(", "));
 
     String query = String.format("CREATE TABLE %s (%s)", tableName, columnDefinitions);
-    executeUpdate(query);
+    execute(query);
     Refraction.log(1, "Created table [%s]", tableName);
   }
 
-  public void insertData(String tableName, Map<String, Object> data) throws SQLException {
+  public void insert(String tableName, Map<String, Object> data) throws SQLException {
     String columns = String.join(", ", data.keySet());
     String placeholders = data.keySet().stream().map(key -> "?").collect(Collectors.joining(", "));
 
@@ -80,7 +80,7 @@ public class DatabaseManager {
     }
   }
 
-  public boolean recordExists(String tableName, String columnName, Object value)
+  public boolean isRecordCreated(String tableName, String columnName, Object value)
       throws SQLException {
     String query = String.format("SELECT COUNT(*) FROM %s WHERE %s = ?", tableName, columnName);
     try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -90,7 +90,7 @@ public class DatabaseManager {
     }
   }
 
-  public void updateData(
+  public void update(
       String table, Map<String, Object> data, String conditionColumn, Object conditionValue)
       throws SQLException {
     StringBuilder sql = new StringBuilder("UPDATE " + table + " SET ");
@@ -114,7 +114,7 @@ public class DatabaseManager {
     }
   }
 
-  public ResultSet queryData(String select, String from, String where, String... parameters)
+  public ResultSet query(String select, String from, String where, String... parameters)
       throws SQLException {
     String query = String.format("SELECT %s FROM %s WHERE %s", select, from, where);
     PreparedStatement statement = connection.prepareStatement(query);
@@ -130,8 +130,8 @@ public class DatabaseManager {
     return connection == null || connection.isClosed();
   }
 
-  private void initializeDatabase() throws SQLException {
-    if (!databaseExists()) {
+  private void initialize() throws SQLException {
+    if (!isDatabaseCreated()) {
       createDatabase();
     }
 
@@ -139,7 +139,7 @@ public class DatabaseManager {
     Refraction.log(0, "Connected to database [%s]", name);
   }
 
-  private boolean databaseExists() throws SQLException {
+  private boolean isDatabaseCreated() throws SQLException {
     String query = "SHOW DATABASES LIKE ?";
     try (PreparedStatement statement = connection.prepareStatement(query)) {
       statement.setString(1, name);
@@ -150,17 +150,17 @@ public class DatabaseManager {
 
   private void createDatabase() throws SQLException {
     String query = String.format("CREATE DATABASE %s", name);
-    executeUpdate(query);
+    execute(query);
     Refraction.log(1, "Created database [%s]", name);
   }
 
-  private void executeUpdate(String query) throws SQLException {
+  public void execute(String query) throws SQLException {
     try (Statement statement = connection.createStatement()) {
       statement.executeUpdate(query);
     }
   }
 
-  private boolean tableExists(String tableName) throws SQLException {
+  private boolean isTableCreated(String tableName) throws SQLException {
     String query =
         String.format(
             "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '%s' AND table_name = '%s'",

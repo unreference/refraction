@@ -2,7 +2,8 @@ package com.github.unreference.refraction.command.impl.rank;
 
 import com.github.unreference.refraction.command.AbstractCommand;
 import com.github.unreference.refraction.command.CommandContext;
-import com.github.unreference.refraction.data.manager.AccountRepositoryManager;
+import com.github.unreference.refraction.data.manager.AccountRanksRepositoryManager;
+import com.github.unreference.refraction.data.manager.AccountsRepositoryManager;
 import com.github.unreference.refraction.event.RankChangeEvent;
 import com.github.unreference.refraction.model.Rank;
 import com.github.unreference.refraction.util.MessageUtil;
@@ -42,12 +43,13 @@ public class RanksSetCommand extends AbstractCommand {
     }
 
     String targetName = context.getTargetName();
+    UUID targetId = AccountsRepositoryManager.get().getId(targetName);
 
-    AccountRepositoryManager.get().setPrimaryRank(targetName, rank);
+    AccountRanksRepositoryManager.get().setRank(targetId, rank);
 
     sender.sendMessage(
         MessageUtil.getPrefixedMessage(
-            getPrefix(), "Set &e%s's &7primary rank to &e%s&7.", targetName, rank.getPrefix()));
+            getPrefix(), "Set &e%s's &7rank to &e%s&7.", targetName, rank.getPrefix()));
 
     Player targetPlayer = Bukkit.getPlayer(targetName);
 
@@ -55,7 +57,7 @@ public class RanksSetCommand extends AbstractCommand {
       Objects.requireNonNull(Bukkit.getPlayer(targetName))
           .sendMessage(
               MessageUtil.getPrefixedMessage(
-                  getPrefix(), "Your primary rank has been updated to &e%s&7!", rank.getPrefix()));
+                  getPrefix(), "Your rank has been updated to &e%s&7!", rank.getPrefix()));
       Bukkit.getServer().getPluginManager().callEvent(new RankChangeEvent(targetPlayer, rank));
     }
   }

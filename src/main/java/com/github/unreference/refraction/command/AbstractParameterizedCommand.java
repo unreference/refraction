@@ -1,6 +1,7 @@
 package com.github.unreference.refraction.command;
 
-import com.github.unreference.refraction.data.manager.AccountRepositoryManager;
+import com.github.unreference.refraction.data.manager.AccountRanksRepositoryManager;
+import com.github.unreference.refraction.data.manager.AccountsRepositoryManager;
 import com.github.unreference.refraction.model.Rank;
 import com.github.unreference.refraction.util.MessageUtil;
 import java.util.*;
@@ -49,7 +50,7 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
       }
     }
 
-    UUID targetId = AccountRepositoryManager.get().getId(firstArg);
+    UUID targetId = AccountsRepositoryManager.get().getId(firstArg);
     boolean isFirstArgTarget = targetId != null;
 
     if (isFirstArgTarget && args.length > 1) {
@@ -82,7 +83,7 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
     }
 
     if (args.length == 2) {
-      UUID targetId = AccountRepositoryManager.get().getId(args[0]);
+      UUID targetId = AccountsRepositoryManager.get().getId(args[0]);
 
       if (targetId != null) {
         subcommands.values().stream()
@@ -126,13 +127,14 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
       return true;
     }
 
-    Rank rank = Rank.getRankFromId(AccountRepositoryManager.get().getPrimaryRank(player.getName()));
+    Rank rank =
+        Rank.getRankFromId(AccountRanksRepositoryManager.get().getRank(player.getUniqueId()));
     return rank.isPermitted(permission);
   }
 
   private void handleSubcommandWithTarget(CommandSender sender, String[] args) {
     String targetInput = args[0];
-    UUID targetId = AccountRepositoryManager.get().getId(targetInput);
+    UUID targetId = AccountsRepositoryManager.get().getId(targetInput);
 
     if (targetId == null) {
       sender.sendMessage(
@@ -140,7 +142,7 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
       return;
     }
 
-    String targetName = AccountRepositoryManager.get().getName(targetId);
+    String targetName = AccountsRepositoryManager.get().getName(targetId);
     handleSubcommand(sender, args, 1, targetName);
   }
 
