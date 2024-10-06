@@ -7,12 +7,12 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class MessageUtil {
-  private MessageUtil() {}
+public class UtilMessage {
+  private UtilMessage() {}
 
   public static Component getPrefixedMessage(String prefix, String message, Object... args) {
-    Component bodyPrefix = FormatUtil.getPrideMessage(prefix + ">");
-    Component body = FormatUtil.getFormattedComponent(message, args);
+    Component bodyPrefix = UtilFormat.getPrideMessage(prefix + ">");
+    Component body = UtilFormat.getFormattedComponent(message, args);
     TextComponent.Builder builder = Component.text();
 
     builder.append(bodyPrefix);
@@ -22,7 +22,7 @@ public class MessageUtil {
   }
 
   public static Component getMessage(String message, Object... args) {
-    Component body = FormatUtil.getFormattedComponent(message, args);
+    Component body = UtilFormat.getFormattedComponent(message, args);
     TextComponent.Builder builder = Component.text();
 
     builder.append(body).colorIfAbsent(NamedTextColor.GRAY);
@@ -30,12 +30,12 @@ public class MessageUtil {
   }
 
   public static Component getMessageWithHover(String message, String hoverMessage, Object... args) {
-    Component body = FormatUtil.getFormattedComponent(message, args);
+    Component body = UtilFormat.getFormattedComponent(message, args);
     TextComponent.Builder builder = Component.text();
     builder.append(body).colorIfAbsent(NamedTextColor.GRAY);
 
     Component hover =
-        FormatUtil.getFormattedComponent(hoverMessage, args).colorIfAbsent(NamedTextColor.GRAY);
+        UtilFormat.getFormattedComponent(hoverMessage, args).colorIfAbsent(NamedTextColor.GRAY);
     builder.hoverEvent(HoverEvent.showText(hover));
     return builder.build();
   }

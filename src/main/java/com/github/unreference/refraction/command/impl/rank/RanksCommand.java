@@ -2,7 +2,7 @@ package com.github.unreference.refraction.command.impl.rank;
 
 import com.github.unreference.refraction.command.AbstractParameterizedCommand;
 import com.github.unreference.refraction.model.Rank;
-import com.github.unreference.refraction.util.MessageUtil;
+import com.github.unreference.refraction.util.UtilMessage;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 
@@ -18,21 +18,21 @@ public class RanksCommand extends AbstractParameterizedCommand {
 
   @Override
   protected void execute(CommandSender sender, String[] args) {
-    sender.sendMessage(MessageUtil.getPrefixedMessage(getPrefix(), "Command List:"));
+    sender.sendMessage(UtilMessage.getPrefixedMessage(getPrefix(), "Command List:"));
     sender.sendMessage(
-        MessageUtil.getMessageWithHover(
+        UtilMessage.getMessageWithHover(
                 "- /%s <player> set <rank>", "Sets a player's primary rank.", getAliasUsed())
             .color(Rank.ADMIN.getPrefixColor()));
     sender.sendMessage(
-        MessageUtil.getMessageWithHover(
+        UtilMessage.getMessageWithHover(
                 "- /%s <player> add <rank>", "Adds a subrank to a player.", getAliasUsed())
             .color(Rank.ADMIN.getPrefixColor()));
     sender.sendMessage(
-        MessageUtil.getMessageWithHover(
+        UtilMessage.getMessageWithHover(
                 "- /%s <player> info", "Displays a player's rank information.", getAliasUsed())
             .color(Rank.ADMIN.getPrefixColor()));
     sender.sendMessage(
-        MessageUtil.getMessageWithHover(
+        UtilMessage.getMessageWithHover(
                 "- /%s list", "Lists all primary and subrank ranks.", getAliasUsed())
             .color(Rank.ADMIN.getPrefixColor()));
   }

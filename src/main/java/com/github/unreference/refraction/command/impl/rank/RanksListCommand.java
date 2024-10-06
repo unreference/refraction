@@ -3,7 +3,7 @@ package com.github.unreference.refraction.command.impl.rank;
 import com.github.unreference.refraction.command.AbstractCommand;
 import com.github.unreference.refraction.command.CommandContext;
 import com.github.unreference.refraction.model.Rank;
-import com.github.unreference.refraction.util.MessageUtil;
+import com.github.unreference.refraction.util.UtilMessage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +19,7 @@ public class RanksListCommand extends AbstractCommand {
 
   @Override
   protected Component getUsageMessage() {
-    return MessageUtil.getPrefixedMessage(
+    return UtilMessage.getPrefixedMessage(
         getPrefix(), "Usage: /%s %s", getMainAliasUsed(), getAliasUsed());
   }
 
@@ -38,10 +38,10 @@ public class RanksListCommand extends AbstractCommand {
       return;
     }
 
-    sender.sendMessage(MessageUtil.getPrefixedMessage(getPrefix(), "Ranks List:"));
+    sender.sendMessage(UtilMessage.getPrefixedMessage(getPrefix(), "Ranks List:"));
     sender.sendMessage(
-        MessageUtil.getMessage("- Primary: ").append(formatRanks(getPrimaryRanks())));
-    sender.sendMessage(MessageUtil.getMessage("- Subranks: ").append(formatRanks(getSubranks())));
+        UtilMessage.getMessage("- Primary: ").append(formatRanks(getPrimaryRanks())));
+    sender.sendMessage(UtilMessage.getMessage("- Subranks: ").append(formatRanks(getSubranks())));
   }
 
   @Override

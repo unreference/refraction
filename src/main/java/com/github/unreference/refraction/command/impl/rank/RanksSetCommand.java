@@ -6,7 +6,8 @@ import com.github.unreference.refraction.data.manager.AccountRanksRepositoryMana
 import com.github.unreference.refraction.data.manager.AccountsRepositoryManager;
 import com.github.unreference.refraction.event.RankChangeEvent;
 import com.github.unreference.refraction.model.Rank;
-import com.github.unreference.refraction.util.MessageUtil;
+import com.github.unreference.refraction.util.UtilMessage;
+import com.github.unreference.refraction.util.UtilServer;
 import java.util.*;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -32,34 +33,44 @@ public class RanksSetCommand extends AbstractCommand {
 
     if (rank == null) {
       sender.sendMessage(
-          MessageUtil.getPrefixedMessage(getPrefix(), "Rank not found: &e%s", args[0]));
+          UtilMessage.getPrefixedMessage(getPrefix(), "Rank not found: &e%s", args[0]));
       return;
     }
 
     if (!rank.isPrimary()) {
       sender.sendMessage(
-          MessageUtil.getPrefixedMessage(getPrefix(), "Invalid primary rank: &e%s", rank.getId()));
+          UtilMessage.getPrefixedMessage(getPrefix(), "Invalid primary rank: &e%s", rank.getId()));
       return;
     }
 
     String targetName = context.getTargetName();
-    UUID targetId = AccountsRepositoryManager.get().getId(targetName);
 
-    AccountRanksRepositoryManager.get().setRank(targetId, rank);
+    UtilServer.runAsync(
+        () -> {
+          UUID targetId = AccountsRepositoryManager.get().getId(targetName);
+          AccountRanksRepositoryManager.get().setRank(targetId, rank);
 
-    sender.sendMessage(
-        MessageUtil.getPrefixedMessage(
-            getPrefix(), "Set &e%s's &7rank to &e%s&7.", targetName, rank.getPrefix()));
+          UtilServer.runSync(
+              () -> {
+                sender.sendMessage(
+                    UtilMessage.getPrefixedMessage(
+                        getPrefix(), "Set &e%s's &7rank to &e%s&7.", targetName, rank.getPrefix()));
 
-    Player targetPlayer = Bukkit.getPlayer(targetName);
+                Player targetPlayer = Bukkit.getPlayer(targetName);
 
-    if (targetPlayer != null) {
-      Objects.requireNonNull(Bukkit.getPlayer(targetName))
-          .sendMessage(
-              MessageUtil.getPrefixedMessage(
-                  getPrefix(), "Your rank has been updated to &e%s&7!", rank.getPrefix()));
-      Bukkit.getServer().getPluginManager().callEvent(new RankChangeEvent(targetPlayer, rank));
-    }
+                if (targetPlayer != null) {
+                  Objects.requireNonNull(Bukkit.getPlayer(targetName))
+                      .sendMessage(
+                          UtilMessage.getPrefixedMessage(
+                              getPrefix(),
+                              "Your rank has been updated to &e%s&7!",
+                              rank.getPrefix()));
+                  Bukkit.getServer()
+                      .getPluginManager()
+                      .callEvent(new RankChangeEvent(targetPlayer, rank));
+                }
+              });
+        });
   }
 
   @Override
@@ -83,7 +94,7 @@ public class RanksSetCommand extends AbstractCommand {
 
   @Override
   protected Component getUsageMessage() {
-    return MessageUtil.getPrefixedMessage(
+    return UtilMessage.getPrefixedMessage(
         getPrefix(), "Usage: /%s <player> %s <rank>", getMainAliasUsed(), getAliasUsed());
   }
 

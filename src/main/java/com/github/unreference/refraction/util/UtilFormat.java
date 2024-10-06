@@ -12,7 +12,7 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 
-public class FormatUtil {
+public class UtilFormat {
   private static final Pattern legacyColorPattern = Pattern.compile("&[a-fA-F0-9klmnor]");
   private static final Pattern hexColorPattern = Pattern.compile("#[a-fA-F0-9]{6}");
   private static final Pattern formatPattern =
@@ -27,7 +27,7 @@ public class FormatUtil {
           Objects.requireNonNull(TextColor.fromHexString("#114EFC")),
           Objects.requireNonNull(TextColor.fromHexString("#770288")));
 
-  private FormatUtil() {}
+  private UtilFormat() {}
 
   public static Component getFormattedComponent(String message, Object... args) {
     message = String.format(message, args);

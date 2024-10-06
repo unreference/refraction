@@ -3,7 +3,7 @@ package com.github.unreference.refraction.command.impl;
 import com.github.unreference.refraction.command.AbstractCommand;
 import com.github.unreference.refraction.command.CommandContext;
 import com.github.unreference.refraction.model.Rank;
-import com.github.unreference.refraction.util.MessageUtil;
+import com.github.unreference.refraction.util.UtilMessage;
 import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
@@ -38,7 +38,7 @@ public class SpawnCommand extends AbstractCommand {
 
   @Override
   protected Component getUsageMessage() {
-    return MessageUtil.getPrefixedMessage(getPrefix(), "Usage: /" + getAliasUsed());
+    return UtilMessage.getPrefixedMessage(getPrefix(), "Usage: /" + getAliasUsed());
   }
 
   @Override
