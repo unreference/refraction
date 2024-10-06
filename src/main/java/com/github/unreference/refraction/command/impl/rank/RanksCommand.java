@@ -25,15 +25,15 @@ public class RanksCommand extends AbstractParameterizedCommand {
             .color(Rank.ADMIN.getPrefixColor()));
     sender.sendMessage(
         MessageUtil.getMessageWithHover(
-                "- /%s <player> add <rank>", "Adds a subsidiary rank to a player.", getAliasUsed())
+                "- /%s <player> add <rank>", "Adds a subrank to a player.", getAliasUsed())
             .color(Rank.ADMIN.getPrefixColor()));
     sender.sendMessage(
         MessageUtil.getMessageWithHover(
-                "- /%s <player> info", "Display's a player's rank information.", getAliasUsed())
+                "- /%s <player> info", "Displays a player's rank information.", getAliasUsed())
             .color(Rank.ADMIN.getPrefixColor()));
     sender.sendMessage(
         MessageUtil.getMessageWithHover(
-                "- /%s list", "Lists all primary and subsidiary ranks.", getAliasUsed())
+                "- /%s list", "Lists all primary and subrank ranks.", getAliasUsed())
             .color(Rank.ADMIN.getPrefixColor()));
   }
 

@@ -51,8 +51,7 @@ public class RanksAddCommand extends AbstractCommand {
 
     if (rank.isPrimary()) {
       sender.sendMessage(
-          MessageUtil.getPrefixedMessage(
-              getPrefix(), "Invalid subsidiary rank: &e%s", rank.getId()));
+          MessageUtil.getPrefixedMessage(getPrefix(), "Invalid subrank: &e%s", rank.getId()));
       return;
     }
 
@@ -64,7 +63,7 @@ public class RanksAddCommand extends AbstractCommand {
     sender.sendMessage(
         MessageUtil.getPrefixedMessage(
             getPrefix(),
-            "Added &e%s &7to the &e%s &7subsidiary.",
+            "Added &e%s &7to the &e%s &7subrank.",
             targetName,
             rank.getId().toUpperCase()));
 
@@ -75,7 +74,7 @@ public class RanksAddCommand extends AbstractCommand {
           .sendMessage(
               MessageUtil.getPrefixedMessage(
                   getPrefix(),
-                  "You were added to the &e%s &7subsidiary!",
+                  "You were added to the &e%s &7subrank!",
                   rank.getId().toUpperCase()));
     }
   }

@@ -45,10 +45,10 @@ public class AccountRanksRepository {
       DatabaseManager.get().execute("CREATE INDEX parent_rank_index ON account_ranks(parent_id)");
     }
 
-    if (!indexExists("account_ranks", "subsidiary_index")) {
+    if (!indexExists("account_ranks", "subrank_index")) {
       DatabaseManager.get()
           .execute(
-              "CREATE UNIQUE INDEX subsidiary_index ON account_ranks(account_id, rank, is_primary)");
+              "CREATE UNIQUE INDEX subrank_index ON account_ranks(account_id, rank, is_primary)");
     }
   }
 
@@ -135,9 +135,9 @@ public class AccountRanksRepository {
                   rank.getId())) {
 
         if (!result.next()) {
-          AccountRanksRecord subsidiary =
+          AccountRanksRecord subrank =
               new AccountRanksRecord(id.toString(), rank.getId(), false, parentId);
-          insert(subsidiary);
+          insert(subrank);
         }
       }
     }

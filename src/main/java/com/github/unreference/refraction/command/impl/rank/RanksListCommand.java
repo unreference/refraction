@@ -41,8 +41,7 @@ public class RanksListCommand extends AbstractCommand {
     sender.sendMessage(MessageUtil.getPrefixedMessage(getPrefix(), "Ranks List:"));
     sender.sendMessage(
         MessageUtil.getMessage("- Primary: ").append(formatRanks(getPrimaryRanks())));
-    sender.sendMessage(
-        MessageUtil.getMessage("- Subsidiary: ").append(formatRanks(getSubsidiaryRanks())));
+    sender.sendMessage(MessageUtil.getMessage("- Subranks: ").append(formatRanks(getSubranks())));
   }
 
   @Override
@@ -56,7 +55,7 @@ public class RanksListCommand extends AbstractCommand {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  private List<Rank> getSubsidiaryRanks() {
+  private List<Rank> getSubranks() {
     return Arrays.stream(Rank.values())
         .filter(rank -> !rank.isPrimary())
         .collect(Collectors.toCollection(ArrayList::new));

@@ -165,7 +165,6 @@ public class DatabaseManager {
     }
   }
 
-
   private boolean isTableCreated(String tableName) throws SQLException {
     String query =
         String.format(
