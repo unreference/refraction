@@ -177,24 +177,29 @@ public enum Rank {
   }
 
   public boolean isPermitted(String permission) {
+    // 1. Check if the permission is explicitly revoked for this rank
     if (revokedPermissions.contains(permission)) {
       return false; // Explicitly revoked permission
     }
 
+    // 2. Check if the permission is explicitly granted for this rank
     RankPermission perm = grantedPermissions.get(permission);
     if (perm != null) {
       return true; // Explicitly granted permission
     }
 
-    if (parent != null && parent.isPermitted(permission)) {
-      RankPermission parentPermission = parent.grantedPermissions.get(permission);
-
-      if (parentPermission != null && parentPermission.isInheritable()) {
-        grantedPermissions.put(permission, parentPermission);
-        return true; // Inherits granted permission
+    // 3. If there is a parent rank, check if permission is inherited from parent
+    if (parent != null) {
+      // Check if parent permits and whether the permission is inheritable
+      if (parent.isPermitted(permission)) {
+        RankPermission parentPermission = parent.grantedPermissions.get(permission);
+        if (parentPermission != null && parentPermission.isInheritable()) {
+          return true; // Inherited permission
+        }
       }
     }
 
+    // 4. If not explicitly granted, revoked, or inherited, return false
     return false;
   }
 

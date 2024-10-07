@@ -137,7 +137,6 @@ public class AccountRanksRepository {
   public void addRank(UUID id, Rank rank) throws SQLException {
     Integer parentId = getId(id.toString());
 
-    if (parentId != null) {
       try (ResultSet result =
           DatabaseManager.get()
               .query(
@@ -153,7 +152,6 @@ public class AccountRanksRepository {
           insert(subrank);
         }
       }
-    }
   }
 
   private Map<String, Object> buildAccountRanks(AccountRanksRecord data) {

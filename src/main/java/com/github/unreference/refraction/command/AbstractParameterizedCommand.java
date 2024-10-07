@@ -5,7 +5,6 @@ import com.github.unreference.refraction.data.manager.AccountsRepositoryManager;
 import com.github.unreference.refraction.model.Rank;
 import com.github.unreference.refraction.util.UtilMessage;
 import java.util.*;
-import java.util.stream.Collectors;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -129,6 +128,14 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
 
     Rank rank =
         Rank.getRankFromId(AccountRanksRepositoryManager.get().getRank(player.getUniqueId()));
+    List<Rank> subranks = AccountRanksRepositoryManager.get().getSubranks(player.getUniqueId());
+
+    for (Rank sr : subranks) {
+      if (sr.isPermitted(permission)) {
+        return true;
+      }
+    }
+
     return rank.isPermitted(permission);
   }
 
@@ -197,13 +204,6 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
         execute(sender, args);
       }
     }
-  }
-
-  private List<String> getPermittedSubcommands(CommandSender sender) {
-    return subcommands.entrySet().stream()
-        .filter(entry -> isPermitted(sender, entry.getValue().getPermission()))
-        .map(Map.Entry::getKey)
-        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   protected void addSubcommand(Command subcommand) {

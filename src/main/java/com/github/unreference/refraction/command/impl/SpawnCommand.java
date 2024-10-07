@@ -44,5 +44,6 @@ public class SpawnCommand extends AbstractCommand {
   @Override
   protected void generatePermissions() {
     Rank.DEFAULT.grantPermission(getPermission(), true);
+    Rank.STM.revokePermission(getPermission());
   }
 }
