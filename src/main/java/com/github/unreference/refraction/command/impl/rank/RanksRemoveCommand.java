@@ -15,9 +15,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class RanksAddCommand extends AbstractCommand {
-  public RanksAddCommand() {
-    super("add", "Ranks", "refraction.command.ranks.add", true);
+public class RanksRemoveCommand extends AbstractCommand {
+  public RanksRemoveCommand() {
+    super("remove", "Ranks", "refraction.command.ranks.remove", true);
   }
 
   @Override
@@ -44,14 +44,7 @@ public class RanksAddCommand extends AbstractCommand {
     Rank rank = Rank.getRankFromId(args[0]);
 
     if (rank == null) {
-      sender.sendMessage(
-          MessageUtil.getPrefixedMessage(getPrefix(), "Rank not found: &e%s", args[0]));
-      return;
-    }
-
-    if (rank.isPrimary()) {
-      sender.sendMessage(
-          MessageUtil.getPrefixedMessage(getPrefix(), "Invalid subrank: &e%s", rank.getId()));
+      MessageUtil.getPrefixedMessage(getPrefix(), "Rank not found: &e%s", args[0]);
       return;
     }
 
@@ -61,14 +54,28 @@ public class RanksAddCommand extends AbstractCommand {
         () -> {
           try {
             UUID targetId = AccountsRepositoryManager.get().getId(targetName);
-            AccountRanksRepositoryManager.get().addSubrank(targetId, rank);
+            List<Rank> targetSubranks = getSubranks(targetId);
+
+            if (!targetSubranks.contains(rank)) {
+              ServerUtil.runSync(
+                  () ->
+                      sender.sendMessage(
+                          MessageUtil.getPrefixedMessage(
+                              getPrefix(),
+                              "&e%s &7is not part of the &e%s &7subrank.",
+                              targetName,
+                              rank.getId().toUpperCase())));
+              return;
+            }
+
+            AccountRanksRepositoryManager.get().removeSubrank(targetId, rank);
 
             ServerUtil.runSync(
                 () -> {
                   sender.sendMessage(
                       MessageUtil.getPrefixedMessage(
                           getPrefix(),
-                          "Added &e%s &7to the &e%s &7subrank.",
+                          "Removed %e%s &7from the &e%s &7subrank.",
                           targetName,
                           rank.getId().toUpperCase()));
 
@@ -78,15 +85,15 @@ public class RanksAddCommand extends AbstractCommand {
                     targetPlayer.sendMessage(
                         MessageUtil.getPrefixedMessage(
                             getPrefix(),
-                            "You were added to the &e%s &7subrank!",
+                            "You were removed from the &e%s &7subrank!",
                             rank.getId().toUpperCase()));
                   }
                 });
-          } catch (Exception exception) {
+          } catch (Exception e) {
             sender.sendMessage(
                 MessageUtil.getPrefixedMessage(
                     getPrefix(),
-                    "An error occurred while attempting to add a subrank to the player."));
+                    "An error occurred while attempting to remove a subrank from the player."));
           }
         });
   }
@@ -95,18 +102,29 @@ public class RanksAddCommand extends AbstractCommand {
   public List<String> tab(CommandSender sender, String alias, String[] args) {
     List<String> suggestions = new ArrayList<>();
 
-    if (args.length == 1) {
-      for (Rank rank : Rank.values()) {
-        if (rank.isPrimary()) {
-          continue;
-        }
+    ServerUtil.runAsync(
+        () -> {
+          UUID targetId = AccountsRepositoryManager.get().getId(args[0]);
 
-        suggestions.add(rank.getId());
-        String currentArg = args[0];
-        filterTab(suggestions, currentArg);
-      }
-    }
+          if (targetId == null) {
+            return;
+          }
+
+          if (args.length == 1) {
+            List<Rank> subranks = getSubranks(targetId);
+
+            for (Rank subrank : subranks) {
+              suggestions.add(subrank.getId());
+              String currentArg = args[0];
+              filterTab(suggestions, currentArg);
+            }
+          }
+        });
 
     return suggestions;
+  }
+
+  private List<Rank> getSubranks(UUID id) {
+    return AccountRanksRepositoryManager.get().getSubranks(id);
   }
 }

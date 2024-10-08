@@ -12,6 +12,7 @@ public class RanksCommand extends AbstractParameterizedCommand {
 
     addSubcommand(new RanksSetCommand());
     addSubcommand(new RanksAddCommand());
+    addSubcommand(new RanksRemoveCommand());
     addSubcommand(new RanksInfoCommand());
     addSubcommand(new RanksListCommand());
   }
@@ -26,6 +27,10 @@ public class RanksCommand extends AbstractParameterizedCommand {
     sender.sendMessage(
         MessageUtil.getMessageWithHover(
                 "- /%s <player> add <rank>", "Adds a subrank to a player.", getAliasUsed())
+            .color(Rank.ADMIN.getPrefixColor()));
+    sender.sendMessage(
+        MessageUtil.getMessageWithHover(
+                "- /%s <player> remove <rank>", "Removes a subrank from a player.", getAliasUsed())
             .color(Rank.ADMIN.getPrefixColor()));
     sender.sendMessage(
         MessageUtil.getMessageWithHover(

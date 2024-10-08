@@ -42,20 +42,27 @@ public class RanksInfoCommand extends AbstractCommand {
 
     ServerUtil.runAsync(
         () -> {
-          UUID targetId = AccountsRepositoryManager.get().getId(targetName);
-          String rank = AccountRanksRepositoryManager.get().getRank(targetId);
-          List<Rank> subranks = AccountRanksRepositoryManager.get().getSubranks(targetId);
+          try {
+            UUID targetId = AccountsRepositoryManager.get().getId(targetName);
+            String rank = AccountRanksRepositoryManager.get().getRank(targetId);
+            List<Rank> subranks = AccountRanksRepositoryManager.get().getSubranks(targetId);
 
-          ServerUtil.runSync(
-              () -> {
-                sender.sendMessage(
-                    MessageUtil.getPrefixedMessage(
-                        getPrefix(), "Rank Information for %s:", targetName));
-                sender.sendMessage(MessageUtil.getMessage("- Primary: &e%s", rank));
-                sender.sendMessage(
-                    MessageUtil.getMessage("- Subranks &8(%s)&7: ", subranks.size())
-                        .append(Rank.getFormattedList(subranks)));
-              });
+            ServerUtil.runSync(
+                () -> {
+                  sender.sendMessage(
+                      MessageUtil.getPrefixedMessage(
+                          getPrefix(), "Rank Information for %s:", targetName));
+                  sender.sendMessage(MessageUtil.getMessage("- Primary: &e%s", rank));
+                  sender.sendMessage(
+                      MessageUtil.getMessage("- Subranks &8(%s)&7: ", subranks.size())
+                          .append(Rank.getFormattedList(subranks)));
+                });
+          } catch (Exception exception) {
+            sender.sendMessage(
+                MessageUtil.getPrefixedMessage(
+                    getPrefix(),
+                    "An error occurred while attempting to get the player's rank information."));
+          }
         });
   }
 

@@ -32,7 +32,10 @@ public class AccountsRepositoryManager
       return !AccountsRepository.get().exists("account_id", id.toString());
     } catch (SQLException exception) {
       Refraction.log(
-          2, "Failed to check if player (account_id=%s) exists: %s", id.toString(), exception.getMessage());
+          2,
+          "Failed to check if player (account_id=%s) exists: %s",
+          id.toString(),
+          exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
       return false;
     }
@@ -74,7 +77,8 @@ public class AccountsRepositoryManager
     try {
       return AccountsRepository.get().getName(id);
     } catch (SQLException exception) {
-      Refraction.log(2, "Failed getting name (account_id=%s): %s", id.toString(), exception.getMessage());
+      Refraction.log(
+          2, "Failed getting name (account_id=%s): %s", id.toString(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
       return null;
     }

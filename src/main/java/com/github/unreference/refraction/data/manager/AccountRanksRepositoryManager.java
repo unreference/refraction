@@ -33,7 +33,10 @@ public class AccountRanksRepositoryManager
       return !AccountRanksRepository.get().exists("account_id", id.toString());
     } catch (SQLException exception) {
       Refraction.log(
-          2, "Failed to check if player (account_id=%s) exists: %s", id.toString(), exception.getMessage());
+          2,
+          "Failed to check if player (account_id=%s) exists: %s",
+          id.toString(),
+          exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
       return false;
     }
@@ -60,7 +63,8 @@ public class AccountRanksRepositoryManager
     try {
       return AccountRanksRepository.get().getRank(id);
     } catch (SQLException exception) {
-      Refraction.log(2, "Failed getting rank (account_id=%s): %s", id.toString(), exception.getMessage());
+      Refraction.log(
+          2, "Failed getting rank (account_id=%s): %s", id.toString(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
       return null;
     }
@@ -70,7 +74,8 @@ public class AccountRanksRepositoryManager
     try {
       return AccountRanksRepository.get().getSubranks(id);
     } catch (SQLException exception) {
-      Refraction.log(2, "Failed getting subranks (account_id=%s): %s", id.toString(), exception.getMessage());
+      Refraction.log(
+          2, "Failed getting subranks (account_id=%s): %s", id.toString(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
       return List.of();
     }
@@ -80,7 +85,8 @@ public class AccountRanksRepositoryManager
     try {
       AccountRanksRepository.get().setRank(id, rank);
     } catch (SQLException exception) {
-      Refraction.log(2, "Failed setting rank (account_id=%s): %s", id.toString(), exception.getMessage());
+      Refraction.log(
+          2, "Failed setting rank (account_id=%s): %s", id.toString(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
     }
   }
@@ -89,7 +95,18 @@ public class AccountRanksRepositoryManager
     try {
       AccountRanksRepository.get().addSubrank(id, subrank);
     } catch (SQLException exception) {
-      Refraction.log(2, "Failed adding subrank (account_id=%s): %s", id.toString(), exception.getMessage());
+      Refraction.log(
+          2, "Failed adding subrank (account_id=%s): %s", id.toString(), exception.getMessage());
+      Refraction.log(2, Arrays.toString(exception.getStackTrace()));
+    }
+  }
+
+  public void removeSubrank(UUID id, Rank subrank) {
+    try {
+      AccountRanksRepository.get().removeSubrank(id, subrank);
+    } catch (SQLException exception) {
+      Refraction.log(
+          2, "Failed removing subrank (account_id=%s): %s", id.toString(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
     }
   }

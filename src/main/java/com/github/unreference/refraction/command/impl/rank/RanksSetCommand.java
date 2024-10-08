@@ -47,24 +47,30 @@ public class RanksSetCommand extends AbstractCommand {
 
     ServerUtil.runAsync(
         () -> {
-          UUID targetId = AccountsRepositoryManager.get().getId(targetName);
-          AccountRanksRepositoryManager.get().setRank(targetId, rank);
+          try {
+            UUID targetId = AccountsRepositoryManager.get().getId(targetName);
+            AccountRanksRepositoryManager.get().setRank(targetId, rank);
 
-          ServerUtil.runSync(
-              () -> {
-                sender.sendMessage(
-                    MessageUtil.getPrefixedMessage(
-                        getPrefix(), "Set &e%s's &7rank to &e%s&7.", targetName, rank.getId()));
-
-                Player targetPlayer = Bukkit.getPlayer(targetName);
-
-                if (targetPlayer != null) {
-                  targetPlayer.sendMessage(
+            ServerUtil.runSync(
+                () -> {
+                  sender.sendMessage(
                       MessageUtil.getPrefixedMessage(
-                          getPrefix(), "Your rank has been updated to &e%s&7!", rank.getId()));
-                  ServerUtil.callEvent(new RankChangeEvent(targetPlayer, rank));
-                }
-              });
+                          getPrefix(), "Set &e%s's &7rank to &e%s&7.", targetName, rank.getId()));
+
+                  Player targetPlayer = Bukkit.getPlayer(targetName);
+
+                  if (targetPlayer != null) {
+                    targetPlayer.sendMessage(
+                        MessageUtil.getPrefixedMessage(
+                            getPrefix(), "Your rank has been updated to &e%s&7!", rank.getId()));
+                    ServerUtil.callEvent(new RankChangeEvent(targetPlayer, rank));
+                  }
+                });
+          } catch (Exception exception) {
+            sender.sendMessage(
+                MessageUtil.getPrefixedMessage(
+                    getPrefix(), "An error occurred while attempting to set the player's rank."));
+          }
         });
   }
 
