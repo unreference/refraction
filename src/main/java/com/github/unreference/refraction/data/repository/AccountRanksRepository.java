@@ -74,7 +74,7 @@ public class AccountRanksRepository extends AbstractRepository<AccountRanksRecor
     data.put("is_primary", true);
 
     if (currentPrimaryId != null) {
-      update(data, "account_id = ? AND is_primary = ?", id.toString(), true);
+      update(data, "account_id = ? AND is_primary = TRUE", id.toString());
     } else {
       AccountRanksRecord primary = new AccountRanksRecord(id.toString(), rank.getId(), true, null);
       insert(primary);
@@ -92,6 +92,7 @@ public class AccountRanksRepository extends AbstractRepository<AccountRanksRecor
             "account_id = ? AND rank = ? AND is_primary = FALSE",
             id.toString(),
             rank.getId())) {
+
       if (!result.next()) {
         AccountRanksRecord subrank =
             new AccountRanksRecord(id.toString(), rank.getId(), false, parentId);
@@ -103,7 +104,7 @@ public class AccountRanksRepository extends AbstractRepository<AccountRanksRecor
   public List<Rank> getSubranks(UUID id) throws SQLException {
     List<Rank> subranks = new ArrayList<>();
 
-    try (ResultSet result = query("rank", "account_id = ?", id.toString())) {
+    try (ResultSet result = query("rank", "account_id = ? AND is_primary = FALSE", id.toString())) {
       while (result.next()) {
         String rankId = result.getString("rank");
         Rank rank = Rank.getRankFromId(rankId);
@@ -128,6 +129,9 @@ public class AccountRanksRepository extends AbstractRepository<AccountRanksRecor
   }
 
   private void clearSubranks(UUID id) throws SQLException {
-    DatabaseManager.get().execute("DELETE FROM account_ranks WHERE account_id = ?", id.toString());
+    DatabaseManager.get()
+        .execute(
+            String.format("DELETE FROM %s WHERE account_id = ? AND is_primary = FALSE", getName()),
+            id.toString());
   }
 }

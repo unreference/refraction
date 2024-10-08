@@ -59,13 +59,10 @@ public class RanksSetCommand extends AbstractCommand {
                 Player targetPlayer = Bukkit.getPlayer(targetName);
 
                 if (targetPlayer != null) {
-                  Objects.requireNonNull(Bukkit.getPlayer(targetName))
-                      .sendMessage(
-                          MessageUtil.getPrefixedMessage(
-                              getPrefix(), "Your rank has been updated to &e%s&7!", rank.getId()));
-                  Bukkit.getServer()
-                      .getPluginManager()
-                      .callEvent(new RankChangeEvent(targetPlayer, rank));
+                  targetPlayer.sendMessage(
+                      MessageUtil.getPrefixedMessage(
+                          getPrefix(), "Your rank has been updated to &e%s&7!", rank.getId()));
+                  ServerUtil.callEvent(new RankChangeEvent(targetPlayer, rank));
                 }
               });
         });

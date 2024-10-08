@@ -1,6 +1,7 @@
 package com.github.unreference.refraction.util;
 
 import com.github.unreference.refraction.Refraction;
+import org.bukkit.event.Event;
 
 public class ServerUtil {
   private ServerUtil() {}
@@ -14,5 +15,9 @@ public class ServerUtil {
 
   public static void runSync(Runnable runnable) {
     Refraction.getPlugin().getServer().getScheduler().runTask(Refraction.getPlugin(), runnable);
+  }
+
+  public static void callEvent(Event event) {
+    Refraction.getPlugin().getServer().getPluginManager().callEvent(event);
   }
 }

@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
@@ -22,7 +23,7 @@ public class PlayerListener implements Listener {
   }
 
   @EventHandler
-  public void onPlayerJoin(PlayerJoinEvent event) {
+  public void onPlayerLogin(PlayerLoginEvent event) {
     Player player = event.getPlayer();
     String name = player.getName();
     UUID uuid = player.getUniqueId();
@@ -39,17 +40,19 @@ public class PlayerListener implements Listener {
 
     AccountsRepositoryManager.get().update(uuid, name, now);
 
-    Rank playerRank =
-        Rank.getRankFromId(AccountRanksRepositoryManager.get().getRank(player.getUniqueId()));
+    Rank playerRank = Rank.getRankFromId(AccountRanksRepositoryManager.get().getRank(uuid));
 
     boolean wasOp = player.isOp();
     player.setOp(playerRank.isPermitted(PERMISSION_AUTO_OP));
     boolean isOp = player.isOp();
 
     if (isOp != wasOp) {
-      Refraction.log(1, "Updated operator status [%s] -> %s", player.getName(), isOp);
+      Refraction.log(1, "Updated operator status [%s] -> %s", name, isOp);
     }
+  }
 
+  @EventHandler
+  public void onPlayerJoin(PlayerJoinEvent event) {
     event.joinMessage(null);
   }
 

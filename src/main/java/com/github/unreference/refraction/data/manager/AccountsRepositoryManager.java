@@ -29,9 +29,10 @@ public class AccountsRepositoryManager
 
   public boolean isNew(UUID id) {
     try {
-      return !AccountsRepository.get().exists("account_id", id);
+      return !AccountsRepository.get().exists("account_id", id.toString());
     } catch (SQLException exception) {
-      Refraction.log(2, "Failed to check if player (id=%s) exists: %s", id, exception.getMessage());
+      Refraction.log(
+          2, "Failed to check if player (account_id=%s) exists: %s", id.toString(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
       return false;
     }
@@ -45,8 +46,7 @@ public class AccountsRepositoryManager
         Refraction.log(1, "Player (name=%s) already exists", data.name());
       }
     } catch (SQLException exception) {
-      Refraction.log(
-          2, "Failed to register (name=%s): %s", data.name(), exception.getMessage());
+      Refraction.log(2, "Failed to register (name=%s): %s", data.name(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
     }
   }
@@ -74,7 +74,7 @@ public class AccountsRepositoryManager
     try {
       return AccountsRepository.get().getName(id);
     } catch (SQLException exception) {
-      Refraction.log(2, "Failed getting name (id=%s): %s", id, exception.getMessage());
+      Refraction.log(2, "Failed getting name (account_id=%s): %s", id.toString(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
       return null;
     }
