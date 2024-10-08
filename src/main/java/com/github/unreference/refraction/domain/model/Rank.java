@@ -1,6 +1,8 @@
 package com.github.unreference.refraction.domain.model;
 
 import java.util.*;
+
+import com.github.unreference.refraction.util.FormatUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
@@ -10,96 +12,96 @@ public enum Rank {
   // A first step into the fantastical stories of the mist\n
   // that just might turn out to be true.\n\n
   // The first purchasable rank in the Minexplex shop!
-  ULTRA("ultra", "Ultra", NamedTextColor.AQUA, PLAYER, true),
+  ULTRA("ultra", "&b&lUltra", PLAYER, true),
 
   // There are many stories of a person who was brave enough\n
   // to tame the most fearsome dragon in the land.\n\n
   // The second purchasable rank in the Mineplex shop!
-  HERO("hero", "Hero", NamedTextColor.LIGHT_PURPLE, ULTRA, true),
+  HERO("hero", "&d&lHero",  ULTRA, true),
 
   // For years, many have scoffed at the existence of\n
   // these beings, only for them to become true.\n\n
   // The third purchasable rank at the Mineplex shop!
-  LEGEND("legend", "Legend", NamedTextColor.GREEN, HERO, true),
+  LEGEND("legend", "&a&lLegend",  HERO, true),
 
   // Ancient myths have spoken of these gigantic\n
   // beings with unfathomable power.\n\n
   // The fourth purchasable rank in the Mineplex shop!
-  TITAN("titan", "Titan", NamedTextColor.RED, LEGEND, true),
+  TITAN("titan", "&c&lTitan",  LEGEND, true),
 
   // Fantastic and magical, no one except the time lords\n
   // truly understand the power of these individuals.\n\n
   // The fifth purchasable rank in the Mineplex shop!
-  ETERNAL("eternal", "Eternal", NamedTextColor.DARK_AQUA, TITAN, true),
+  ETERNAL("eternal", "&3Eternal",  TITAN, true),
 
   // Everlasting beings that are said to have\n
   // witnessed the birth of the universe.\n
   // It's said they can control time itself.\n\n
   // A subscription-based rank purchasable in the Mineplex shop!
-  IMMORTAL("immortal", "Immortal", NamedTextColor.YELLOW, ETERNAL, true),
+  IMMORTAL("immortal", "&e&lImmortal",  ETERNAL, true),
 
   // A streamer who often features Mineplex\n
   // on their Twitch, Beam, or YouTube stream.
-  STREAM("stream", "Stream", NamedTextColor.DARK_PURPLE, IMMORTAL, true),
+  STREAM("stream", "&5&lStream",  IMMORTAL, true),
 
   // A YouTuber who creates content for\nor related to Mineplex.\n\n
   // They have fewer subscribers than full YouTubers.
-  YT("yt", "YT", NamedTextColor.DARK_PURPLE, STREAM, true),
+  YT("yt", "&5&lYT",  STREAM, true),
 
   // A YouTuber who creates content for\n
   // or related to Mineplex.
-  YOUTUBE("youtube", "YouTube", NamedTextColor.RED, YT, true),
+  YOUTUBE("youtube", "&c&lYouTube",  YT, true),
 
   // These creative staff members help\n
   // build maps for your favorite games!
-  BUILDER("builder", "Builder", NamedTextColor.BLUE, ETERNAL, true),
+  BUILDER("builder", "&9&lBuilder",  ETERNAL, true),
 
   // Build Leads are leaders of the Mineplex Build Team.\n
   // They oversee the creation of new maps and manage Builders.
-  BUILD_LEAD("build_lead", "BuildLead", NamedTextColor.BLUE, BUILDER, true),
+  BUILD_LEAD("build_lead", "&9&lBuildLead",  BUILDER, true),
 
   // Trainees are Moderators in training.\n
   // Their duties include enforcing the rules\n
   // and providing help to anyone\n
   // with questions or concerns.\n\n
   // For assistance, contact them using &e/a <message>.
-  TRAINEE("trainee", "Trainee", NamedTextColor.GOLD, BUILD_LEAD, true),
+  TRAINEE("trainee", "&6&lTrainee",  BUILD_LEAD, true),
 
   // Moderators enforce rules and provide help to\n
   // anyone with questions or concerns.\n\n
   // For assistance, contact them using &e/a <message>.
-  MOD("mod", "Mod", NamedTextColor.GOLD, TRAINEE, true),
+  MOD("mod", "&6&lMod",  TRAINEE, true),
 
   // Senior Moderators are members of a special staff team\n
   // whose duties include fulfilling specific tasks such as\n
   // community or staff management.\n
   // Just like Moderators, you can always ask them for help!\n\n
   // For assistance, contact them using &e/a <message>.
-  SR_MOD("sr_mod", "Sr.Mod", NamedTextColor.GOLD, MOD, true),
+  SR_MOD("sr_mod", "&6&lSr.Mod",  MOD, true),
 
   // Support members handle tickets and\n
   // provide customer service.
-  SUPPORT("support", "Support", NamedTextColor.BLUE, SR_MOD, true),
+  SUPPORT("support", "&9&lSupport",  SR_MOD, true),
 
   // Administrators are leaders of their respective\n
   // Senior Moderator teams.
-  ADMIN("admin", "Admin", NamedTextColor.DARK_RED, SUPPORT, true),
+  ADMIN("admin", "&4&lAdmin",  SUPPORT, true),
 
   // Developers work behind the scenes to create new\n
   // games and features.\n
   // They also fix bugs to provide you\n
   // with the best experience!
-  DEV("dev", "Dev", NamedTextColor.DARK_RED, ADMIN, true),
+  DEV("dev", "&4&lDev",  ADMIN, true),
 
   // Leaders manage the operation of their respective\n
   // team or projects within the staff, development, or\n
   // management team.
-  LEADER("leader", "Leader", NamedTextColor.DARK_RED, DEV, true),
+  LEADER("leader", "&4&lLeader",  DEV, true),
 
   // Owners are the core managers of Mineplex.\n
   // Each Owner manages a different aspect of the\n
   // server and ensures its efficient operation.
-  OWNER("owner", "Owner", NamedTextColor.DARK_RED, LEADER, true),
+  OWNER("owner", "&4&lOwner",  LEADER, true),
 
   RC("rc", false),
   STMA("stma", false),
@@ -110,7 +112,6 @@ public enum Rank {
 
   private final String id;
   private final String prefix;
-  private final NamedTextColor prefixColor;
   private final Rank parent;
   private final boolean isPrimary;
 
@@ -120,7 +121,6 @@ public enum Rank {
   Rank(String id, boolean isPrimary) {
     this.id = id;
     this.prefix = null;
-    this.prefixColor = null;
     this.parent = null;
     this.isPrimary = isPrimary;
     this.grantedPermissions = new HashMap<>();
@@ -130,17 +130,15 @@ public enum Rank {
   Rank(String id, Rank parent, boolean isPrimary) {
     this.id = id;
     this.prefix = null;
-    this.prefixColor = null;
     this.parent = parent;
     this.isPrimary = isPrimary;
     this.grantedPermissions = new HashMap<>();
     this.revokedPermissions = new HashSet<>();
   }
 
-  Rank(String id, String prefix, NamedTextColor prefixColor, Rank parent, boolean isPrimary) {
+  Rank(String id, String prefix, Rank parent, boolean isPrimary) {
     this.id = id;
     this.prefix = prefix;
-    this.prefixColor = prefixColor;
     this.parent = parent;
     this.isPrimary = isPrimary;
     this.grantedPermissions = new HashMap<>();
@@ -225,8 +223,12 @@ public enum Rank {
     return prefix;
   }
 
-  public NamedTextColor getPrefixColor() {
-    return prefixColor;
+  public Component getFormattedPrefix() {
+    if (prefix != null) {
+      return FormatUtil.getFormattedComponent(prefix).appendSpace();
+    }
+
+    return Component.empty();
   }
 
   public boolean isPrimary() {

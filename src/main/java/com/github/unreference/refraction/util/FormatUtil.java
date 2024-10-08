@@ -71,6 +71,47 @@ public class FormatUtil {
     return builder.build();
   }
 
+  public static Component toUpperCase(Component component) {
+    if (component instanceof TextComponent textComponent) {
+      TextComponent.Builder builder = Component.text();
+
+      String originalText = textComponent.content();
+      int lastEnd = 0;
+      Style currentStyle = textComponent.style();
+
+      Matcher matcher = formatPattern.matcher(originalText);
+      while (matcher.find()) {
+        builder.append(
+            Component.text(
+                originalText.substring(lastEnd, matcher.start()).toUpperCase(), currentStyle));
+
+        String match = matcher.group();
+        if (legacyColorPattern.matcher(match).matches()) {
+          currentStyle = handleLegacyColor(match, currentStyle);
+        } else if (hexColorPattern.matcher(match).matches()) {
+          currentStyle = handleHexColor(match, currentStyle);
+        }
+
+        lastEnd = matcher.end();
+      }
+
+      builder.append(Component.text(originalText.substring(lastEnd).toUpperCase(), currentStyle));
+
+      for (Component child : component.children()) {
+        builder.append(toUpperCase(child));
+      }
+
+      return builder.build();
+    }
+
+    TextComponent.Builder builder = Component.text();
+    for (Component child : component.children()) {
+      builder.append(toUpperCase(child));
+    }
+
+    return builder.build();
+  }
+
   private static TextColor adjustHsb(
       TextColor color, float hue, float saturation, float brightness) {
     float[] hsb = new float[3];

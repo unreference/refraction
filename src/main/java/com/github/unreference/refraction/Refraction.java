@@ -4,6 +4,7 @@ import com.github.unreference.refraction.data.manager.AccountRanksRepositoryMana
 import com.github.unreference.refraction.data.manager.AccountsRepositoryManager;
 import com.github.unreference.refraction.data.manager.DatabaseManager;
 import com.github.unreference.refraction.domain.model.Rank;
+import com.github.unreference.refraction.event.ChatListener;
 import com.github.unreference.refraction.event.CommandListener;
 import com.github.unreference.refraction.event.PlayerListener;
 import com.github.unreference.refraction.util.MessageUtil;
@@ -85,6 +86,7 @@ public final class Refraction extends JavaPlugin {
 
   private void registerListeners() {
     registerListener(new PlayerListener());
+    registerListener(new ChatListener());
     registerListener(new CommandListener());
   }
 
