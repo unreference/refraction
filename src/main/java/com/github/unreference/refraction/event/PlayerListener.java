@@ -40,7 +40,7 @@ public class PlayerListener implements Listener {
 
               AccountRanksRecord accountRank =
                   new AccountRanksRecord(
-                      uuid.toString(), Rank.DEFAULT.getId(), Rank.DEFAULT.isPrimary());
+                      uuid.toString(), Rank.PLAYER.getId(), Rank.PLAYER.isPrimary());
               AccountRanksRepositoryManager.get().register(accountRank);
             }
 

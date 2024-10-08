@@ -14,6 +14,7 @@ public class RanksCommand extends AbstractParameterizedCommand {
     addSubcommand(new RanksAddCommand());
     addSubcommand(new RanksRemoveCommand());
     addSubcommand(new RanksInfoCommand());
+    addSubcommand(new RanksResetCommand());
     addSubcommand(new RanksListCommand());
   }
 
@@ -35,6 +36,10 @@ public class RanksCommand extends AbstractParameterizedCommand {
     sender.sendMessage(
         MessageUtil.getMessageWithHover(
                 "- /%s <player> info", "Displays a player's rank information.", getAliasUsed())
+            .color(Rank.ADMIN.getPrefixColor()));
+    sender.sendMessage(
+        MessageUtil.getMessageWithHover(
+                "- /%s <player> reset", "Resets a player's rank to default.", getAliasUsed())
             .color(Rank.ADMIN.getPrefixColor()));
     sender.sendMessage(
         MessageUtil.getMessageWithHover(

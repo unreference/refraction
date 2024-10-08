@@ -5,12 +5,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public enum Rank {
-  DEFAULT("default", true),
+  PLAYER("player", true),
 
   // A first step into the fantastical stories of the mist\n
   // that just might turn out to be true.\n\n
   // The first purchasable rank in the Minexplex shop!
-  ULTRA("ultra", "Ultra", NamedTextColor.AQUA, DEFAULT, true),
+  ULTRA("ultra", "Ultra", NamedTextColor.AQUA, PLAYER, true),
 
   // There are many stories of a person who was brave enough\n
   // to tame the most fearsome dragon in the land.\n\n
