@@ -7,7 +7,6 @@ import com.github.unreference.refraction.data.manager.AccountsRepositoryManager;
 import com.github.unreference.refraction.domain.model.Rank;
 import com.github.unreference.refraction.util.MessageUtil;
 import com.github.unreference.refraction.util.ServerUtil;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
@@ -23,7 +22,7 @@ public class RanksRemoveCommand extends AbstractCommand {
   @Override
   protected Component getUsageMessage() {
     return MessageUtil.getPrefixedMessage(
-        getPrefix(), "/%s <player> %s <rank>", getMainAliasUsed(), getAliasUsed());
+        getPrefix(), "Usage: /%s <player> %s <rank>", getMainAliasUsed(), getAliasUsed());
   }
 
   @Override
@@ -43,8 +42,9 @@ public class RanksRemoveCommand extends AbstractCommand {
 
     Rank rank = Rank.getRankFromId(args[0]);
 
-    if (rank == null) {
-      MessageUtil.getPrefixedMessage(getPrefix(), "Rank not found: &e%s", args[0]);
+    if (rank == null || rank.isPrimary()) {
+      sender.sendMessage(
+          MessageUtil.getPrefixedMessage(getPrefix(), "Subrank not found: &e%s", args[0]));
       return;
     }
 
@@ -64,7 +64,7 @@ public class RanksRemoveCommand extends AbstractCommand {
                               getPrefix(),
                               "&e%s &7is not part of the &e%s &7subrank.",
                               targetName,
-                              rank.getId().toUpperCase())));
+                              rank.getId())));
               return;
             }
 
@@ -75,9 +75,9 @@ public class RanksRemoveCommand extends AbstractCommand {
                   sender.sendMessage(
                       MessageUtil.getPrefixedMessage(
                           getPrefix(),
-                          "Removed %e%s &7from the &e%s &7subrank.",
+                          "Removed &e%s &7from the &e%s &7subrank.",
                           targetName,
-                          rank.getId().toUpperCase()));
+                          rank.getId()));
 
                   Player targetPlayer = Bukkit.getPlayer(targetName);
 
@@ -86,10 +86,10 @@ public class RanksRemoveCommand extends AbstractCommand {
                         MessageUtil.getPrefixedMessage(
                             getPrefix(),
                             "You were removed from the &e%s &7subrank!",
-                            rank.getId().toUpperCase()));
+                            rank.getId()));
                   }
                 });
-          } catch (Exception e) {
+          } catch (Exception exception) {
             sender.sendMessage(
                 MessageUtil.getPrefixedMessage(
                     getPrefix(),
@@ -100,28 +100,8 @@ public class RanksRemoveCommand extends AbstractCommand {
 
   @Override
   public List<String> tab(CommandSender sender, String alias, String[] args) {
-    List<String> suggestions = new ArrayList<>();
-
-    ServerUtil.runAsync(
-        () -> {
-          UUID targetId = AccountsRepositoryManager.get().getId(args[0]);
-
-          if (targetId == null) {
-            return;
-          }
-
-          if (args.length == 1) {
-            List<Rank> subranks = getSubranks(targetId);
-
-            for (Rank subrank : subranks) {
-              suggestions.add(subrank.getId());
-              String currentArg = args[0];
-              filterTab(suggestions, currentArg);
-            }
-          }
-        });
-
-    return suggestions;
+    // TODO: Find a way to fetch the target's subranks to populate tab completion
+    return List.of();
   }
 
   private List<Rank> getSubranks(UUID id) {

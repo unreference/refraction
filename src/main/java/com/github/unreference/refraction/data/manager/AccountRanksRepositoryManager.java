@@ -38,7 +38,7 @@ public class AccountRanksRepositoryManager
           id.toString(),
           exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
-      return false;
+      throw new RuntimeException();
     }
   }
 
@@ -56,6 +56,7 @@ public class AccountRanksRepositoryManager
           data.getAccountId(),
           exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
+      throw new RuntimeException();
     }
   }
 
@@ -66,7 +67,7 @@ public class AccountRanksRepositoryManager
       Refraction.log(
           2, "Failed getting rank (account_id=%s): %s", id.toString(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
-      return null;
+      throw new RuntimeException();
     }
   }
 
@@ -77,7 +78,7 @@ public class AccountRanksRepositoryManager
       Refraction.log(
           2, "Failed getting subranks (account_id=%s): %s", id.toString(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
-      return List.of();
+      throw new RuntimeException();
     }
   }
 
@@ -88,6 +89,7 @@ public class AccountRanksRepositoryManager
       Refraction.log(
           2, "Failed setting rank (account_id=%s): %s", id.toString(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
+      throw new RuntimeException();
     }
   }
 
@@ -98,6 +100,7 @@ public class AccountRanksRepositoryManager
       Refraction.log(
           2, "Failed adding subrank (account_id=%s): %s", id.toString(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
+      throw new RuntimeException();
     }
   }
 
@@ -108,6 +111,7 @@ public class AccountRanksRepositoryManager
       Refraction.log(
           2, "Failed removing subrank (account_id=%s): %s", id.toString(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
+      throw new RuntimeException();
     }
   }
 }

@@ -43,18 +43,11 @@ public class RanksAddCommand extends AbstractCommand {
 
     Rank rank = Rank.getRankFromId(args[0]);
 
-    if (rank == null) {
+    if (rank == null || rank.isPrimary()) {
       sender.sendMessage(
-          MessageUtil.getPrefixedMessage(getPrefix(), "Rank not found: &e%s", args[0]));
+          MessageUtil.getPrefixedMessage(getPrefix(), "Subrank not found: &e%s", args[0]));
       return;
     }
-
-    if (rank.isPrimary()) {
-      sender.sendMessage(
-          MessageUtil.getPrefixedMessage(getPrefix(), "Invalid subrank: &e%s", rank.getId()));
-      return;
-    }
-
     String targetName = context.getTargetName();
 
     ServerUtil.runAsync(
@@ -70,16 +63,14 @@ public class RanksAddCommand extends AbstractCommand {
                           getPrefix(),
                           "Added &e%s &7to the &e%s &7subrank.",
                           targetName,
-                          rank.getId().toUpperCase()));
+                          rank.getId()));
 
                   Player targetPlayer = Bukkit.getPlayer(targetName);
 
                   if (targetPlayer != null) {
                     targetPlayer.sendMessage(
                         MessageUtil.getPrefixedMessage(
-                            getPrefix(),
-                            "You were added to the &e%s &7subrank!",
-                            rank.getId().toUpperCase()));
+                            getPrefix(), "You were added to the &e%s &7subrank!", rank.getId()));
                   }
                 });
           } catch (Exception exception) {

@@ -51,6 +51,7 @@ public class AccountsRepositoryManager
     } catch (SQLException exception) {
       Refraction.log(2, "Failed to register (name=%s): %s", data.name(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
+      throw new RuntimeException();
     }
   }
 
@@ -60,6 +61,7 @@ public class AccountsRepositoryManager
     } catch (SQLException exception) {
       Refraction.log(2, "Failed to update last played (name=%s): %s", name, exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
+      throw new RuntimeException();
     }
   }
 
@@ -69,7 +71,7 @@ public class AccountsRepositoryManager
     } catch (SQLException exception) {
       Refraction.log(2, "Failed getting ID (name=%s): %s", name, exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
-      return null;
+      throw new RuntimeException();
     }
   }
 
@@ -80,7 +82,7 @@ public class AccountsRepositoryManager
       Refraction.log(
           2, "Failed getting name (account_id=%s): %s", id.toString(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
-      return null;
+      throw new RuntimeException();
     }
   }
 }

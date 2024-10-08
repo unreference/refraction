@@ -7,7 +7,6 @@ import com.github.unreference.refraction.domain.model.Rank;
 import com.github.unreference.refraction.event.CommandListener;
 import com.github.unreference.refraction.event.PlayerListener;
 import com.github.unreference.refraction.util.MessageUtil;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Optional;
 import net.kyori.adventure.text.Component;
@@ -55,7 +54,17 @@ public final class Refraction extends JavaPlugin {
 
     if (isConnectionSuccessful()) {
       registerListeners();
+      getRepositories();
       handleWhitelist();
+    }
+  }
+
+  private void getRepositories() {
+    try {
+      AccountsRepositoryManager.get().create();
+      AccountRanksRepositoryManager.get().create();
+    } catch (Exception exception) {
+      logError(exception);
     }
   }
 
@@ -67,10 +76,8 @@ public final class Refraction extends JavaPlugin {
   private boolean isConnectionSuccessful() {
     try {
       DatabaseManager.get().connect();
-      AccountsRepositoryManager.get().create();
-      AccountRanksRepositoryManager.get().create();
       return true;
-    } catch (SQLException | NullPointerException exception) {
+    } catch (Exception exception) {
       logError(exception);
       return false;
     }
