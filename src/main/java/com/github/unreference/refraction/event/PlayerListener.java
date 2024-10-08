@@ -1,12 +1,11 @@
-package com.github.unreference.refraction.listener;
+package com.github.unreference.refraction.event;
 
 import com.github.unreference.refraction.Refraction;
-import com.github.unreference.refraction.data.AccountRanksRecord;
-import com.github.unreference.refraction.data.AccountsRecord;
 import com.github.unreference.refraction.data.manager.AccountRanksRepositoryManager;
 import com.github.unreference.refraction.data.manager.AccountsRepositoryManager;
-import com.github.unreference.refraction.event.RankChangeEvent;
-import com.github.unreference.refraction.model.Rank;
+import com.github.unreference.refraction.domain.model.AccountRanksRecord;
+import com.github.unreference.refraction.domain.model.AccountsRecord;
+import com.github.unreference.refraction.domain.model.Rank;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.bukkit.entity.Player;
@@ -25,16 +24,17 @@ public class PlayerListener implements Listener {
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent event) {
     Player player = event.getPlayer();
-    UUID uuid = player.getUniqueId();
     String name = player.getName();
+    UUID uuid = player.getUniqueId();
     LocalDateTime now = LocalDateTime.now();
 
     if (AccountsRepositoryManager.get().isNew(uuid)) {
-      AccountsRecord accountsData = new AccountsRecord(uuid.toString(), name, 0, 0, now, now);
-      AccountRanksRecord accountRanksData =
+      AccountsRecord account = new AccountsRecord(uuid.toString(), name, 0, 0, now, now);
+      AccountsRepositoryManager.get().register(account);
+
+      AccountRanksRecord accountRank =
           new AccountRanksRecord(uuid.toString(), Rank.DEFAULT.getId(), Rank.DEFAULT.isPrimary());
-      AccountsRepositoryManager.get().register(accountsData);
-      AccountRanksRepositoryManager.get().register(accountRanksData);
+      AccountRanksRepositoryManager.get().register(accountRank);
     }
 
     AccountsRepositoryManager.get().update(uuid, name, now);

@@ -3,10 +3,10 @@ package com.github.unreference.refraction;
 import com.github.unreference.refraction.data.manager.AccountRanksRepositoryManager;
 import com.github.unreference.refraction.data.manager.AccountsRepositoryManager;
 import com.github.unreference.refraction.data.manager.DatabaseManager;
-import com.github.unreference.refraction.listener.CommandListener;
-import com.github.unreference.refraction.listener.PlayerListener;
-import com.github.unreference.refraction.model.Rank;
-import com.github.unreference.refraction.util.UtilMessage;
+import com.github.unreference.refraction.domain.model.Rank;
+import com.github.unreference.refraction.event.CommandListener;
+import com.github.unreference.refraction.event.PlayerListener;
+import com.github.unreference.refraction.util.MessageUtil;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Optional;
@@ -132,8 +132,8 @@ public final class Refraction extends JavaPlugin {
         }
       }
 
-      UtilMessage.broadcastMessage(
-          UtilMessage.getPrefixedMessage(
+      MessageUtil.broadcastMessage(
+          MessageUtil.getPrefixedMessage(
               "Refraction",
               isFatalError
                   ? "One or more fatal errors have occurred. Whitelist enabled."

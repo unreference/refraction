@@ -1,9 +1,9 @@
-package com.github.unreference.refraction.data;
+package com.github.unreference.refraction.domain.model;
 
 import java.time.LocalDateTime;
 
 public record AccountsRecord(
-    String uuid,
+    String accountId,
     String name,
     int gems,
     int shards,

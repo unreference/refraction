@@ -1,9 +1,7 @@
-package com.github.unreference.refraction.model;
+package com.github.unreference.refraction.domain.model;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public enum Rank {
@@ -163,11 +161,28 @@ public enum Rank {
     return null;
   }
 
+  public static Component getFormattedList(List<Rank> ranks) {
+    Component ranksComponent = Component.empty().colorIfAbsent(NamedTextColor.GRAY);
+
+    for (int i = 0; i < ranks.size(); i++) {
+      Rank rank = ranks.get(i);
+
+      ranksComponent = ranksComponent.append(Component.text(rank.getId(), NamedTextColor.YELLOW));
+
+      if (i < ranks.size() - 1) {
+        ranksComponent = ranksComponent.append(Component.text(", "));
+      }
+    }
+
+    return ranksComponent;
+  }
+
   public String getId() {
     return id;
   }
 
   public void grantPermission(String permission, boolean isInheritable) {
+    revokedPermissions.remove(permission);
     grantedPermissions.put(permission, new RankPermission(isInheritable));
   }
 
@@ -188,14 +203,17 @@ public enum Rank {
       return true; // Explicitly granted permission
     }
 
-    // 3. If there is a parent rank, check if permission is inherited from parent
-    if (parent != null) {
-      // Check if parent permits and whether the permission is inheritable
-      if (parent.isPermitted(permission)) {
-        RankPermission parentPermission = parent.grantedPermissions.get(permission);
-        if (parentPermission != null && parentPermission.isInheritable()) {
-          return true; // Inherited permission
-        }
+    // 3. Check if permission is inherited from parent (recursively)
+    Rank currentRank = this;
+    while (currentRank.parent != null) {
+      currentRank = currentRank.parent;
+      if (currentRank.revokedPermissions.contains(permission)) {
+        return false; // Permission explicitly revoked in parent
+      }
+
+      RankPermission parentPerm = currentRank.grantedPermissions.get(permission);
+      if (parentPerm != null && parentPerm.isInheritable()) {
+        return true; // Inherited permission
       }
     }
 

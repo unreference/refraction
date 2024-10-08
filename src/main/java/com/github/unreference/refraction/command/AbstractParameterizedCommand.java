@@ -2,8 +2,8 @@ package com.github.unreference.refraction.command;
 
 import com.github.unreference.refraction.data.manager.AccountRanksRepositoryManager;
 import com.github.unreference.refraction.data.manager.AccountsRepositoryManager;
-import com.github.unreference.refraction.model.Rank;
-import com.github.unreference.refraction.util.UtilMessage;
+import com.github.unreference.refraction.domain.model.Rank;
+import com.github.unreference.refraction.util.MessageUtil;
 import java.util.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -145,7 +145,7 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
 
     if (targetId == null) {
       sender.sendMessage(
-          UtilMessage.getPrefixedMessage(getPrefix(), "Player not found: &e%s", args[0]));
+          MessageUtil.getPrefixedMessage(getPrefix(), "Player not found: &e%s", args[0]));
       return;
     }
 

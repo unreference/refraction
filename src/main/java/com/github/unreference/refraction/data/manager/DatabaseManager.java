@@ -2,10 +2,7 @@ package com.github.unreference.refraction.data.manager;
 
 import com.github.unreference.refraction.Refraction;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DatabaseManager {
@@ -49,6 +46,41 @@ public class DatabaseManager {
     }
   }
 
+  public void createTable(
+      String tableName, Map<String, String> columns, Map<String, String> indexes)
+      throws SQLException {
+    if (isTableCreated(tableName)) {
+      Refraction.log(0, "Found table [%s]", tableName);
+      return;
+    } else {
+      String columnDefinitions =
+          columns.entrySet().stream()
+              .map(entry -> String.format("%s %s", entry.getKey(), entry.getValue()))
+              .collect(Collectors.joining(", "));
+      String query = String.format("CREATE TABLE %s (%s)", tableName, columnDefinitions);
+      execute(query);
+      Refraction.log(1, "Created table [%s]", tableName);
+    }
+
+    for (Map.Entry<String, String> entry : indexes.entrySet()) {
+      String indexName = entry.getKey();
+      String indexDefinition = entry.getValue();
+
+      if (!indexExists(tableName, indexName)) {
+        String query =
+            String.format("CREATE INDEX %s ON %s(%s)", indexName, tableName, indexDefinition);
+        if (indexName.toUpperCase().contains("UNIQUE")) {
+          indexName = indexName.replace("UNIQUE", "").trim();
+          query =
+              String.format(
+                  "CREATE UNIQUE INDEX %s ON %s(%s)", indexName, tableName, indexDefinition);
+        }
+        execute(query);
+        Refraction.log(1, "Created index [%s] on table [%s]", indexName, tableName);
+      }
+    }
+  }
+
   public void createTable(String tableName, Map<String, String> columns) throws SQLException {
     if (isTableCreated(tableName)) {
       Refraction.log(0, "Found table [%s]", tableName);
@@ -65,12 +97,21 @@ public class DatabaseManager {
     Refraction.log(1, "Created table [%s]", tableName);
   }
 
+  public boolean indexExists(String tableName, String indexName) throws SQLException {
+    String query = String.format("SHOW INDEX FROM %s WHERE Key_name = '%s'", tableName, indexName);
+    try (Statement statement = getConnection().createStatement();
+        ResultSet result = statement.executeQuery(query)) {
+      return result.next();
+    }
+  }
+
   public void insert(String tableName, Map<String, Object> data) throws SQLException {
     String columns = String.join(", ", data.keySet());
     String placeholders = data.keySet().stream().map(key -> "?").collect(Collectors.joining(", "));
 
     String query =
         String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, columns, placeholders);
+
     try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
       int i = 1;
       for (Object value : data.values()) {
@@ -87,7 +128,12 @@ public class DatabaseManager {
     try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
       preparedStatement.setObject(1, value);
       ResultSet result = preparedStatement.executeQuery();
-      return result.next() && result.getInt(1) > 0;
+      if (result.next()) {
+        int count = result.getInt(1);
+        return count > 0;
+      }
+
+      return false;
     }
   }
 

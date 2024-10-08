@@ -1,14 +1,15 @@
 package com.github.unreference.refraction.data.manager;
 
 import com.github.unreference.refraction.Refraction;
-import com.github.unreference.refraction.data.AccountsRecord;
 import com.github.unreference.refraction.data.repository.AccountsRepository;
+import com.github.unreference.refraction.domain.model.AccountsRecord;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 
-public class AccountsRepositoryManager {
+public class AccountsRepositoryManager
+    extends AbstractRepositoryManager<AccountsRecord, AccountsRepository> {
   private static AccountsRepositoryManager instance;
 
   private AccountsRepositoryManager() {}
@@ -21,21 +22,16 @@ public class AccountsRepositoryManager {
     return instance;
   }
 
-  public void create() {
-    try {
-      AccountsRepository.get().createTable();
-    } catch (SQLException exception) {
-      Refraction.log(2, "Failed creating table: %s", exception.getMessage());
-      Refraction.log(2, Arrays.toString(exception.getStackTrace()));
-    }
+  @Override
+  protected AccountsRepository getRepository() {
+    return AccountsRepository.get();
   }
 
   public boolean isNew(UUID id) {
     try {
-      return !AccountsRepository.get().exists(id);
+      return !AccountsRepository.get().exists("account_id", id);
     } catch (SQLException exception) {
-      Refraction.log(
-          2, "Failed to check if player (uuid=%s) exists: %s", id, exception.getMessage());
+      Refraction.log(2, "Failed to check if player (id=%s) exists: %s", id, exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
       return false;
     }
@@ -43,14 +39,14 @@ public class AccountsRepositoryManager {
 
   public void register(AccountsRecord data) {
     try {
-      if (isNew(UUID.fromString(data.uuid()))) {
+      if (isNew(UUID.fromString(data.accountId()))) {
         AccountsRepository.get().insert(data);
       } else {
         Refraction.log(1, "Player (name=%s) already exists", data.name());
       }
     } catch (SQLException exception) {
       Refraction.log(
-          2, "Failed to register new player (uuid=%s): %s", data.uuid(), exception.getMessage());
+          2, "Failed to register (name=%s): %s", data.name(), exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
     }
   }
@@ -78,29 +74,9 @@ public class AccountsRepositoryManager {
     try {
       return AccountsRepository.get().getName(id);
     } catch (SQLException exception) {
-      Refraction.log(2, "Failed getting name (uuid=%s): %s", id, exception.getMessage());
+      Refraction.log(2, "Failed getting name (id=%s): %s", id, exception.getMessage());
       Refraction.log(2, Arrays.toString(exception.getStackTrace()));
       return null;
-    }
-  }
-
-  public int getGems(UUID id) {
-    try {
-      return AccountsRepository.get().getGems(id);
-    } catch (SQLException exception) {
-      Refraction.log(2, "Failed getting gems (uuid=%s): %s", id, exception.getMessage());
-      Refraction.log(2, Arrays.toString(exception.getStackTrace()));
-      return -1;
-    }
-  }
-
-  public int getGems(String name) {
-    try {
-      return AccountsRepository.get().getGems(name);
-    } catch (SQLException exception) {
-      Refraction.log(2, "Failed getting gems (name=%s): %s", name, exception.getMessage());
-      Refraction.log(2, Arrays.toString(exception.getStackTrace()));
-      return -1;
     }
   }
 }

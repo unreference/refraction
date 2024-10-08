@@ -4,13 +4,12 @@ import com.github.unreference.refraction.command.AbstractCommand;
 import com.github.unreference.refraction.command.CommandContext;
 import com.github.unreference.refraction.data.manager.AccountRanksRepositoryManager;
 import com.github.unreference.refraction.data.manager.AccountsRepositoryManager;
-import com.github.unreference.refraction.model.Rank;
-import com.github.unreference.refraction.util.UtilMessage;
-import com.github.unreference.refraction.util.UtilServer;
+import com.github.unreference.refraction.domain.model.Rank;
+import com.github.unreference.refraction.util.MessageUtil;
+import com.github.unreference.refraction.util.ServerUtil;
 import java.util.List;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 
 public class RanksInfoCommand extends AbstractCommand {
@@ -20,7 +19,7 @@ public class RanksInfoCommand extends AbstractCommand {
 
   @Override
   protected Component getUsageMessage() {
-    return UtilMessage.getPrefixedMessage(
+    return MessageUtil.getPrefixedMessage(
         getPrefix(), "Usage: /%s %s <player>", getMainAliasUsed(), getAliasUsed());
   }
 
@@ -41,21 +40,21 @@ public class RanksInfoCommand extends AbstractCommand {
 
     String targetName = context.getTargetName();
 
-    UtilServer.runAsync(
+    ServerUtil.runAsync(
         () -> {
           UUID targetId = AccountsRepositoryManager.get().getId(targetName);
           String rank = AccountRanksRepositoryManager.get().getRank(targetId);
           List<Rank> subranks = AccountRanksRepositoryManager.get().getSubranks(targetId);
 
-          UtilServer.runSync(
+          ServerUtil.runSync(
               () -> {
                 sender.sendMessage(
-                    UtilMessage.getPrefixedMessage(
+                    MessageUtil.getPrefixedMessage(
                         getPrefix(), "Rank Information for %s:", targetName));
-                sender.sendMessage(UtilMessage.getMessage("- Primary: &e%s", rank));
+                sender.sendMessage(MessageUtil.getMessage("- Primary: &e%s", rank));
                 sender.sendMessage(
-                    UtilMessage.getMessage("- Subranks &8(%s)&7: ", subranks.size())
-                        .append(formatRanks(subranks)));
+                    MessageUtil.getMessage("- Subranks &8(%s)&7: ", subranks.size())
+                        .append(Rank.getFormattedList(subranks)));
               });
         });
   }
@@ -63,21 +62,5 @@ public class RanksInfoCommand extends AbstractCommand {
   @Override
   public List<String> tab(CommandSender sender, String alias, String[] args) {
     return List.of();
-  }
-
-  private Component formatRanks(List<Rank> ranks) {
-    Component ranksComponent = Component.empty().colorIfAbsent(NamedTextColor.GRAY);
-
-    for (int i = 0; i < ranks.size(); i++) {
-      Rank rank = ranks.get(i);
-
-      ranksComponent = ranksComponent.append(Component.text(rank.getId(), NamedTextColor.YELLOW));
-
-      if (i < ranks.size() - 1) {
-        ranksComponent = ranksComponent.append(Component.text(", "));
-      }
-    }
-
-    return ranksComponent;
   }
 }

@@ -1,6 +1,6 @@
 package com.github.unreference.refraction.event;
 
-import com.github.unreference.refraction.model.Rank;
+import com.github.unreference.refraction.domain.model.Rank;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

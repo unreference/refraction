@@ -1,9 +1,9 @@
-package com.github.unreference.refraction.command.impl;
+package com.github.unreference.refraction.command.impl.world;
 
 import com.github.unreference.refraction.command.AbstractCommand;
 import com.github.unreference.refraction.command.CommandContext;
-import com.github.unreference.refraction.model.Rank;
-import com.github.unreference.refraction.util.UtilMessage;
+import com.github.unreference.refraction.domain.model.Rank;
+import com.github.unreference.refraction.util.MessageUtil;
 import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
@@ -52,7 +52,7 @@ public class SetSpawnCommand extends AbstractCommand {
 
   @Override
   protected Component getUsageMessage() {
-    return UtilMessage.getPrefixedMessage(
+    return MessageUtil.getPrefixedMessage(
         getPrefix(), "Usage: /%s [<coordinates>]", getAliasUsed());
   }
 
@@ -65,7 +65,7 @@ public class SetSpawnCommand extends AbstractCommand {
     World world = location.getWorld();
     world.setSpawnLocation(location);
     sender.sendMessage(
-        UtilMessage.getPrefixedMessage(
+        MessageUtil.getPrefixedMessage(
             getPrefix(),
             "Set &b%s's &7spawn to &b%.0f&7, &b%.0f&7, &b%.0f&7.",
             world.getName(),

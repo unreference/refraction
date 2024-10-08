@@ -1,10 +1,10 @@
-package com.github.unreference.refraction.listener;
+package com.github.unreference.refraction.event;
 
-import com.github.unreference.refraction.command.impl.SetSpawnCommand;
-import com.github.unreference.refraction.command.impl.SpawnCommand;
 import com.github.unreference.refraction.command.impl.rank.RanksCommand;
+import com.github.unreference.refraction.command.impl.world.SetSpawnCommand;
+import com.github.unreference.refraction.command.impl.world.SpawnCommand;
 import com.github.unreference.refraction.data.manager.AccountRanksRepositoryManager;
-import com.github.unreference.refraction.model.Rank;
+import com.github.unreference.refraction.domain.model.Rank;
 import java.util.Collection;
 import java.util.HashSet;
 import org.bukkit.Bukkit;

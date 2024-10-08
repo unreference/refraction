@@ -2,8 +2,8 @@ package com.github.unreference.refraction.util;
 
 import com.github.unreference.refraction.Refraction;
 
-public class UtilServer {
-  private UtilServer() {}
+public class ServerUtil {
+  private ServerUtil() {}
 
   public static void runAsync(Runnable runnable) {
     Refraction.getPlugin()

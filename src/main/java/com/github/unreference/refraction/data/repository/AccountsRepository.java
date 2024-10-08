@@ -1,16 +1,12 @@
 package com.github.unreference.refraction.data.repository;
 
-import com.github.unreference.refraction.data.AccountsRecord;
-import com.github.unreference.refraction.data.manager.DatabaseManager;
+import com.github.unreference.refraction.domain.model.AccountsRecord;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-public class AccountsRepository {
+public class AccountsRepository extends AbstractRepository<AccountsRecord> {
   private static AccountsRepository instance;
 
   private AccountsRepository() {}
@@ -23,50 +19,46 @@ public class AccountsRepository {
     return instance;
   }
 
-  public void createTable() throws SQLException {
+  @Override
+  public String getName() {
+    return "accounts";
+  }
+
+  @Override
+  protected Map<String, String> getColumns() {
     Map<String, String> columns = new LinkedHashMap<>();
-    columns.put("uuid", "VARCHAR(36) NOT NULL UNIQUE");
+    columns.put("account_id", "VARCHAR(36) NOT NULL UNIQUE");
     columns.put("name", "VARCHAR(16) NOT NULL");
     columns.put("gems", "INT NOT NULL");
     columns.put("shards", "INT NOT NULL");
     columns.put("first_played", "DATETIME(0) NOT NULL");
     columns.put("last_played", "DATETIME(0) NOT NULL");
-
-    DatabaseManager.get().createTable("accounts", columns);
-
-    if (!indexExists("accounts", "name_index")) {
-      DatabaseManager.get().execute("CREATE UNIQUE INDEX name_index ON accounts(name)");
-    }
+    return columns;
   }
 
-  private boolean indexExists(String tableName, String indexName) throws SQLException {
-    String query = String.format("SHOW INDEX FROM %s WHERE Key_name = '%s'", tableName, indexName);
-    try (Statement statement = DatabaseManager.get().getConnection().createStatement();
-        ResultSet result = statement.executeQuery(query)) {
-      return result.next();
-    }
+  @Override
+  protected Map<String, String> getIndexes() {
+    Map<String, String> indexes = new HashMap<>();
+    indexes.put("UNIQUE name_index", "name");
+    return indexes;
   }
 
-  public boolean exists(UUID id) throws SQLException {
-    return DatabaseManager.get().isRecordCreated("accounts", "uuid", id.toString());
-  }
-
-  public void insert(AccountsRecord data) throws SQLException {
-    Map<String, Object> account = buildAccounts(data);
-    DatabaseManager.get().insert("accounts", account);
-  }
-
-  public void updateLastPlayed(UUID id, String name, LocalDateTime lastPlayed) throws SQLException {
-    Map<String, Object> data = new LinkedHashMap<>();
-    data.put("name", name);
-    data.put("last_played", lastPlayed);
-    DatabaseManager.get().update("accounts", data, "uuid = ?", id.toString());
+  @Override
+  protected Map<String, Object> map(AccountsRecord record) {
+    Map<String, Object> accounts = new LinkedHashMap<>();
+    accounts.put("account_id", record.accountId());
+    accounts.put("name", record.name());
+    accounts.put("gems", record.gems());
+    accounts.put("shards", record.shards());
+    accounts.put("first_played", record.firstPlayed());
+    accounts.put("last_played", record.lastPlayed());
+    return accounts;
   }
 
   public UUID getId(String name) throws SQLException {
-    try (ResultSet result = DatabaseManager.get().query("uuid", "accounts", "name = ?", name)) {
+    try (ResultSet result = query("account_id", "name = ?", name)) {
       if (result.next()) {
-        return UUID.fromString(result.getString("uuid"));
+        return UUID.fromString(result.getString("account_id"));
       }
     }
 
@@ -74,8 +66,7 @@ public class AccountsRepository {
   }
 
   public String getName(UUID id) throws SQLException {
-    try (ResultSet result =
-        DatabaseManager.get().query("name", "accounts", "uuid = ?", id.toString())) {
+    try (ResultSet result = query("name", "account_id = ?", id.toString())) {
       if (result.next()) {
         return result.getString("name");
       }
@@ -85,18 +76,7 @@ public class AccountsRepository {
   }
 
   public int getGems(UUID id) throws SQLException {
-    try (ResultSet result =
-        DatabaseManager.get().query("gems", "accounts", "uuid = ?", id.toString())) {
-      if (result.next()) {
-        return result.getInt("gems");
-      }
-    }
-
-    return -1;
-  }
-
-  public int getGems(String name) throws SQLException {
-    try (ResultSet result = DatabaseManager.get().query("gems", "accounts", "name = ?", name)) {
+    try (ResultSet result = query("gems", "account_id = ?", id.toString())) {
       if (result.next()) {
         return result.getInt("gems");
       }
@@ -106,8 +86,7 @@ public class AccountsRepository {
   }
 
   public int getShards(UUID id) throws SQLException {
-    try (ResultSet result =
-        DatabaseManager.get().query("shards", "accounts", "uuid = ?", id.toString())) {
+    try (ResultSet result = query("shards", "account_id = ?", id.toString())) {
       if (result.next()) {
         return result.getInt("shards");
       }
@@ -116,24 +95,10 @@ public class AccountsRepository {
     return -1;
   }
 
-  public int getShards(String name) throws SQLException {
-    try (ResultSet result = DatabaseManager.get().query("shards", "accounts", "name = ?", name)) {
-      if (result.next()) {
-        return result.getInt("shards");
-      }
-    }
-
-    return -1;
-  }
-
-  private Map<String, Object> buildAccounts(AccountsRecord data) {
-    Map<String, Object> account = new LinkedHashMap<>();
-    account.put("uuid", data.uuid());
-    account.put("name", data.name());
-    account.put("gems", data.gems());
-    account.put("shards", data.shards());
-    account.put("first_played", data.firstPlayed());
-    account.put("last_played", data.lastPlayed());
-    return account;
+  public void updateLastPlayed(UUID id, String name, LocalDateTime lastPlayed) throws SQLException {
+    Map<String, Object> data = new LinkedHashMap<>();
+    data.put("name", name);
+    data.put("last_played", lastPlayed);
+    update(data, "account_id = ?", id.toString());
   }
 }

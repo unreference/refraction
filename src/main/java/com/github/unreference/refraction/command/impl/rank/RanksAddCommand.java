@@ -4,9 +4,9 @@ import com.github.unreference.refraction.command.AbstractCommand;
 import com.github.unreference.refraction.command.CommandContext;
 import com.github.unreference.refraction.data.manager.AccountRanksRepositoryManager;
 import com.github.unreference.refraction.data.manager.AccountsRepositoryManager;
-import com.github.unreference.refraction.model.Rank;
-import com.github.unreference.refraction.util.UtilMessage;
-import com.github.unreference.refraction.util.UtilServer;
+import com.github.unreference.refraction.domain.model.Rank;
+import com.github.unreference.refraction.util.MessageUtil;
+import com.github.unreference.refraction.util.ServerUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,7 +23,7 @@ public class RanksAddCommand extends AbstractCommand {
 
   @Override
   protected Component getUsageMessage() {
-    return UtilMessage.getPrefixedMessage(
+    return MessageUtil.getPrefixedMessage(
         getPrefix(), "/%s <player> %s <rank>", getMainAliasUsed(), getAliasUsed());
   }
 
@@ -46,27 +46,27 @@ public class RanksAddCommand extends AbstractCommand {
 
     if (rank == null) {
       sender.sendMessage(
-          UtilMessage.getPrefixedMessage(getPrefix(), "Rank not found: &e%s", args[0]));
+          MessageUtil.getPrefixedMessage(getPrefix(), "Rank not found: &e%s", args[0]));
       return;
     }
 
     if (rank.isPrimary()) {
       sender.sendMessage(
-          UtilMessage.getPrefixedMessage(getPrefix(), "Invalid subrank: &e%s", rank.getId()));
+          MessageUtil.getPrefixedMessage(getPrefix(), "Invalid subrank: &e%s", rank.getId()));
       return;
     }
 
     String targetName = context.getTargetName();
 
-    UtilServer.runAsync(
+    ServerUtil.runAsync(
         () -> {
           UUID targetId = AccountsRepositoryManager.get().getId(targetName);
-          AccountRanksRepositoryManager.get().addRank(targetId, rank);
+          AccountRanksRepositoryManager.get().addSubrank(targetId, rank);
 
-          UtilServer.runSync(
+          ServerUtil.runSync(
               () -> {
                 sender.sendMessage(
-                    UtilMessage.getPrefixedMessage(
+                    MessageUtil.getPrefixedMessage(
                         getPrefix(),
                         "Added &e%s &7to the &e%s &7subrank.",
                         targetName,
@@ -77,7 +77,7 @@ public class RanksAddCommand extends AbstractCommand {
                 if (targetPlayer != null) {
                   Objects.requireNonNull(Bukkit.getPlayer(targetName))
                       .sendMessage(
-                          UtilMessage.getPrefixedMessage(
+                          MessageUtil.getPrefixedMessage(
                               getPrefix(),
                               "You were added to the &e%s &7subrank!",
                               rank.getId().toUpperCase()));
