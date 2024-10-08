@@ -104,10 +104,9 @@ public class AccountRanksRepository extends AbstractRepository<AccountRanksRecor
   public void removeSubrank(UUID id, Rank subrank) throws SQLException {
     DatabaseManager.get()
         .execute(
-            String.format(
-                "DELETE %s FROM %s WHERE account_id = ? AND is_primary = FALSE",
-                subrank.getId(), getName()),
-            id.toString());
+            String.format("DELETE FROM %s WHERE account_id = ? AND rank = ?", getName()),
+            id.toString(),
+            subrank.getId());
   }
 
   public List<Rank> getSubranks(UUID id) throws SQLException {
