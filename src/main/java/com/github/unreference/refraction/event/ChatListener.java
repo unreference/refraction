@@ -21,21 +21,26 @@ public class ChatListener implements Listener {
     Rank rank =
         Rank.getRankFromId(AccountRanksRepositoryManager.get().getRank(player.getUniqueId()));
 
+    Component playerLevel = Component.text(0).colorIfAbsent(NamedTextColor.GRAY);
+    Component playerRank =
+        rank.getPrefix() != null
+            ? FormatUtil.toUpperCase(rank.getFormattedPrefix())
+                .hoverEvent(
+                    FormatUtil.toUpperCase(rank.getFormattedPrefix())
+                        .appendNewline()
+                        .append(MessageUtil.getMessage(rank.getDescription())))
+                .appendSpace()
+            : Component.empty();
+    Component playerName = MessageUtil.getMessage(player.getName()).color(NamedTextColor.YELLOW);
+    Component playerMessage = event.message().colorIfAbsent(NamedTextColor.WHITE);
+
     Component finalMessage =
-        Component.text()
-            .append(Component.text(0).colorIfAbsent(NamedTextColor.GRAY))
+        playerLevel
             .appendSpace()
-            .append(
-                FormatUtil.toUpperCase(rank.getFormattedPrefix())
-                    .hoverEvent(
-                        FormatUtil.toUpperCase(rank.getFormattedPrefix())
-                            .appendNewline()
-                            .append(MessageUtil.getMessage(rank.getDescription()))))
-            .append(
-                MessageUtil.getMessage(player.getName()).color(NamedTextColor.YELLOW).appendSpace())
-            .append(event.message())
-            .color(NamedTextColor.WHITE)
-            .build();
+            .append(playerRank)
+            .append(playerName)
+            .appendSpace()
+            .append(playerMessage);
 
     MessageUtil.broadcastMessage(finalMessage);
   }

@@ -280,7 +280,7 @@ public enum Rank {
 
   public Component getFormattedPrefix() {
     if (prefix != null) {
-      return FormatUtil.getFormattedComponent(prefix).appendSpace();
+      return FormatUtil.getFormattedComponent(prefix);
     }
 
     return Component.empty();
