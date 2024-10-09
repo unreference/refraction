@@ -25,7 +25,9 @@ public class ChatListener implements Listener {
         Component.text()
             .append(Component.text(0).colorIfAbsent(NamedTextColor.GRAY))
             .appendSpace()
-            .append(FormatUtil.toUpperCase(rank.getFormattedPrefix()))
+            .append(
+                FormatUtil.toUpperCase(rank.getFormattedPrefix())
+                    .hoverEvent(MessageUtil.getMessage(rank.getDescription())))
             .append(
                 MessageUtil.getMessage(player.getName()).color(NamedTextColor.YELLOW).appendSpace())
             .append(event.message())

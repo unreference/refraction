@@ -47,7 +47,7 @@ public class RanksResetCommand extends AbstractCommand {
 
                   if (targetPlayer != null) {
                     targetPlayer.sendMessage(
-                        MessageUtil.getPrefixedMessage(getPrefix(), "Your ranks has been reset!"));
+                        MessageUtil.getPrefixedMessage(getPrefix(), "Your ranks have been reset!"));
                     ServerUtil.callEvent(new RankChangeEvent(targetPlayer, Rank.PLAYER));
                   }
                 });

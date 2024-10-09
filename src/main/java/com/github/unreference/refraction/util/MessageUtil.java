@@ -12,12 +12,13 @@ public class MessageUtil {
 
   public static Component getPrefixedMessage(String prefix, String message, Object... args) {
     Component bodyPrefix = FormatUtil.getPrideMessage(prefix + ">");
-    Component body = FormatUtil.getFormattedComponent(message, args);
+    Component body =
+        FormatUtil.getFormattedComponent(message, args).colorIfAbsent(NamedTextColor.GRAY);
     TextComponent.Builder builder = Component.text();
 
     builder.append(bodyPrefix);
     builder.appendSpace();
-    builder.append(body).colorIfAbsent(NamedTextColor.GRAY);
+    builder.append(body);
     return builder.build();
   }
 
