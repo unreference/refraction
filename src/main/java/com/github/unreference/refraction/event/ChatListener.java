@@ -27,7 +27,10 @@ public class ChatListener implements Listener {
             .appendSpace()
             .append(
                 FormatUtil.toUpperCase(rank.getFormattedPrefix())
-                    .hoverEvent(MessageUtil.getMessage(rank.getDescription())))
+                    .hoverEvent(
+                        FormatUtil.toUpperCase(rank.getFormattedPrefix())
+                            .appendNewline()
+                            .append(MessageUtil.getMessage(rank.getDescription()))))
             .append(
                 MessageUtil.getMessage(player.getName()).color(NamedTextColor.YELLOW).appendSpace())
             .append(event.message())
