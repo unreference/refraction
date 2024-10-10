@@ -1,164 +1,170 @@
 package com.github.unreference.refraction.domain.model;
 
 import com.github.unreference.refraction.util.FormatUtil;
+import com.github.unreference.refraction.util.MessageUtil;
 import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 
 public enum Rank {
   PLAYER("player", true),
 
-  ULTRA(
-      "ultra",
-      "&b&lUltra",
+  CELESTIAL(
+      "celestial",
+      "#FFFC66Celestial",
       PLAYER,
       true,
-      "The first step into the fantastical stores of the mist that just might turn out to be true.\n\n"
-          + "The first purchasable rank in the shop!"),
-  HERO(
-      "hero",
-      "&d&lHero",
-      ULTRA,
+      "The embodiment of light and radiance, those who transcend the ordinary. The Celestial shine above all "
+          + "others with unmatched brilliance.\n\nThe first purchasable rank in the shop!"),
+  VANGUARD(
+      "vanguard",
+      "#00E2FCVanguard",
+      CELESTIAL,
       true,
-      "There are many stories of a person who was brave enough to tame the most fearsome dragon in the"
-          + "land.\n\nThe second purchasable rank in the shop!"),
-  LEGEND(
-      "legend",
-      "&a&lLegend",
-      HERO,
+      "The first line of defense, blazing trails for others to follow. The Vanguard stand tall as protectors "
+          + "and innovators in the face of adversity.\n\nThe second purchasable rank in the shop!"),
+  MYTHIC(
+      "mythic",
+      "#FC6EFCMythic",
+      VANGUARD,
       true,
-      "For years, many have scoffed at the existence of these begins, only for it to turn out to be "
-          + "true.\n\nThe third purchasable rank at the shop!"),
-  TITAN(
-      "titan",
-      "&c&lTitan",
-      LEGEND,
+      "Stories are told of these rare few whose deeds reshape history itself. The Mythic rise above legends as "
+          + "those who leave an everlasting mark.\n\nThe third purchasable rank in the shop!"),
+  COLOSSUS(
+      "colossus",
+      "#FC7657Colossus",
+      MYTHIC,
       true,
-      "Ancient myths have spoken of these gigantic beings with unfathomable power.\n\n"
-          + "The fourth purchasable rank in the shop!"),
-  ETERNAL(
-      "eternal",
-      "&3Eternal",
-      TITAN,
+      "Unyielding, colossal figures of power. The Colossus stand as immovable giants, representing unmatched "
+          + "strength and resilience.\n\nThe fourth purchasable rank in the shop!"),
+  ETHEREAL(
+      "ethereal",
+      "#3CFFB5Ethereal",
+      COLOSSUS,
       true,
-      "Fantastic and magical, no one except the Time Lords themselves truly understand the power"
-          + "of these individuals.\n\nThe fifth purchasable rank in the shop!"),
+      "Transcending the mortal plane, the Ethereal live forever as luminous beings, guiding the future "
+          + "with their eternal contributions.\n\nThe fifth purchasable rank in the shop!"),
+  ASCENDANT(
+      "ascendant",
+      "#73FF60Ascendant",
+      ETHEREAL,
+      true,
+      "The pinnacle of existence, having ascended beyond the stars themselves. The Ascendant are the "
+          + "ultimate beings, forever etched in the fabric of time and space.\n\nA subscription-based rank, purchasable in "
+          + "the shop!"),
 
-  IMMORTAL(
-      "immortal",
-      "&e&lImmortal",
-      ETERNAL,
+  TWITCH(
+      "twitch",
+      "#7E45FBTwitch",
+      ASCENDANT,
       true,
-      "Everlasting beings that are said to have witnessed the birth of the universe. It's said that these "
-          + "individuals can control time itself.\n\nA subscription-based rank purchasable in the shop!"),
-
-  STREAM(
-      "stream",
-      "&5&lStream",
-      IMMORTAL,
+      "Twitch streamers broadcast live content, engaging the community and showcasing server events to "
+          + "enhance player interaction."),
+  TIKTOK(
+      "tiktok",
+      "#E84FA3TikTok",
+      TWITCH,
       true,
-      "A streamer who often features the server on their stream."),
-  YT(
-      "yt",
-      "&5&lYT",
-      STREAM,
-      true,
-      "A YouTuber who creates content for or related to the server. They have fewer subscribers than"
-          + "full YouTubers."),
+      "TikTok creators produce and share engaging short-form videos, promoting the server and its "
+          + "community to attract new players."),
   YOUTUBE(
       "youtube",
-      "&c&lYouTube",
-      YT,
+      "#FB0000YouTube",
+      TIKTOK,
       true,
-      "A YouTuber who creates content for or related to the server."),
+      "YouTube creators produce video content related to the server, increasing visibility and helping "
+          + "to grow the player base."),
 
   BUILDER(
       "builder",
-      "&9&lBuilder",
-      ETERNAL,
+      "#FBA300Builder",
+      ETHEREAL,
       true,
-      "These creative staff members help build maps for your favorite games!"),
+      "Builders design and construct maps and environments within the server, enhancing gameplay and "
+          + "player experiences."),
   BUILD_LEAD(
       "build_lead",
-      "&9&lBuildLead",
+      "#FBA300BuildLead",
       BUILDER,
       true,
-      "Build Leads are leaders of the Build Team. They oversee the creation of new maps and manage"
-          + "Builders."),
+      "Build Leads coordinate map creation efforts, ensuring high-quality designs and effective "
+          + "collaboration among builders."),
 
   TRAINEE(
       "trainee",
-      "&6&lTrainee",
+      "#0EA7FCTrainee",
       BUILD_LEAD,
       true,
-      "Trainees are Moderators in training. Their duties include enforcing the rules and providing help"
-          + "to anybody with questions or concerns.\n\nFor assistance, you can contact them using &e/a <message>&7."),
+      "Trainees learn server moderation and community engagement practices, providing assistance under the "
+          + "guidance of experienced staff.\n\nFor assistance, you can contact them using &e/a <message>&7."),
   MOD(
       "mod",
-      "&6&lMod",
+      "#0EA7FCMod",
       TRAINEE,
       true,
-      "Moderators enforce rules and provide assistance to anybody with questions or concerns.\n\n"
-          + "For assistance, contact them using &e/a <message>&7."),
+      "Moderators maintain order and enforce rules within the server, fostering a positive atmosphere and"
+          + "ensuring player safety.\n\nFor assistance, contact them using &e/a <message>&7."),
   SR_MOD(
       "sr_mod",
-      "&6&lSr.Mod",
+      "#0EA7FCSr.Mod",
       MOD,
       true,
-      "Senior Moderators are members of a special staff team whose duties include fulfilling "
-          + "specific tasks such as community or staff management. Just like a Moderator, you can always ask them "
-          + "for help!\n\nFor assistance, contact them using &e/a <message>&7."),
+      "Senior Moderators are members of a specialized team and contribute to its efforts, enhancing server "
+          + "management and community interaction through additional responsibilities.\n\nFor assistance, contact them "
+          + "using\n&e/a <message>&7."),
 
   SUPPORT(
       "support",
-      "&9&lSupport",
+      "#576BF0Support",
       SR_MOD,
       true,
-      "Support members handle tickets and provide customer service."),
+      "Support members handle tickets and resolve issues related to purchases, ensuring a positive "
+          + "shopping experience for players."),
+
   ADMIN(
       "admin",
-      "&4&lAdmin",
+      "#FB2057Admin",
       SUPPORT,
       true,
-      "Administrators are leaders of their respective Senior Moderator teams."),
+      "Administrators lead subteams and manage operations to ensure efficient server functionality and "
+          + "effective collaboration."),
   DEV(
       "dev",
-      "&4&lDev",
+      "#FB2057Dev",
       ADMIN,
       true,
-      "Developers work behind the scenes to create new games and features. "
-          + "They also fix bugs to provide you with the best experience!"),
+      "Developers create and maintain server features, implementing technical solutions to enhance "
+          + "gameplay and player experience."),
   LEADER(
       "leader",
-      "&4&lLeader",
+      "#FB2057Leader",
       DEV,
       true,
-      "Leaders manage the operation of their respective team or projects within the staff, development, or "
-          + "management team."),
-
+      "Leaders oversee specific aspects of the server, ensuring effective communication and coordination "
+          + "among team members."),
   OWNER(
       "owner",
-      "&4&lOwner",
+      "#FB2057Owner",
       LEADER,
       true,
-      "Owners are the core managers of Mineplex. Each owner manages a different aspect of the server to "
-          + "ensure its efficient operation."),
+      "Owners hold ultimate authority over server management, guiding the overall direction and ensuring "
+          + "a thriving community."),
 
   RC("rc", false),
   STMA("stma", false),
   STM("stm", STMA, false),
   QAT("qat", false),
-  QA("qa", QAT, false),
+  QA("qa", ASCENDANT, false),
   QAL("qal", QA, false);
 
   private final String id;
-  private final String prefix;
   private final Rank parent;
   private final boolean isPrimary;
   private final String description;
-
   private final Map<String, RankPermission> grantedPermissions;
   private final Set<String> revokedPermissions;
+  private String prefix;
 
   Rank(String id, boolean isPrimary) {
     this.id = id;
@@ -278,6 +284,10 @@ public enum Rank {
     return prefix;
   }
 
+  public void setPrefix(String prefix) {
+    this.prefix = prefix;
+  }
+
   public Component getFormattedPrefix() {
     if (prefix != null) {
       return FormatUtil.getFormattedComponent(prefix);
@@ -292,5 +302,26 @@ public enum Rank {
 
   public String getDescription() {
     return description;
+  }
+
+  public Component getRankWithHover() {
+    if (prefix != null) {
+      if (description != null) {
+        Component hoverContent =
+            Component.text()
+                .append(FormatUtil.toUpperCase(getFormattedPrefix()).decorate(TextDecoration.BOLD))
+                .append(Component.newline())
+                .append(MessageUtil.getMessage(description))
+                .build();
+
+        return FormatUtil.toUpperCase(getFormattedPrefix())
+            .decorate(TextDecoration.BOLD)
+            .hoverEvent(hoverContent);
+      } else {
+        return FormatUtil.toUpperCase(getFormattedPrefix()).decorate(TextDecoration.BOLD);
+      }
+    } else {
+      return Component.empty();
+    }
   }
 }

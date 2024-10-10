@@ -47,6 +47,13 @@ public class PlayerListener implements Listener {
             AccountsRepositoryManager.get().update(uuid, name, now);
 
             Rank rank = Rank.getRankFromId(AccountRanksRepositoryManager.get().getRank(uuid));
+
+            if (rank == null) {
+              AccountRanksRepositoryManager.get().setRank(uuid, Rank.PLAYER);
+              ServerUtil.runSync(
+                  () -> Refraction.log(1, "Fixed invalid rank (name=%s)", player.getName()));
+            }
+
             setOp(player, rank);
           } catch (Exception exception) {
             player.kick(Component.text("Timed out"));
@@ -90,12 +97,16 @@ public class PlayerListener implements Listener {
   private void setOp(Player player, Rank rank) {
     ServerUtil.runSync(
         () -> {
-          boolean wasOp = player.isOp();
-          player.setOp(rank.isPermitted(PERMISSION_AUTO_OP));
-          boolean isOp = player.isOp();
+          try {
+            boolean wasOp = player.isOp();
+            player.setOp(rank.isPermitted(PERMISSION_AUTO_OP));
+            boolean isOp = player.isOp();
 
-          if (isOp != wasOp) {
-            Refraction.log(1, "Updated operator status [%s] -> %s", player.getName(), isOp);
+            if (isOp != wasOp) {
+              Refraction.log(1, "Updated operator status (name=%s) -> %s", player.getName(), isOp);
+            }
+          } catch (Exception exception) {
+            Refraction.log(2, "Failed to update operator status (name=%s)", player.getName());
           }
         });
   }
