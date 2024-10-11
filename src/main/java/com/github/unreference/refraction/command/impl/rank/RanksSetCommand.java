@@ -5,11 +5,14 @@ import com.github.unreference.refraction.command.CommandContext;
 import com.github.unreference.refraction.data.manager.AccountRanksRepositoryManager;
 import com.github.unreference.refraction.data.manager.AccountsRepositoryManager;
 import com.github.unreference.refraction.domain.model.Rank;
+import com.github.unreference.refraction.event.RankChangeEvent;
 import com.github.unreference.refraction.util.MessageUtil;
 import com.github.unreference.refraction.util.ServerUtil;
 import java.util.*;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class RanksSetCommand extends AbstractCommand {
   public RanksSetCommand() {
@@ -54,16 +57,14 @@ public class RanksSetCommand extends AbstractCommand {
                       MessageUtil.getPrefixedMessage(
                           getPrefix(), "Set &e%s's &7rank to &e%s&7.", targetName, rank.getId()));
 
-                  //                  Player targetPlayer = Bukkit.getPlayer(targetName);
-                  //
-                  //                  if (targetPlayer != null) {
-                  //                    targetPlayer.sendMessage(
-                  //                        MessageUtil.getPrefixedMessage(
-                  //                            getPrefix(), "Your rank has been updated to
-                  // &e%s&7!", rank.getId()));
-                  //                    ServerUtil.callEvent(new RankChangeEvent(targetPlayer,
-                  // rank));
-                  //                  }
+                  Player targetPlayer = Bukkit.getPlayer(targetName);
+
+                  if (targetPlayer != null) {
+                    targetPlayer.sendMessage(
+                        MessageUtil.getPrefixedMessage(
+                            getPrefix(), "Your rank has been updated to &e%s&7!", rank.getId()));
+                    ServerUtil.callEvent(new RankChangeEvent(targetPlayer, rank));
+                  }
                 });
           } catch (Exception exception) {
             sender.sendMessage(
