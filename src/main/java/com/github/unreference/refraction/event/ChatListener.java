@@ -12,16 +12,35 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class ChatListener implements Listener {
+  private final String bypassChatManagementPermission = "refraction.server.chat.bypass";
+
+  public ChatListener() {
+    Rank.TRAINEE.grantPermission(bypassChatManagementPermission, true);
+  }
+
   @EventHandler
   public void onAsyncChat(AsyncChatEvent event) {
     event.setCancelled(true);
 
     Player player = event.getPlayer();
 
-    ServerUtil.runSync(
+    ServerUtil.runAsync(
         () -> {
           Rank rank =
               Rank.getRankFromId(AccountRanksRepositoryManager.get().getRank(player.getUniqueId()));
+
+          if (ChatManager.get().isChatLocked()
+              && !rank.isPermitted(bypassChatManagementPermission)) {
+            player.sendMessage(
+                MessageUtil.getPrefixedMessage(
+                    "Chat",
+                    "Shh... chat is currently locked "
+                        + (ChatManager.get().getLockDuration() == -1
+                            ? "&epermanently&7."
+                            : "for &e%d seconds&7."),
+                    ChatManager.get().getRemainingLockTime()));
+            return;
+          }
 
           Component playerLevel = Component.text(0).colorIfAbsent(NamedTextColor.GRAY);
           Component playerRank =

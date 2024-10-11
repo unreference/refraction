@@ -49,12 +49,14 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
       }
     }
 
-    UUID targetId = AccountsRepositoryManager.get().getId(firstArg);
+    if (isTargetRequired) {
+      UUID targetId = AccountsRepositoryManager.get().getId(firstArg);
 
-    if (targetId == null) {
-      sender.sendMessage(
-          MessageUtil.getPrefixedMessage(getPrefix(), "Player not found: &e%s", args[0]));
-      return;
+      if (targetId == null) {
+        sender.sendMessage(
+            MessageUtil.getPrefixedMessage(getPrefix(), "Player not found: &e%s", args[0]));
+        return;
+      }
     }
 
     if (args.length > 1) {
@@ -96,7 +98,9 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
                 !subcommand.isTargetRequired() && isPermitted(sender, subcommand.getPermission()))
         .forEach(subcommand -> suggestions.add(subcommand.getName().toLowerCase()));
 
-    suggestions.addAll(getOnlinePlayers());
+    if (isTargetRequired) {
+      suggestions.addAll(getOnlinePlayers());
+    }
 
     filterTab(suggestions, arg);
     return suggestions;

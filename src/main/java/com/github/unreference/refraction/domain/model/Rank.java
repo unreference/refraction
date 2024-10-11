@@ -97,14 +97,14 @@ public enum Rank {
       BUILD_LEAD,
       true,
       "Trainees learn server moderation and community engagement practices, providing assistance under the "
-          + "guidance of experienced staff.\n\nFor assistance, you can contact them using &e/a <message>&7."),
+          + "guidance of experienced staff.\n\nFor assistance, you can contact them using\n&e/a <message>&7."),
   MOD(
       "mod",
       "#0EA7FCMod",
       TRAINEE,
       true,
-      "Moderators maintain order and enforce rules within the server, fostering a positive atmosphere and"
-          + "ensuring player safety.\n\nFor assistance, contact them using &e/a <message>&7."),
+      "Moderators maintain order and enforce rules within the server, fostering a positive atmosphere and "
+          + "ensuring player safety.\n\nFor assistance, contact them using\n&e/a <message>&7."),
   SR_MOD(
       "sr_mod",
       "#0EA7FCSr.Mod",
@@ -127,8 +127,8 @@ public enum Rank {
       "#FB2057Admin",
       SUPPORT,
       true,
-      "Administrators lead subteams and manage operations to ensure efficient server functionality and "
-          + "effective collaboration."),
+      "Administrators lead specialized Senior Moderator teams and manage operations to ensure efficient "
+          + "server functionality and effective collaboration."),
   DEV(
       "dev",
       "#FB2057Dev",

@@ -1,5 +1,6 @@
 package com.github.unreference.refraction.event;
 
+import com.github.unreference.refraction.command.impl.chat.ChatCommand;
 import com.github.unreference.refraction.command.impl.rank.RanksCommand;
 import com.github.unreference.refraction.command.impl.world.SetSpawnCommand;
 import com.github.unreference.refraction.command.impl.world.SpawnCommand;
@@ -22,6 +23,7 @@ public class CommandListener implements Listener {
     registerCommand(new SetSpawnCommand());
     registerCommand(new SpawnCommand());
     registerCommand(new RanksCommand());
+    registerCommand(new ChatCommand());
   }
 
   @EventHandler
