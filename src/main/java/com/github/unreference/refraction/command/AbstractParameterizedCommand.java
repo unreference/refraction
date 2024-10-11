@@ -72,34 +72,60 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
 
   @Override
   public List<String> tab(CommandSender sender, String alias, String[] args) {
-    List<String> suggestions = new ArrayList<>();
-
     if (args.length == 1) {
-      subcommands.values().stream()
-          .filter(
-              subcommand ->
-                  !subcommand.isTargetRequired() && isPermitted(sender, subcommand.getPermission()))
-          .forEach(subcommand -> suggestions.add(subcommand.getName().toLowerCase()));
-
-      suggestions.addAll(getOnlinePlayers());
-      filterTab(suggestions, args[0]);
-      return suggestions;
+      return handleFirstArgument(sender, args[0]);
     }
 
     if (args.length == 2) {
-      subcommands.values().stream()
-          .filter(
-              subcommand ->
-                  subcommand.isTargetRequired() && isPermitted(sender, subcommand.getPermission()))
-          .forEach(subcommand -> suggestions.add(subcommand.getName().toLowerCase()));
+      return handleSecondArgument(sender, alias, args[0], args[1]);
+    }
 
-      filterTab(suggestions, args[1]);
-      return suggestions;
-    } else {
-      Command subcommand = subcommands.get(args[1]);
-      if (subcommand != null) {
-        return subcommand.tab(sender, alias, Arrays.copyOfRange(args, 2, args.length));
-      }
+    if (args.length == 3) {
+      return handleThirdArgument(sender, alias, args[0], args[1], args[2]);
+    }
+
+    return Collections.emptyList();
+  }
+
+  private List<String> handleFirstArgument(CommandSender sender, String arg) {
+    List<String> suggestions = new ArrayList<>();
+
+    subcommands.values().stream()
+        .filter(
+            subcommand ->
+                !subcommand.isTargetRequired() && isPermitted(sender, subcommand.getPermission()))
+        .forEach(subcommand -> suggestions.add(subcommand.getName().toLowerCase()));
+
+    suggestions.addAll(getOnlinePlayers());
+
+    filterTab(suggestions, arg);
+    return suggestions;
+  }
+
+  private List<String> handleSecondArgument(
+      CommandSender sender, String alias, String firstArg, String secondArg) {
+    List<String> suggestions = new ArrayList<>();
+
+    Command subcommand = subcommands.get(firstArg.toLowerCase());
+    if (subcommand != null && !subcommand.isTargetRequired()) {
+      return subcommand.tab(
+          sender, alias, Arrays.copyOfRange(new String[] {firstArg, secondArg}, 1, 2));
+    }
+
+    subcommands.values().stream()
+        .filter(sub -> sub.isTargetRequired() && isPermitted(sender, sub.getPermission()))
+        .forEach(sub -> suggestions.add(sub.getName().toLowerCase()));
+
+    filterTab(suggestions, secondArg);
+    return suggestions;
+  }
+
+  private List<String> handleThirdArgument(
+      CommandSender sender, String alias, String firstArg, String secondArg, String thirdArg) {
+    Command subcommand = subcommands.get(secondArg.toLowerCase());
+    if (subcommand != null && subcommand.isTargetRequired()) {
+      return subcommand.tab(
+          sender, alias, Arrays.copyOfRange(new String[] {firstArg, secondArg, thirdArg}, 2, 3));
     }
 
     return Collections.emptyList();
