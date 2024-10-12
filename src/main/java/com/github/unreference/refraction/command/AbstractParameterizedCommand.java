@@ -34,29 +34,39 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
     String firstArg = args[0].toLowerCase();
     Command subcommand = subcommands.get(firstArg);
 
-    if (subcommand != null) {
-      if (subcommand.isTargetRequired()) {
-        if (args.length < 2) {
-          execute(sender, args);
-          return;
-        }
-
-        handleSubcommandWithTarget(sender, args);
-        return;
-      } else {
-        handleSubcommand(sender, args, 0);
-        return;
-      }
-    }
-
-    if (isTargetRequired) {
+    if (subcommand != null && subcommand.isTargetRequired()) {
       UUID targetId = AccountsRepositoryManager.get().getId(firstArg);
 
       if (targetId == null) {
         sender.sendMessage(
-            MessageUtil.getPrefixedMessage(getPrefix(), "Player not found: &e%s", args[0]));
+            MessageUtil.getPrefixedMessage(getPrefix(), "Player not found: &e%s", firstArg));
         return;
       }
+
+      if (args.length < 2) {
+        execute(sender, args);
+        return;
+      }
+
+      handleSubcommandWithTarget(sender, args);
+      return;
+    }
+
+    if (subcommand != null) {
+      handleSubcommand(sender, args, 0);
+      return;
+    }
+
+    if (!isTargetRequired) {
+      execute(sender, args);
+      return;
+    }
+
+    UUID targetId = AccountsRepositoryManager.get().getId(firstArg);
+    if (targetId == null) {
+      sender.sendMessage(
+          MessageUtil.getPrefixedMessage(getPrefix(), "Player not found: &e%s", args[0]));
+      return;
     }
 
     if (args.length > 1) {

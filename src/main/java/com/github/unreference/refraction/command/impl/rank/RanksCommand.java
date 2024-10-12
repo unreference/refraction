@@ -4,7 +4,6 @@ import com.github.unreference.refraction.command.AbstractParameterizedCommand;
 import com.github.unreference.refraction.domain.model.Rank;
 import com.github.unreference.refraction.util.MessageUtil;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.CommandSender;
 

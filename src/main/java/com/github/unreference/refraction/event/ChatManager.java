@@ -62,8 +62,7 @@ public class ChatManager implements Listener {
             }
           };
 
-      unlockTask.runTaskLater(
-          Refraction.getPlugin(), duration * 20L);
+      unlockTask.runTaskLater(Refraction.getPlugin(), duration * 20L);
     }
   }
 

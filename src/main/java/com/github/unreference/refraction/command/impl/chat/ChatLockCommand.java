@@ -54,7 +54,8 @@ public class ChatLockCommand extends AbstractCommand {
         ChatManager.get().lockChat(sender, duration);
       }
     } catch (NumberFormatException exception) {
-      sender.sendMessage(MessageUtil.getPrefixedMessage(getPrefix(), "Invalid duration: &e%s", args[0]));
+      sender.sendMessage(
+          MessageUtil.getPrefixedMessage(getPrefix(), "Invalid duration: &e%s", args[0]));
     }
   }
 
