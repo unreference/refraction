@@ -5,6 +5,8 @@ import com.github.unreference.refraction.data.manager.AccountsRepositoryManager;
 import com.github.unreference.refraction.domain.model.Rank;
 import com.github.unreference.refraction.util.MessageUtil;
 import java.util.*;
+
+import com.github.unreference.refraction.util.ServerUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -35,20 +37,31 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
     Command subcommand = subcommands.get(firstArg);
 
     if (subcommand != null && subcommand.isTargetRequired()) {
-      UUID targetId = AccountsRepositoryManager.get().getId(firstArg);
+      ServerUtil.runAsync(
+          () -> {
+            try {
+              UUID targetId = AccountsRepositoryManager.get().getId(firstArg);
 
-      if (targetId == null) {
-        sender.sendMessage(
-            MessageUtil.getPrefixedMessage(getPrefix(), "Player not found: &e%s", firstArg));
-        return;
-      }
+              if (targetId == null) {
+                sender.sendMessage(
+                    MessageUtil.getPrefixedMessage(
+                        getPrefix(), "Player not found: &e%s", firstArg));
+                return;
+              }
 
-      if (args.length < 2) {
-        execute(sender, args);
-        return;
-      }
+              if (args.length < 2) {
+                execute(sender, args);
+                return;
+              }
 
-      handleSubcommandWithTarget(sender, args);
+              handleSubcommandWithTarget(sender, args);
+            } catch (Exception e) {
+              sender.sendMessage(
+                  MessageUtil.getPrefixedMessage(
+                      getPrefix(), "An error occurred while attempting to find the player."));
+            }
+          });
+
       return;
     }
 
@@ -62,24 +75,33 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
       return;
     }
 
-    UUID targetId = AccountsRepositoryManager.get().getId(firstArg);
-    if (targetId == null) {
-      sender.sendMessage(
-          MessageUtil.getPrefixedMessage(getPrefix(), "Player not found: &e%s", args[0]));
-      return;
-    }
+    ServerUtil.runAsync(
+        () -> {
+          try {
+            UUID targetId = AccountsRepositoryManager.get().getId(firstArg);
+            if (targetId == null) {
+              sender.sendMessage(
+                  MessageUtil.getPrefixedMessage(getPrefix(), "Player not found: &e%s", args[0]));
+              return;
+            }
 
-    if (args.length > 1) {
-      String secondArg = args[1].toLowerCase();
-      subcommand = subcommands.get(secondArg);
+            if (args.length > 1) {
+              String secondArg = args[1].toLowerCase();
+              Command secondSubcommand = subcommands.get(secondArg);
 
-      if (subcommand != null && subcommand.isTargetRequired()) {
-        handleSubcommandWithTarget(sender, args);
-        return;
-      }
-    }
+              if (secondSubcommand != null && secondSubcommand.isTargetRequired()) {
+                handleSubcommandWithTarget(sender, args);
+                return;
+              }
+            }
 
-    execute(sender, args);
+            execute(sender, args);
+          } catch (Exception e) {
+            sender.sendMessage(
+                MessageUtil.getPrefixedMessage(
+                    getPrefix(), "An error occurred while attempting to find the player."));
+          }
+        });
   }
 
   @Override
@@ -180,9 +202,19 @@ public abstract class AbstractParameterizedCommand extends AbstractCommand {
 
   private void handleSubcommandWithTarget(CommandSender sender, String[] args) {
     String targetInput = args[0];
-    UUID targetId = AccountsRepositoryManager.get().getId(targetInput);
-    String targetName = AccountsRepositoryManager.get().getName(targetId);
-    handleSubcommand(sender, args, 1, targetName);
+
+    ServerUtil.runAsync(
+        () -> {
+          try {
+            UUID targetId = AccountsRepositoryManager.get().getId(targetInput);
+            String targetName = AccountsRepositoryManager.get().getName(targetId);
+            handleSubcommand(sender, args, 1, targetName);
+          } catch (Exception e) {
+            sender.sendMessage(
+                MessageUtil.getPrefixedMessage(
+                    getPrefix(), "An error occurred while attempting to find the player."));
+          }
+        });
   }
 
   private void handleSubcommand(
