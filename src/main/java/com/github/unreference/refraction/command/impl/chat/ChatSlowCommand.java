@@ -22,7 +22,7 @@ public class ChatSlowCommand extends AbstractCommand {
 
   @Override
   protected void generatePermissions() {
-    Rank.MOD.grantPermission(getPermission(), true);
+    Rank.SR_MOD.grantPermission(getPermission(), true);
   }
 
   @Override

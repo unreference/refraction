@@ -22,7 +22,7 @@ public class ChatLockCommand extends AbstractCommand {
 
   @Override
   protected void generatePermissions() {
-    Rank.MOD.grantPermission(getPermission(), true);
+    Rank.ADMIN.grantPermission(getPermission(), true);
   }
 
   @Override

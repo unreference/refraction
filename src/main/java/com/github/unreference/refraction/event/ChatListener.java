@@ -12,10 +12,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class ChatListener implements Listener {
-  private static final String PERMISSION_CHAT_BYPASS = "refraction.server.chat.bypass";
+  private static final String PERMISSION_CHAT_SLOW_BYPASS = "refraction.server.chat.bypass-slow";
+  private static final String PERMISSION_CHAT_LOCK_BYPASS = "refraction.server.chat.bypass-lock";
 
   public ChatListener() {
-    Rank.TRAINEE.grantPermission(PERMISSION_CHAT_BYPASS, true);
+    Rank.TRAINEE.grantPermission(PERMISSION_CHAT_SLOW_BYPASS, true);
+    Rank.MOD.grantPermission(PERMISSION_CHAT_LOCK_BYPASS, true);
   }
 
   @EventHandler
@@ -27,9 +29,9 @@ public class ChatListener implements Listener {
         () -> {
           Rank rank = getPlayerRank(player);
 
-          if (isChatLocked(player, rank)) return;
-
           if (isSlowModeActive(player, rank)) return;
+
+          if (isChatLocked(player, rank)) return;
 
           Component finalMessage = getMessage(event, player, rank);
           ServerUtil.runSync(() -> MessageUtil.broadcastMessage(finalMessage));
@@ -41,7 +43,7 @@ public class ChatListener implements Listener {
   }
 
   private boolean isChatLocked(Player player, Rank rank) {
-    if (ChatManager.get().isChatLocked() && !rank.isPermitted(PERMISSION_CHAT_BYPASS)) {
+    if (ChatManager.get().isChatLocked() && !rank.isPermitted(PERMISSION_CHAT_LOCK_BYPASS)) {
       player.sendMessage(
           MessageUtil.getPrefixedMessage(
               "Chat",
@@ -57,7 +59,8 @@ public class ChatListener implements Listener {
   }
 
   private boolean isSlowModeActive(Player player, Rank rank) {
-    if (ChatManager.get().getSlowModeDuration() > 0 && !rank.isPermitted(PERMISSION_CHAT_BYPASS)) {
+    if (ChatManager.get().getSlowModeDuration() > 0
+        && !rank.isPermitted(PERMISSION_CHAT_SLOW_BYPASS)) {
       if (ChatManager.get().isOnCooldown(player)) {
         long remainingTime =
             ChatManager.get().getSlowModeDuration()
