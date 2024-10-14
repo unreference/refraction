@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 
 public class ChatLockCommand extends AbstractCommand {
   public ChatLockCommand() {
-    super("lock", "Chat", "refraction.command.chat.lock", false);
+    super("lock", "Chat", "refraction.command.chat.lock", false, "l");
   }
 
   @Override

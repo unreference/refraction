@@ -13,10 +13,9 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 
 public class FormatUtil {
-  private static final Pattern legacyColorPattern = Pattern.compile("&[a-fA-F0-9klmnor]");
-  private static final Pattern hexColorPattern = Pattern.compile("#[a-fA-F0-9]{6}");
-  private static final Pattern formatPattern =
-      Pattern.compile("&[a-fA-F0-9klmnor]|#[a-fA-F0-9]{6}");
+  public static final Pattern legacyColorPattern = Pattern.compile("&[a-fA-F0-9klmnor]");
+  public static final Pattern hexColorPattern = Pattern.compile("#[a-fA-F0-9]{6}");
+  public static final Pattern formatPattern = Pattern.compile("&[a-fA-F0-9klmnor]|#[a-fA-F0-9]{6}");
 
   private static final List<TextColor> prideColors =
       List.of(
@@ -195,7 +194,7 @@ public class FormatUtil {
     return strippedMessage.isEmpty();
   }
 
-  private static NamedTextColor getColorFromLegacy(char legacyCode) {
+  public static NamedTextColor getColorFromLegacy(char legacyCode) {
     return switch (legacyCode) {
       case '0' -> NamedTextColor.BLACK;
       case '1' -> NamedTextColor.DARK_BLUE;

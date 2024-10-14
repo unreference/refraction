@@ -4,9 +4,8 @@ import com.github.unreference.refraction.data.manager.AccountRanksRepositoryMana
 import com.github.unreference.refraction.data.manager.AccountsRepositoryManager;
 import com.github.unreference.refraction.domain.model.Rank;
 import com.github.unreference.refraction.util.MessageUtil;
-import java.util.*;
-
 import com.github.unreference.refraction.util.ServerUtil;
+import java.util.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

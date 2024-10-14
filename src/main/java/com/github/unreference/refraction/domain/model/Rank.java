@@ -3,8 +3,10 @@ package com.github.unreference.refraction.domain.model;
 import com.github.unreference.refraction.util.FormatUtil;
 import com.github.unreference.refraction.util.MessageUtil;
 import java.util.*;
+import java.util.regex.Matcher;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 
 public enum Rank {
@@ -29,8 +31,8 @@ public enum Rank {
       "#FC6EFCMythic",
       VANGUARD,
       true,
-      "Stories are told of these rare few whose deeds reshape history itself. The Mythic rise above legends as "
-          + "those who leave an everlasting mark.\n\nThe third purchasable rank in the shop!"),
+      "Stories are told of these rare few whose deeds reshape history itself. The Mythic rise above legends "
+          + "as those who leave an everlasting mark.\n\nThe third purchasable rank in the shop!"),
   COLOSSUS(
       "colossus",
       "#FC7657Colossus",
@@ -51,8 +53,8 @@ public enum Rank {
       ETHEREAL,
       true,
       "The pinnacle of existence, having ascended beyond the stars themselves. The Ascendant are the "
-          + "ultimate beings, forever etched in the fabric of time and space.\n\nA subscription-based rank, purchasable in "
-          + "the shop!"),
+          + "ultimate beings, forever etched in the fabric of time and space.\n\nA subscription-based rank, "
+          + "purchasable in the shop!"),
 
   TWITCH(
       "twitch",
@@ -196,16 +198,6 @@ public enum Rank {
     this.revokedPermissions = new HashSet<>();
   }
 
-  Rank(String id, String prefix, Rank parent, boolean isPrimary) {
-    this.id = id;
-    this.prefix = prefix;
-    this.parent = parent;
-    this.isPrimary = isPrimary;
-    this.description = null;
-    this.grantedPermissions = new HashMap<>();
-    this.revokedPermissions = new HashSet<>();
-  }
-
   public static String getId(Rank rank) {
     return rank.getId();
   }
@@ -305,23 +297,43 @@ public enum Rank {
   }
 
   public Component getRankWithHover() {
-    if (prefix != null) {
-      if (description != null) {
-        Component hoverContent =
-            Component.text()
-                .append(FormatUtil.toUpperCase(getFormattedPrefix()).decorate(TextDecoration.BOLD))
-                .append(Component.newline())
-                .append(MessageUtil.getMessage(description))
-                .build();
-
-        return FormatUtil.toUpperCase(getFormattedPrefix())
-            .decorate(TextDecoration.BOLD)
-            .hoverEvent(hoverContent);
-      } else {
-        return FormatUtil.toUpperCase(getFormattedPrefix()).decorate(TextDecoration.BOLD);
-      }
-    } else {
+    if (prefix == null) {
       return Component.empty();
     }
+
+    if (description == null) {
+      return FormatUtil.toUpperCase(getFormattedPrefix()).decorate(TextDecoration.BOLD);
+    }
+
+    Component hoverContent =
+        Component.text()
+            .append(FormatUtil.toUpperCase(getFormattedPrefix()).decorate(TextDecoration.BOLD))
+            .append(Component.newline())
+            .append(MessageUtil.getMessage(description))
+            .build();
+
+    return FormatUtil.toUpperCase(getFormattedPrefix())
+        .decorate(TextDecoration.BOLD)
+        .hoverEvent(hoverContent);
+  }
+
+  public TextColor getRankColor() {
+    Matcher hexMatcher = FormatUtil.hexColorPattern.matcher(this.prefix);
+    if (hexMatcher.find()) {
+      String hexColor = hexMatcher.group();
+      return TextColor.fromHexString(hexColor);
+    }
+
+    Matcher legacyMatcher = FormatUtil.legacyColorPattern.matcher(this.prefix);
+    if (legacyMatcher.find()) {
+      String legacyCode = legacyMatcher.group();
+      char legacyChar = legacyCode.charAt(1);
+      NamedTextColor namedColor = FormatUtil.getColorFromLegacy(legacyChar);
+      if (namedColor != null) {
+        return namedColor;
+      }
+    }
+
+    return NamedTextColor.WHITE;
   }
 }
