@@ -30,7 +30,7 @@ public class ChatCommand extends AbstractParameterizedCommand {
               () -> {
                 sender.sendMessage(MessageUtil.getPrefixedMessage(getPrefix(), "Command List:"));
 
-                if (rank == Rank.ADMIN) {
+                if (rank.isPermitted("refraction.command.chat.lock")) {
                   sender.sendMessage(
                       MessageUtil.getMessageWithHover(
                               "- /%s lock [duration]",
