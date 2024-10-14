@@ -36,10 +36,8 @@ public class ChatSlowCommand extends AbstractCommand {
     }
 
     if (args.length == 0) {
-      if (ChatManager.get().getSlowModeDuration() != 0) {
-        ChatManager.get().setSlowModeDuration(sender, 0);
-        return;
-      }
+      ChatManager.get().setSlowModeDuration(sender, 0);
+      return;
     }
 
     try {
