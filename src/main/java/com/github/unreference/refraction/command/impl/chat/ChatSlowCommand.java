@@ -9,15 +9,15 @@ import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 
-public class ChatLockCommand extends AbstractCommand {
-  public ChatLockCommand() {
-    super("lock", "Chat", "refraction.command.chat.lock", false, "silence");
+public class ChatSlowCommand extends AbstractCommand {
+  public ChatSlowCommand() {
+    super("slow", "Chat", "refraction.command.chat.slow", false, "s");
   }
 
   @Override
   protected Component getUsageMessage() {
     return MessageUtil.getPrefixedMessage(
-        getPrefix(), "Usage: /%s %s [duration]", getMainAliasUsed(), getAliasUsed());
+        getPrefix(), "Usage: /%s /%s [duration]", getMainAliasUsed(), getAliasUsed());
   }
 
   @Override
@@ -36,22 +36,21 @@ public class ChatLockCommand extends AbstractCommand {
     }
 
     if (args.length == 0) {
-      if (ChatManager.get().isChatLocked()) {
-        ChatManager.get().unlockChat(sender);
-      } else {
-        ChatManager.get().lockChat(sender, 0);
+      if (ChatManager.get().getSlowModeDuration() != 0) {
+        ChatManager.get().setSlowModeDuration(sender, 0);
+        return;
       }
-
-      return;
     }
 
     try {
       int duration = Integer.parseInt(args[0]);
 
       if (duration == 0) {
-        ChatManager.get().unlockChat(sender);
+        if (ChatManager.get().getSlowModeDuration() != 0) {
+          ChatManager.get().setSlowModeDuration(sender, 0);
+        }
       } else {
-        ChatManager.get().lockChat(sender, duration);
+        ChatManager.get().setSlowModeDuration(sender, duration);
       }
     } catch (NumberFormatException exception) {
       sender.sendMessage(

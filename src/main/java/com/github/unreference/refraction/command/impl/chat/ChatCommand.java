@@ -11,6 +11,7 @@ public class ChatCommand extends AbstractParameterizedCommand {
     super("chat", "Chat", "refraction.command.chat", false);
 
     addSubcommand(new ChatLockCommand());
+    addSubcommand(new ChatSlowCommand());
   }
 
   @Override
@@ -20,6 +21,11 @@ public class ChatCommand extends AbstractParameterizedCommand {
         MessageUtil.getMessageWithHover(
                 "- /%s lock [duration]",
                 "Locks the chat for the specified duration.", getAliasUsed())
+            .color(Rank.MOD.getRankColor()));
+    sender.sendMessage(
+        MessageUtil.getMessageWithHover(
+                "- /%s slow [duration]",
+                "Adds a slow mode to the chat for the specified duration.", getAliasUsed())
             .color(Rank.MOD.getRankColor()));
   }
 

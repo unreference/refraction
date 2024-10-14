@@ -12,57 +12,87 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class ChatListener implements Listener {
-  private final String bypassChatManagementPermission = "refraction.server.chat.bypass";
+  private static final String PERMISSION_CHAT_BYPASS = "refraction.server.chat.bypass";
 
   public ChatListener() {
-    Rank.TRAINEE.grantPermission(bypassChatManagementPermission, true);
+    Rank.TRAINEE.grantPermission(PERMISSION_CHAT_BYPASS, true);
   }
 
   @EventHandler
   public void onAsyncChat(AsyncChatEvent event) {
     event.setCancelled(true);
-
     Player player = event.getPlayer();
 
     ServerUtil.runAsync(
         () -> {
-          Rank rank =
-              Rank.getRankFromId(AccountRanksRepositoryManager.get().getRank(player.getUniqueId()));
+          Rank rank = getPlayerRank(player);
 
-          if (ChatManager.get().isChatLocked()
-              && !rank.isPermitted(bypassChatManagementPermission)) {
-            player.sendMessage(
-                MessageUtil.getPrefixedMessage(
-                    "Chat",
-                    "Shh... chat is currently locked "
-                        + (ChatManager.get().getLockDuration() == -1
-                            ? "&epermanently&7."
-                            : "for &e%d seconds&7."),
-                    ChatManager.get().getRemainingLockTime()));
-            return;
-          }
+          if (isChatLocked(player, rank)) return;
 
-          Component playerLevel = Component.text(0).colorIfAbsent(NamedTextColor.GRAY);
-          Component playerRank =
-              rank.getPrefix() != null ? rank.getRankWithHover() : Component.empty();
-          Component spaceMayhaps =
-              rank.getPrefix() != null ? Component.empty().appendSpace() : Component.empty();
-          Component playerName =
-              MessageUtil.getMessage(player.getName()).color(NamedTextColor.YELLOW);
-          Component playerMessage = event.message().colorIfAbsent(NamedTextColor.WHITE);
+          if (isSlowModeActive(player, rank)) return;
 
-          Component finalMessage =
-              Component.text()
-                  .append(playerLevel)
-                  .appendSpace()
-                  .append(playerRank)
-                  .append(spaceMayhaps)
-                  .append(playerName)
-                  .appendSpace()
-                  .append(playerMessage)
-                  .build();
-
+          Component finalMessage = getMessage(event, player, rank);
           ServerUtil.runSync(() -> MessageUtil.broadcastMessage(finalMessage));
         });
+  }
+
+  private Rank getPlayerRank(Player player) {
+    return Rank.getRankFromId(AccountRanksRepositoryManager.get().getRank(player.getUniqueId()));
+  }
+
+  private boolean isChatLocked(Player player, Rank rank) {
+    if (ChatManager.get().isChatLocked() && !rank.isPermitted(PERMISSION_CHAT_BYPASS)) {
+      player.sendMessage(
+          MessageUtil.getPrefixedMessage(
+              "Chat",
+              "Shh... chat is currently locked %s&7.",
+              (ChatManager.get().getLockDuration() == -1) ? "&epermanently" : "for &e%d %s",
+              ChatManager.get().getRemainingLockTime(),
+              (ChatManager.get().getLockDuration() > 1) ? "seconds" : "second"));
+
+      return true;
+    }
+
+    return false;
+  }
+
+  private boolean isSlowModeActive(Player player, Rank rank) {
+    if (ChatManager.get().getSlowModeDuration() > 0 && !rank.isPermitted(PERMISSION_CHAT_BYPASS)) {
+      if (ChatManager.get().isOnCooldown(player)) {
+        long remainingTime =
+            ChatManager.get().getSlowModeDuration()
+                - (System.currentTimeMillis()
+                        - ChatManager.get().getLastMessageTimestamps().get(player.getUniqueId()))
+                    / 1000;
+
+        player.sendMessage(
+            MessageUtil.getPrefixedMessage(
+                "Chat",
+                "Shh... slow mode is enabled. You can send another message in &e%d %s&7.",
+                remainingTime,
+                (remainingTime > 1) ? "seconds" : "second"));
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private Component getMessage(AsyncChatEvent event, Player player, Rank rank) {
+    Component playerLevel = Component.text(0).colorIfAbsent(NamedTextColor.GRAY);
+    Component playerRank = rank.getPrefix() != null ? rank.getRankWithHover() : Component.empty();
+    Component spaceMayhaps =
+        rank.getPrefix() != null ? Component.empty().appendSpace() : Component.empty();
+    Component playerName = MessageUtil.getMessage(player.getName()).color(NamedTextColor.YELLOW);
+    Component playerMessage = event.message().colorIfAbsent(NamedTextColor.WHITE);
+
+    return Component.text()
+        .append(playerLevel)
+        .appendSpace()
+        .append(playerRank)
+        .append(spaceMayhaps)
+        .append(playerName)
+        .appendSpace()
+        .append(playerMessage)
+        .build();
   }
 }
